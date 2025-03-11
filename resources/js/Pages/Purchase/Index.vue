@@ -32,7 +32,7 @@ const updateTotalCost = (index) => {
 };
 </script>
 <template>
-    <AppLayout title="Dashboard">
+    <AppLayout title="Purchase">
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                 Purchase
@@ -47,7 +47,7 @@ const updateTotalCost = (index) => {
                         color="bg-red-500 hover:bg-red-700"
                     />
                 </div>
-                <h1 class="px-6 py-2 text-2xl font-extrabold">Inventory Form</h1>
+                <h1 class="px-6 py-2 text-2xl font-extrabold">Purchase Form</h1>
                 <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3">
                     <CustomSelect label="Supplier Name:" name="suppplier_name"
                                 :options="[ { value: 'Filpet Bottles', label: 'Filpet Bottles' },
@@ -165,11 +165,12 @@ const updateTotalCost = (index) => {
                     <thead>
                         <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
                             <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Bill No.</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Customer</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Sold Items</td>
+                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Supplier</td>
+                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Purchase Item</td>
                             <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Quantity</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Total Price Sold</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Date Sold</td>
+                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Price Per Unit</td>
+                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Total Price Purchased</td>
+                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Date Purchased</td>
                             <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Action</td>
                         </tr>
                     </thead>
@@ -179,6 +180,7 @@ const updateTotalCost = (index) => {
                             <td class="px-2 py-1 border whitespace-nowrap">Filpet Bottles</td>
                             <td class="px-2 py-1 border whitespace-nowrap">16oz_PB0091</td>
                             <td class="px-2 py-1 border whitespace-nowrap">50</td>
+                            <td class="px-2 py-1 border whitespace-nowrap">307</td>
                             <td class="px-2 py-1 border whitespace-nowrap">15350.00</td>
                             <td class="px-2 py-1 border whitespace-nowrap">05 January 2025</td>
                             <td class="px-2 py-1 border whitespace-nowrap">
