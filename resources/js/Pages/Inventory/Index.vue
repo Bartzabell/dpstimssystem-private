@@ -1,6 +1,13 @@
 <script setup>
+import { ref, watch, onMounted } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
+import { PhListMagnifyingGlass, PhFilePlus } from "@phosphor-icons/vue";
+
+const isFormVisible = ref(false);
+
+function toggleFormVisibility() {
+        isFormVisible.value = !isFormVisible.value;
+    };
 </script>
 <template>
     <AppLayout title="Inventory">
@@ -9,11 +16,55 @@ import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyi
                 Inventory
             </h2>
         </template>
+        <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
+            <div v-if="isFormVisible">
+                <div class="absolute flex justify-end w-full right-1 top-1">
+                    <ButtonCode
+                        @click="toggleFormVisibility"
+                        text="Close"
+                        color="bg-red-500 hover:bg-red-700"
+                    />
+                </div>
+                <h1 class="px-6 py-2 text-2xl font-extrabold">Inventory Form</h1>
+                <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+                    <CustomInput name="Assign an Item Code:" />
+                    <CustomInput name="Quantity:" type="number" />
+                    <CustomSelect label="Category" name="category"
+                                :options="[ { value: 'bottle', label: 'Bottle' },
+                                            { value: 'cap', label: 'Cap' } ]" />
+                    <CustomInput name="Minimum Stock Level:" type="number" />
+                    <CustomSelect label="Material" name="material"
+                                :options="[ { value: 'plastic', label: 'Plastic' },
+                                            { value: 'sheet', label: 'Sheet' } ]" />
+                    <CustomInput name="Maximum Stock Level:" type="number" />
+                    <CustomSelect label="Color:" name="color"
+                                :options="[ { value: 'red', label: 'Red' },
+                                            { value: 'blue', label: 'Blue' },
+                                            { value: 'yellow', label: 'Yellow' } ]" />
+                    <CustomInput name="Price per Unit:" type="number" />
+                    <CustomSelect label="Unit of Measurement:" name="uom"
+                                :options="[ { value: 'pcs', label: 'Pieces' },
+                                            { value: 'pck', label: 'Pack' },
+                                            { value: 'bg', label: 'Bag' } ]" />
+                    <div class="flex items-center justify-end w-full">
+                        <div class="w-max">
+                            <ButtonCode
+                                text="Add Item"
+                                :icon="PhFilePlus"
+                                color="bg-emerald-700 hover:bg-emerald-900"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Modal>
         <div class="p-5">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-end gap-2 mb-4">
                 <ButtonCode 
+                    @click="toggleFormVisibility"
                     text="Add Item"
-                    color="bg-green-500 hover:bg-green-700"
+                    :icon="PhFilePlus"
+                    color="bg-emerald-700 hover:bg-emerald-900"
                 />
                 <div class="relative">
                     <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />

@@ -4,15 +4,15 @@ import { defineProps, defineEmits } from 'vue';
 const props = defineProps({
   label: {
     type: String,
-    required: true
+    required: false
   },
   name: {
     type: String,
-    required: true
+    required: false
   },
   modelValue: {
     type: [String, Number],
-    required: true
+    required: false
   },
   options: {
     type: Array,

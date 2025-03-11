@@ -13,4 +13,9 @@ class InventoryController extends Controller
     {
         return Inertia::render('Inventory/Index');
     }
+
+    public function store(Request $request)
+    {
+        return redirect()->route('inventory.index');
+    }
 }

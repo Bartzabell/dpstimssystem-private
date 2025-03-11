@@ -25,7 +25,7 @@ defineProps({
 <template>
     <button
         :type="type"
-        :class="[color, 'px-4 py-2 text-white rounded flex items-center gap-2']"
+        :class="[color, 'px-4 py-2 text-white rounded-3xl flex items-center gap-2']"
     >
         <!-- Render icon if provided -->
         <component v-if="icon" :is="icon" class="w-5 h-5" />
