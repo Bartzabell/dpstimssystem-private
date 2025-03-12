@@ -7,7 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { PhGear, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhArrowsClockwise, PhWarningOctagon } from "@phosphor-icons/vue";
+import { PhGear, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhArrowsClockwise, PhWarningOctagon, PhIdentificationCard } from "@phosphor-icons/vue";
 
 defineProps({
     title: String,
@@ -116,6 +116,14 @@ const logout = () => {
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhArrowsClockwise :size="28" />
                                             Suppliers
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('customer.index') }">
+                                    <Link :href="route('customer.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhIdentificationCard :size="28" />
+                                            Customer
                                         </span>
                                     </Link>
                                 </li>

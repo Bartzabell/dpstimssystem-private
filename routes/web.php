@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
@@ -37,6 +38,9 @@ Route::middleware([
     
     // Supplier routes
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+
+    // Customer routes
+    Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
     
     // About route
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
