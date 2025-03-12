@@ -88,6 +88,22 @@ const logout = () => {
                                     </Link>
                                 </li>
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('customer.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhWarningOctagon :size="28" />
+                                            Customer
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('suppliers.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhArrowsClockwise :size="28" />
+                                            Suppliers
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('inventory.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhPackage :size="28" />
@@ -112,14 +128,6 @@ const logout = () => {
                                     </Link>
                                 </li>
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
-                                    <Link :href="route('suppliers.index')">
-                                        <span class="inline-flex items-center w-full gap-2">
-                                            <PhArrowsClockwise :size="28" />
-                                            Suppliers
-                                        </span>
-                                    </Link>
-                                </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('about.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhWarningOctagon :size="28" />
@@ -132,14 +140,6 @@ const logout = () => {
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhWarningOctagon :size="28" />
                                             Activity Logs
-                                        </span>
-                                    </Link>
-                                </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
-                                    <Link :href="route('customer.index')">
-                                        <span class="inline-flex items-center w-full gap-2">
-                                            <PhWarningOctagon :size="28" />
-                                            Customer
                                         </span>
                                     </Link>
                                 </li>
