@@ -79,7 +79,7 @@ const logout = () => {
                         </div>
                         <nav class="border-t-2">
                             <ul>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('dashboard') }">
                                     <Link :href="route('dashboard')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhChartLineUp :size="28" />
@@ -87,7 +87,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('inventory.index') }">
                                     <Link :href="route('inventory.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhPackage :size="28" />
@@ -95,7 +95,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('purchase.index') }">
                                     <Link :href="route('purchase.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhBasket :size="28" />
@@ -103,7 +103,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('sales.index') }">
                                     <Link :href="route('sales.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhMoney :size="28" />
@@ -111,7 +111,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('suppliers.index') }">
                                     <Link :href="route('suppliers.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhArrowsClockwise :size="28" />
@@ -119,7 +119,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('about.index') }">
                                     <Link :href="route('about.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhWarningOctagon :size="28" />
