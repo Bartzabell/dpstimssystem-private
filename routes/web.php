@@ -30,6 +30,12 @@ Route::middleware([
     Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
     Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
     Route::put('/customer/{customer}', [CustomerController::class, 'update'])->name('customer.update');
+    Route::delete('/customer/{customer}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+
+    Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier.index');
+    Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
+    Route::post('/supplier/{supplier}', [SupplierController::class, 'update'])->name('supplier.update');
+    Route::delete('/supplier/{supplier}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
@@ -42,9 +48,6 @@ Route::middleware([
 
     // Purchase routes
     Route::get('/purchase', [PurchaseController::class, 'index'])->name('purchase.index');
-
-    // Supplier routes
-    Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
 
     // About route
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
