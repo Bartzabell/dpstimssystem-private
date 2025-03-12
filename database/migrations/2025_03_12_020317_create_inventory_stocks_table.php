@@ -15,9 +15,9 @@ return new class extends Migration
         Schema::create('inventory_stocks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('stock_code')->nullable();
+            $table->string('item_code')->nullable();
             $table->foreignIdFor(Category::class,'category_id')->nullable();
-            $table->integer('stock_qty')->default(0);
+            $table->integer('item_qty')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

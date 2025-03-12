@@ -1,35 +1,219 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { PhListMagnifyingGlass, PhFilePlus, PhPrinter, PhTrash, PhRowsPlusBottom, PhPencilLine } from "@phosphor-icons/vue";
+    import { ref, watch, onMounted } from 'vue';
+    import AppLayout from '@/Layouts/AppLayout.vue';
+    import { PhListMagnifyingGlass, PhFilePlus, PhPrinter, PhTrash, PhRowsPlusBottom, PhPencilLine } from "@phosphor-icons/vue";
 
-// For displaying the modal
-const isFormVisible = ref(false);
-function toggleFormVisibility() {
+    const props = defineProps({
+        receivingForms: Object,
+        employees: Array,
+        inventories: Array,
+        filters: Object
+    });
+
+    const search = ref(props.filters.search || '');
+    const isFormVisible = ref(false);
+    const editing = ref(false);
+    const topToast = ref(null);
+
+    // Fixed: Changed from single value to an array of selected values
+    const selectedItems = ref([]);
+    const selectedEmployee = ref(null);
+
+    function toggleFormVisibility() {
         isFormVisible.value = !isFormVisible.value;
     };
-// For adding/deleting row and Computing total cost
-const items = ref([]);
-const addItem = () => {
-  items.value.push({
-    product: '',
-    quantity: 0,
-    pricePerUnit: 0,
-    totalCost: 0
-  });
-};
-const removeItem = (index) => {
-  items.value.splice(index, 1);
-};
-const updateTotalCost = (index) => {
-  const item = items.value[index];
-  if (item.quantity && item.pricePerUnit) {
-    // Calculate and format to 2 decimal places
-    item.totalCost = (parseFloat(item.quantity) * parseFloat(item.pricePerUnit)).toFixed(2);
-  } else {
-    item.totalCost = (0).toFixed(2);
-  }
-};
+
+    // Modal states
+    const showDeleteConfirmation = ref(false);
+    const showConfirmDialog = ref(false);
+    const itemToDelete = ref(null);
+    const dialogAction = ref(''); // 'add', 'update', or 'cancel'
+
+    // Toast states
+    const toast = ref({
+        show: false,
+        message: '',
+        type: 'success', // success, error, info
+    });
+
+    const form = useForm({
+        id: null,
+        location: '',
+        note: '',
+        status: '',
+        received_from: '',
+        receiver_id: '',
+        date_received: '',
+        items: [],
+    });
+
+    // Watch for search input and debounce API call
+    watch(search, (value) => {
+        router.get(route('receiving-form.index'), { search: value }, { preserveState: true, replace: true });
+    }, { deep: true });
+
+    const edit = (receiving_form) => {
+        if (!isFormVisible.value) {
+            isFormVisible.value = true;
+        }
+        form.id = receiving_form.id;
+        form.location = receiving_form.location;
+        form.note = receiving_form.note;
+        form.date_received = receiving_form.date_received;
+        form.status = receiving_form.status;
+        form.received_from = receiving_form.received_from;
+        form.receiver_id = receiving_form.receiver_id;
+
+        if (receiving_form.date_received) {
+            // Parse the date as UTC and convert it to local time
+            const dateObj = new Date(receiving_form.date_received + 'Z'); // Append 'Z' to treat it as UTC
+            form.date_received = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        } else {
+            form.date_received= '';
+        }
+
+        // Load items
+        form.items = receiving_form.items ?
+            [...receiving_form.items] : [];
+
+        // Fixed: Initialize selectedItems array with the correct number of elements
+        selectedItems.value = form.items.map(item => item.inventory_id || null);
+        selectedEmployee.value = receiving_form.receiver_id;
+
+        editing.value = true;
+    };
+
+    const confirmDelete = (id) => {
+        itemToDelete.value = id;
+        showDeleteConfirmation.value = true;
+    };
+
+    const deleteItem = () => {
+        form.delete(route('receiving-form.destroy', itemToDelete.value), {
+            onSuccess: () => {
+                if (isFormVisible.value) {
+                    isFormVisible.value = false;
+                }
+                topToast.value.showToast('Form deleted successfully', 'success');
+                showDeleteConfirmation.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete form', 'error');
+                showDeleteConfirmation.value = false;
+            }
+        });
+    };
+
+    const resetForm = () => {
+        form.id = '';
+        form.location = '';
+        form.note = '';
+        form.date_received = '';
+        form.status = '';
+        form.received_from = '';
+        form.receiver_id = '';
+        form.items = [];
+        selectedItems.value = [];
+        selectedEmployee.value = null;
+    };
+
+    // Add a new empty items
+    const addItem = () => {
+        form.items.push({
+            id: null,
+            receiving_form_id: '',
+            inventory_id: '',
+            item_qty: '',
+        });
+        // Fixed: Add a corresponding null entry to selectedItems
+        selectedItems.value.push(null);
+    };
+
+    // Remove a items at the specified index
+    const removeItem = (index) => {
+        form.items.splice(index, 1);
+        // Fixed: Remove the corresponding entry from selectedItems
+        selectedItems.value.splice(index, 1);
+    };
+
+    const formatDate = (date_received) => {
+        if (!date_received) return "";
+        return new Date(date_received).toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+    };
+
+    // Fixed: Handler for inventory item selection
+    const handleInventoryChange = (event, index) => {
+        // Update the inventory_id in the form items
+        form.items[index].inventory_id = event.id;
+        // Update just the selected item at the specific index
+        selectedItems.value[index] = event.id;
+    };
+
+    // New functions - placed at the end for organization
+    const submit = () => {
+        dialogAction.value = editing.value ? 'update' : 'add';
+        showConfirmDialog.value = true;
+    };
+
+    const confirmSubmit = () => {
+        if (editing.value) {
+            form.put(route('receiving-form.update', form.id), {
+                onSuccess: () => {
+                    if (isFormVisible.value) {
+                        isFormVisible.value = false;
+                    }
+                    resetForm();
+                    editing.value = false;
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Form updated successfully', 'success');
+                },
+                onError: () => {
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Failed to update form', 'error');
+                }
+            });
+        } else {
+            form.post(route('receiving-form.store'), {
+                onSuccess: () => {
+                    resetForm();
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Form added successfully', 'success');
+                },
+                onError: () => {
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Failed to add form', 'error');
+                }
+            });
+        }
+    };
+
+    const cancelForm = () => {
+        dialogAction.value = 'cancel';
+        showConfirmDialog.value = true;
+    };
+
+    const confirmCancel = () => {
+        if (isFormVisible.value) {
+            isFormVisible.value = false;
+        }
+        resetForm();
+        editing.value = false;
+        showConfirmDialog.value = false;
+        topToast.value.showToast('Operation cancelled', 'info');
+    };
+
+    const cancelDelete = () => {
+        showDeleteConfirmation.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
+
+    const cancelConfirmDialog = () => {
+        showConfirmDialog.value = false;
+    };
 </script>
 <template>
     <AppLayout title="Purchase">
@@ -58,12 +242,12 @@ const updateTotalCost = (index) => {
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-lg font-bold">Items</h3>
                         </div>
-                        
+
                         <!-- Conditional display based on items length -->
                         <div v-if="items.length === 0" class="py-4 text-center rounded bg-gray-50">
                             <p>No items added yet. Click 'Add Item' to start.</p>
                         </div>
-                        
+
                         <!-- Table displays when we have items -->
                         <div v-else class="overflow-visible border rounded-lg">
                             <table class="w-full">
@@ -79,36 +263,36 @@ const updateTotalCost = (index) => {
                                 <tbody>
                                 <tr v-for="(item, index) in items" :key="index" class="hover:bg-gray-50">
                                     <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomSelect 
+                                    <CustomSelect
                                         name="product"
                                         :options="[ { value: 'bottle', label: 'Bottle' },
                                                     { value: 'cap', label: 'Cap' } ]" />
                                     </td>
                                     <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomInput 
-                                        type="number" 
+                                    <CustomInput
+                                        type="number"
                                         v-model="item.quantity"
                                         @update:modelValue="updateTotalCost(index)"
                                     />
                                     </td>
                                     <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomInput 
-                                        type="number" 
+                                    <CustomInput
+                                        type="number"
                                         v-model="item.pricePerUnit"
                                         @update:modelValue="updateTotalCost(index)"
                                     />
                                     </td>
                                     <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomInput 
-                                        type="number" 
-                                        v-model="item.totalCost" 
-                                        readonly 
+                                    <CustomInput
+                                        type="number"
+                                        v-model="item.totalCost"
+                                        readonly
                                     />
                                     </td>
                                     <td class="px-2 py-1 border whitespace-nowrap">
                                     <div class="inline-flex justify-center w-full h-full gap-2">
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                                             @click="removeItem(index)"
                                             >
@@ -120,12 +304,12 @@ const updateTotalCost = (index) => {
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <div class="flex justify-end w-full py-2">
-                            <ButtonCode 
-                                :icon="PhRowsPlusBottom" 
-                                color="bg-green-500 hover:bg-green-700" 
-                                text="Add Row" 
+                            <ButtonCode
+                                :icon="PhRowsPlusBottom"
+                                color="bg-green-500 hover:bg-green-700"
+                                text="Add Row"
                                 @click="addItem"
                             />
                         </div>
@@ -144,7 +328,7 @@ const updateTotalCost = (index) => {
         </Modal>
         <div class="p-5">
             <div class="flex items-center justify-end gap-2 mb-4">
-                <ButtonCode 
+                <ButtonCode
                     @click="toggleFormVisibility"
                     text="Add Purchase"
                     :icon="PhFilePlus"

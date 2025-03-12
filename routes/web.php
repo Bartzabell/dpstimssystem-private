@@ -37,6 +37,11 @@ Route::middleware([
     Route::post('/supplier/{supplier}', [SupplierController::class, 'update'])->name('supplier.update');
     Route::delete('/supplier/{supplier}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
+    Route::get('/purchase', [PurchaseController::class, 'index'])->name('purchase.index');
+    Route::post('/purchase', [PurchaseController::class, 'store'])->name('purchase.store');
+    Route::post('/purchase/{form}', [PurchaseController::class, 'update'])->name('purchase.update');
+    Route::delete('/purchase/{form}', [PurchaseController::class, 'destroy'])->name('purchase.destroy');
+
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     // Inventory routes
@@ -45,9 +50,6 @@ Route::middleware([
 
     // Sales routes
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
-
-    // Purchase routes
-    Route::get('/purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 
     // About route
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
