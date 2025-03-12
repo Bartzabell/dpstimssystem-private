@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
@@ -24,20 +25,22 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
-    
+
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
     // Inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
-    
+
     // Sales routes
     Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
-    
+
     // Purchase routes
     Route::get('/purchase', [PurchaseController::class, 'index'])->name('purchase.index');
-    
+
     // Supplier routes
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
-    
+
     // About route
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 });
