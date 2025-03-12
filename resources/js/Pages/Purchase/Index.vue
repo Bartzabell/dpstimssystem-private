@@ -4,8 +4,8 @@
     import { PhListMagnifyingGlass, PhFilePlus, PhPrinter, PhTrash, PhRowsPlusBottom, PhPencilLine } from "@phosphor-icons/vue";
 
     const props = defineProps({
-        receivingForms: Object,
-        employees: Array,
+        forms: Object,
+        suppliers: Array,
         inventories: Array,
         filters: Object
     });
@@ -38,12 +38,8 @@
 
     const form = useForm({
         id: null,
-        location: '',
-        note: '',
-        status: '',
-        received_from: '',
-        receiver_id: '',
-        date_received: '',
+        supplier_id: '',
+        date_purchased: '',
         items: [],
     });
 
@@ -52,33 +48,30 @@
         router.get(route('receiving-form.index'), { search: value }, { preserveState: true, replace: true });
     }, { deep: true });
 
-    const edit = (receiving_form) => {
+    const edit = (purchased_form) => {
         if (!isFormVisible.value) {
             isFormVisible.value = true;
         }
-        form.id = receiving_form.id;
-        form.location = receiving_form.location;
-        form.note = receiving_form.note;
-        form.date_received = receiving_form.date_received;
-        form.status = receiving_form.status;
-        form.received_from = receiving_form.received_from;
-        form.receiver_id = receiving_form.receiver_id;
+        form.id = purchased_form.id;
+        form.supplier_id = purchased_form.supplier_id;
+        form.date_purchased = purchased_form.date_purchased;
 
-        if (receiving_form.date_received) {
+
+        if (purchased_form.date_purchased) {
             // Parse the date as UTC and convert it to local time
-            const dateObj = new Date(receiving_form.date_received + 'Z'); // Append 'Z' to treat it as UTC
-            form.date_received = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            const dateObj = new Date(purchased_form.date_purchased + 'Z'); // Append 'Z' to treat it as UTC
+            form.date_purchased = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
         } else {
-            form.date_received= '';
+            form.date_purchased= '';
         }
 
         // Load items
-        form.items = receiving_form.items ?
-            [...receiving_form.items] : [];
+        form.items = purchased_form.items ?
+            [...purchased_form.items] : [];
 
         // Fixed: Initialize selectedItems array with the correct number of elements
-        selectedItems.value = form.items.map(item => item.inventory_id || null);
-        selectedEmployee.value = receiving_form.receiver_id;
+        selectedItems.value = form.items.map(item => item.stock_id || null);
+        selectedEmployee.value = purchased_form.receiver_id;
 
         editing.value = true;
     };
