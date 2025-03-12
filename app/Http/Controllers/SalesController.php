@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class SaleController extends Controller
+class SalesController extends Controller
 {
     public function index(Request $request): Response
     {
-        return Inertia::render('Sale/Index');
+        return Inertia::render('Sales/Index');
     }
 }

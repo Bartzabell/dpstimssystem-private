@@ -135,6 +135,14 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('customer.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhWarningOctagon :size="28" />
+                                            Customer
+                                        </span>
+                                    </Link>
+                                </li>
                             </ul>
                         </nav>
                     </div>

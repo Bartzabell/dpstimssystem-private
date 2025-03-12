@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,10 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
+    Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
+    Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
+    Route::put('/customer/{customer}', [CustomerController::class, 'update'])->name('customer.update');
+
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     // Inventory routes
@@ -33,7 +38,7 @@ Route::middleware([
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
 
     // Sales routes
-    Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
 
     // Purchase routes
     Route::get('/purchase', [PurchaseController::class, 'index'])->name('purchase.index');
