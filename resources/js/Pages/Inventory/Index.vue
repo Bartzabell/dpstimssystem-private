@@ -118,7 +118,7 @@
 
     const confirmSubmit = () => {
         if (editing.value) {
-            form.put(route('inventory.update', form.id), {
+            form.post(route('inventory.update', form.id), {
                 onSuccess: () => {
                     if (isFormVisible.value) {
                         isFormVisible.value = false;
@@ -136,6 +136,9 @@
         } else {
             form.post(route('inventory.store'), {
                 onSuccess: () => {
+                    if (isFormVisible.value) {
+                        isFormVisible.value = false;
+                    }
                     resetForm();
                     showConfirmDialog.value = false;
                     topToast.value.showToast('Item added successfully', 'success');

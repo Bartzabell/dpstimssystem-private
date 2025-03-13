@@ -58,13 +58,9 @@ class InventoryController extends Controller
         ]);
     }
 
-    //this STORE IS FOR CREATE
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'phone_no' => 'required|string|min:10',
-        // ]);
+        $status = $this->getStatus($request->item_qty, $request->min_stock, $request->max_stock);
 
         InventoryStock::create([
             'name' => $request->name,
@@ -73,20 +69,22 @@ class InventoryController extends Controller
             'category_id' => $request->category_id,
             'material' => $request->material,
             'color' => $request->color,
-            'uom' =>$request->uom,
-            'price' =>$request->price,
-            'min_stock' =>$request->min_stock,
-            'max_stock' =>$request->max_stock,
-            'status' =>$request->status,
+            'uom' => $request->uom,
+            'price' => $request->price,
+            'min_stock' => $request->min_stock,
+            'max_stock' => $request->max_stock,
+            'status' => $status,
             'created_by' => Auth::id(),
         ]);
 
         return redirect()->route('inventory.index');
     }
 
-    //this UPDATE IS FOR EDIT
+    // This UPDATE IS FOR EDIT
     public function update(Request $request, InventoryStock $inventory)
     {
+        $status = $this->getStatus($request->item_qty, $request->min_stock, $request->max_stock);
+
         $inventory->update([
             'name' => $request->name,
             'item_code' => $request->item_code,
@@ -94,16 +92,27 @@ class InventoryController extends Controller
             'category_id' => $request->category_id,
             'material' => $request->material,
             'color' => $request->color,
-            'uom' =>$request->uom,
-            'price' =>$request->price,
-            'min_stock' =>$request->min_stock,
-            'max_stock' =>$request->max_stock,
-            'status' =>$request->status,
+            'uom' => $request->uom,
+            'price' => $request->price,
+            'min_stock' => $request->min_stock,
+            'max_stock' => $request->max_stock,
+            'status' => $status,
             'updated_by' => Auth::id(),
         ]);
+
         return redirect()->route('inventory.index');
     }
 
+    private function getStatus($itemQty, $minStock, $maxStock)
+    {
+        if ($itemQty < $minStock) {
+            return 'low';
+        } elseif ($itemQty > $maxStock) {
+            return 'high';
+        }
+
+        return 'normal';
+    }
     // FOR DELETE
     public function destroy(InventoryStock $inventory)
     {

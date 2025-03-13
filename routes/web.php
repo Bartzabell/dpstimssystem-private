@@ -47,6 +47,8 @@ Route::middleware([
     // Inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+    Route::post('/inventory/{inventory}', [InventoryController::class, 'update'])->name('inventory.update');
+    Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
 
     // Sales routes
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
