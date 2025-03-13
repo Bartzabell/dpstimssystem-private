@@ -21,7 +21,7 @@ class TransactionPurchaseItem extends Model
 
     protected $table = 'transaction_purchase_items';
 
-    protected $fillable = ['tpb_id', 'stock_id', 'item_qty', 'per_piece', 'total_price', 'bill_no',
+    protected $fillable = ['tpb_id', 'stock_id', 'item_qty', 'item_price',
     'created_by', 'updated_by'];
 
     public function bill(){

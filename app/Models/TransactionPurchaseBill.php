@@ -21,7 +21,7 @@ class TransactionPurchaseBill extends Model
 
     protected $table = 'transaction_purchase_bills';
 
-    protected $fillable = ['supplier_id', 'date_purchased', 'created_by', 'updated_by'];
+    protected $fillable = ['supplier_id', 'date_purchased', 'total_price', 'created_by', 'updated_by'];
 
     public function supplier(){
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
