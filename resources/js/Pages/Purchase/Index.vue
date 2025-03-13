@@ -136,7 +136,7 @@
 
     const confirmSubmit = () => {
         if (editing.value) {
-            form.put(route('purchase.update', form.id), {
+            form.post(route('purchase.update', form.id), {
                 onSuccess: () => {
                     if (isFormVisible.value) {
                         isFormVisible.value = false;
