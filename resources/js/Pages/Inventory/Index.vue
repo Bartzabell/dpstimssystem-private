@@ -184,23 +184,22 @@
 <template>
     <AppLayout title="Inventory">
         <template #header>
-            <h2 class="text-sm font-bold md:text-xl">Inventory</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                Inventory
+            </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="absolute top-0 flex justify-end w-full">
+                <div class="absolute flex justify-end w-full right-1 top-1">
                     <ButtonCode
                         @click="toggleFormVisibility"
                         text="Close"
                         color="bg-red-500 hover:bg-red-700"
                     />
                 </div>
-                <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
-                    <div class="grid w-full grid-cols-1 gap-4 p-6 md:grid-cols-3">
-                        <div class="col-span-1 md:col-span-3">
-                            <h1 class="text-lg font-bold md:text-xl">Inventory Form</h1>
-                            <hr class="my-4">
-                        </div>
+                <form @submit.prevent="submit">
+                    <h1 class="px-6 py-2 text-2xl font-extrabold">Inventory Form</h1>
+                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
                         <CustomInput name="Name" v-model="form.name"/>
                         <CustomInput name="Item Code" v-model="form.item_code"/>
                         <CustomInput name="Item Quantity" v-model="form.item_qty"/>
@@ -248,9 +247,8 @@
                             />
                         </div>
                     </div>
-
-                    <div class="flex items-center justify-center gap-2 mt-6">
-                        <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-blue-500 hover:bg-blue-700" :text="editing ? 'Update Item' : 'Add Item'" />
+                    <div class="flex items-center justify-center gap-2 p-2 mt-6">
+                        <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update Item' : 'Add Item'" />
                         <ButtonCode
                             v-if="editing"
                             type="button"
@@ -268,9 +266,9 @@
                 <div class="flex items-center justify-between mb-4">
                     <ButtonCode
                         @click="toggleFormVisibility"
-                        text="Create Item FOrm"
+                        text="Add Item"
                         :icon="PhFilePlus"
-                        color="bg-green-500 hover:bg-green-700"
+                        color="bg-emerald-700 hover:bg-emerald-900"
                     />
                     <div class="relative">
                         <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
@@ -287,20 +285,20 @@
                     <div class="overflow-x-auto border rounded-lg">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
-                                <tr class="text-xs bg-gray-100 md:text-base">
-                                    <th class="px-2 py-1 border whitespace-nowrap">ID</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">NAME</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">ITEM CODE</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">ITEM QUANTITY</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">CATEGORY</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">MATERIAL</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">COLOR</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">UNIT</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">PRICE</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">MIN STOCK</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">MAX STOCK</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">STATUS</th>
-                                    <th class="px-2 py-1 border whitespace-nowrap">Actions</th>
+                                <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">NAME</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ITEM CODE</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ITEM QUANTITY</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CATEGORY</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MATERIAL</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">COLOR</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">UNIT</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">PRICE</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MIN STOCK</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MAX STOCK</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">STATUS</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
