@@ -16,7 +16,6 @@
     const editing = ref(false);
     const topToast = ref(null);
 
-    // Fixed: Changed from single value to an array of selected values
     const selectedItems = ref([]);
     const selectedSupplier = ref(null);
 
@@ -24,17 +23,15 @@
         isFormVisible.value = !isFormVisible.value;
     };
 
-    // Modal states
     const showDeleteConfirmation = ref(false);
     const showConfirmDialog = ref(false);
     const itemToDelete = ref(null);
-    const dialogAction = ref(''); // 'add', 'update', or 'cancel'
+    const dialogAction = ref('');
 
-    // Toast states
     const toast = ref({
         show: false,
         message: '',
-        type: 'success', // success, error, info
+        type: 'success',
     });
 
     const form = useForm({
@@ -44,7 +41,6 @@
         items: [],
     });
 
-    // Watch for search input and debounce API call
     watch(search, (value) => {
         router.get(route('purchase.index'), { search: value }, { preserveState: true, replace: true });
     }, { deep: true });
@@ -58,18 +54,15 @@
         form.date_purchased = purchase_form.date_purchased;
 
         if (purchase_form.date_purchased) {
-            // Parse the date as UTC and convert it to local time
-            const dateObj = new Date(purchase_form.date_purchased + 'Z'); // Append 'Z' to treat it as UTC
-            form.date_purchased = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            const dateObj = new Date(purchase_form.date_purchased + 'Z');
+            form.date_purchased = dateObj.toISOString().split('T')[0];
         } else {
             form.date_purchased= '';
         }
 
-        // Load items
         form.items = purchase_form.items ?
             [...purchase_form.items] : [];
 
-        // Fixed: Initialize selectedItems array with the correct number of elements
         selectedItems.value = form.items.map(item => item.stock_id || null);
         selectedSupplier.value = purchase_form.supplier_id;
 
@@ -106,25 +99,19 @@
         selectedSupplier.value = null;
     };
 
-    // Add a new empty items
     const addItem = () => {
         form.items.push({
             id: null,
             tpb_id: '',
             stock_id: '',
             item_qty: '',
-            per_piece: '',
-            total_price: '',
-            bill_no: '',
+            item_price: '',
         });
-        // Fixed: Add a corresponding null entry to selectedItems
         selectedItems.value.push(null);
     };
 
-    // Remove a items at the specified index
     const removeItem = (index) => {
         form.items.splice(index, 1);
-        // Fixed: Remove the corresponding entry from selectedItems
         selectedItems.value.splice(index, 1);
     };
 
@@ -247,11 +234,9 @@
                                     <table class="w-full">
                                         <thead>
                                             <tr class="text-left bg-gray-100">
-                                                <th class="w-3/5 px-2 py-1 border whitespace-nowrap">ITEM CODE</th>
+                                                <th class="w-3/5 px-2 py-1 border whitespace-nowrap">Item Code</th>
                                                 <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Quantity</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price Per Unit</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Total Price</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Bill No</th>
+                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price</th>
                                                 <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Actions</th>
                                             </tr>
                                         </thead>
@@ -268,10 +253,7 @@
                                                     />
                                                 </td>
                                                 <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.per_piece" min="1" /></td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.total_price" min="1" /></td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.bill_no" min="1" /></td>
-
+                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_price" min="1" /></td>
                                                 <td class="px-2 py-1 border whitespace-nowrap">
                                                     <div class="inline-flex justify-center w-full h-full gap-2 ">
                                                         <button type="button" @click="removeItem(index)" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
@@ -324,6 +306,7 @@
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">SUPPLIER</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE PURCHASED</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">TOTAL PRICE</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CREATED BY</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE CREATED</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ACTIONS</th>
@@ -334,6 +317,7 @@
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.supplier?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_purchased) }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.total_price) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.creator?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">

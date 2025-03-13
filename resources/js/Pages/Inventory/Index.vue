@@ -1,13 +1,182 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { PhListMagnifyingGlass, PhFilePlus } from "@phosphor-icons/vue";
+    import { ref, watch } from 'vue';
+    import { useForm, router } from '@inertiajs/vue3';
+    import AppLayout from '@/Layouts/AppLayout.vue';
+    import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
 
-const isFormVisible = ref(false);
+    const props = defineProps({
+        inventories: Object,
+        categories: Array,
+        materials: Array,
+        colors: Array,
+        uoms: Array,
+        filters: Object
+    });
 
-function toggleFormVisibility() {
+    const search = ref(props.filters?.search || '');
+    watch(search, (value) => {
+        router.get(route('inventory.index'), { search: value }, { preserveState: true, replace: true });
+    }, { deep: true });
+
+    const isFormVisible = ref(false);
+    const selectedCategory = ref(null);
+    const selectedMaterial = ref(null);
+    const selectedColor = ref(null);
+    const selectedUom = ref(null);
+    const topToast = ref(null);
+    const form = useForm({
+        id: null,
+        name: '',
+        item_code: '',
+        item_qty: '',
+        category_id: '',
+        material: '',
+        color: '',
+        uom: '',
+        price: '',
+        min_stock: '',
+        max_stock: '',
+        status: '',
+    });
+
+    function toggleFormVisibility() {
         isFormVisible.value = !isFormVisible.value;
     };
+
+    const edit = (inventory) => {
+        if (!isFormVisible.value) {
+            isFormVisible.value = true;
+        }
+        form.id = inventory.id;
+        form.name = inventory.name;
+        form.item_code = inventory.item_code;
+        form.item_qty = inventory.item_qty;
+        form.category_id = inventory.category_id;
+        form.material = inventory.material;
+        form.color = inventory.color;
+        form.uom = inventory.uom;
+        form.price = inventory.price;
+        form.min_stock = inventory.min_stock;
+        form.max_stock = inventory.max_stock;
+        form.status = inventory.status;
+
+        selectedCategory.value = inventory.category_id;
+        selectedMaterial.value = inventory.material;
+        selectedColor.value = inventory.color;
+        selectedUom.value = inventory.uom;
+
+
+        editing.value = true;
+    };
+
+    const confirmDelete = (id) => {
+        itemToDelete.value = id;
+        showDeleteConfirmation.value = true;
+    };
+
+    const deleteItem = () => {
+        form.delete(route('user-request.destroy', itemToDelete.value), {
+            onSuccess: () => {
+                if (isFormVisible.value) {
+                    isFormVisible.value = false;
+                }
+                topToast.value.showToast('Item deleted successfully', 'success');
+                showDeleteConfirmation.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete item', 'error');
+                showDeleteConfirmation.value = false;
+            }
+        });
+    };
+
+    const resetForm = () => {
+        form.id = null;
+        form.name = '';
+        form.item_code = '';
+        form.item_qty = '';
+        form.category_id = '';
+        form.material = '';
+        form.color = '';
+        form.uom = '';
+        form.price = '';
+        form.min_stock = '';
+        form.max_stock = '';
+        form.status = '';
+        selectedCategory.value = null;
+        selectedMaterial.value = null;
+        selectedColor.value = null;
+        selectedUom.value = null;
+    };
+
+    const editing = ref(false);
+
+    const submit = () => {
+        dialogAction.value = editing.value ? 'update' : 'add';
+        showConfirmDialog.value = true;
+    };
+
+    const confirmSubmit = () => {
+        if (editing.value) {
+            form.put(route('inventory.update', form.id), {
+                onSuccess: () => {
+                    if (isFormVisible.value) {
+                        isFormVisible.value = false;
+                    }
+                    resetForm();
+                    editing.value = false;
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Item updated successfully', 'success');
+                },
+                onError: () => {
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Failed to update item', 'error');
+                }
+            });
+        } else {
+            form.post(route('inventory.store'), {
+                onSuccess: () => {
+                    resetForm();
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Item added successfully', 'success');
+                },
+                onError: () => {
+                    showConfirmDialog.value = false;
+                    topToast.value.showToast('Failed to add item', 'error');
+                }
+            });
+        }
+    };
+
+    const cancelForm = () => {
+        dialogAction.value = 'cancel';
+        showConfirmDialog.value = true;
+    };
+
+    const confirmCancel = () => {
+        if (isFormVisible.value) {
+            isFormVisible.value = false;
+        }
+        resetForm();
+        editing.value = false;
+        showConfirmDialog.value = false;
+        topToast.value.showToast('Operation cancelled', 'info');
+    };
+
+    const cancelDelete = () => {
+        showDeleteConfirmation.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
+
+    const cancelConfirmDialog = () => {
+        showConfirmDialog.value = false;
+    };
+
+    // Modal states
+    const showDeleteConfirmation = ref(false);
+    const showConfirmDialog = ref(false);
+    const itemToDelete = ref(null);
+    const dialogAction = ref('');
 </script>
 <template>
     <AppLayout title="Inventory">
@@ -60,7 +229,7 @@ function toggleFormVisibility() {
         </Modal>
         <div class="p-5">
             <div class="flex items-center justify-end gap-2 mb-4">
-                <ButtonCode 
+                <ButtonCode
                     @click="toggleFormVisibility"
                     text="Add Item"
                     :icon="PhFilePlus"

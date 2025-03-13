@@ -65,15 +65,18 @@ class PurchaseController extends Controller
                     'tpb_id' => $form->id,
                     'stock_id' => $item['stock_id'],
                     'item_qty' => $item['item_qty'],
-                    'per_piece' => $item['per_piece'],
-                    'total_price' => $item['total_price'],
-                    'bill_no' => $item['bill_no'],
+                    'item_price' => $item['item_price'],
                     'created_by' => Auth::id(),
                 ]);
 
                 $inventory = InventoryStock::find($item['stock_id']);
                 $inventory->update([
                     'item_qty' => $inventory->item_qty + $item['item_qty'],
+                ]);
+
+                $bill = TransactionPurchaseBill::find($form->id);
+                $bill->update([
+                    'total_price' => $bill->total_price + $item['item_price'],
                 ]);
             }
         }
@@ -93,30 +96,24 @@ class PurchaseController extends Controller
 
         // FOR ITEMS
         if ($request->has('items') && is_array($request->items)) {
-            // Get existing product IDs for comparison
             $existingItemIds = $form->items()->pluck('id')->toArray();
             $submittedItemIds = collect($request->items)
                                     ->pluck('id')
                                     ->filter()
                                     ->toArray();
 
-            // Find items to delete (those in existing but not in submitted)
             $itemsToDelete = array_diff($existingItemIds, $submittedItemIds);
             if (!empty($itemsToDelete)) {
                 TransactionPurchaseItem::whereIn('id', $itemsToDelete)->delete();
             }
 
-            // Update or create items
             foreach ($request->items as $item) {
                 if (isset($item['id']) && $item['id']) {
-                    // Update existing product
                     TransactionPurchaseItem::where('id', $item['id'])->update([
                         'tpb_id' => $form->id,
                         'stock_id' => $item['stock_id'],
                         'item_qty' => $item['item_qty'],
-                        'per_piece' => $item['per_piece'],
-                        'total_price' => $item['total_price'],
-                        'bill_no' => $item['bill_no'],
+                        'item_price' => $item['item_price'],
                         'updated_by' => Auth::id(),
                     ]);
                 } else {
@@ -125,15 +122,18 @@ class PurchaseController extends Controller
                         'tpb_id' => $request->id,
                         'stock_id' => $item['stock_id'],
                         'item_qty' => $item['item_qty'],
-                        'per_piece' => $item['per_piece'],
-                        'total_price' => $item['total_price'],
-                        'bill_no' => $item['bill_no'],
+                        'item_price' => $item['item_price'],
                         'created_by' => Auth::id(),
                     ]);
 
                     $inventory = InventoryStock::find($item['stock_id']);
                     $inventory->update([
                         'item_qty' => $inventory->item_qty + $item['item_qty'],
+                    ]);
+
+                    $bill = TransactionPurchaseBill::find($form->id);
+                    $bill->update([
+                        'total_price' => $bill->total_price + $item['item_price'],
                     ]);
                 }
             }

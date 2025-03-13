@@ -1,89 +1,89 @@
 <script setup>
-import { ref, watch } from 'vue';
-import { useForm, router } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
+    import { ref, watch } from 'vue';
+    import { useForm, router } from '@inertiajs/vue3';
+    import AppLayout from '@/Layouts/AppLayout.vue';
+    import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
 
-const props = defineProps({
-    customers: Object,
-    filters: Object
-});
+    const props = defineProps({
+        customers: Object,
+        filters: Object
+    });
 
-const search = ref(props.filters.search || '');
+    const search = ref(props.filters.search || '');
 
-watch(search, (value) => {
-    router.get(route('customer.index'), { search: value }, { preserveState: true, replace: true });
-}, { deep: true });
+    watch(search, (value) => {
+        router.get(route('customer.index'), { search: value }, { preserveState: true, replace: true });
+    }, { deep: true });
 
-const isFormVisible = ref(false);
+    const isFormVisible = ref(false);
 
-const form = useForm({
-    id: null,
-    name: '',
-    phone_no: '',
-    email: '',
-    tin_no: '',
-    street: '',
-    municipality: '',
-    city: '',
-});
+    const form = useForm({
+        id: null,
+        name: '',
+        phone_no: '',
+        email: '',
+        tin_no: '',
+        street: '',
+        municipality: '',
+        city: '',
+    });
 
-const edit = (customer) => {
-    if (!isFormVisible.value) {
-        isFormVisible.value = true;
-    }
-    form.id = customer.id;
-    form.name = customer.name;
-    form.email = customer.email;
-    form.street = customer.street;
-    form.municipality = customer.municipality;
-    form.city = customer.city;
-    form.tin_no = customer.tin_no;
-    form.phone_no = customer.phone_no;
-    editing.value = true;
-};
+    const edit = (customer) => {
+        if (!isFormVisible.value) {
+            isFormVisible.value = true;
+        }
+        form.id = customer.id;
+        form.name = customer.name;
+        form.email = customer.email;
+        form.street = customer.street;
+        form.municipality = customer.municipality;
+        form.city = customer.city;
+        form.tin_no = customer.tin_no;
+        form.phone_no = customer.phone_no;
+        editing.value = true;
+    };
 
-const deleteItem = (id) => {
-    if (confirm('Are you sure?')) {
-        form.delete(route('customer.destroy', id));
-    }
-};
+    const deleteItem = (id) => {
+        if (confirm('Are you sure?')) {
+            form.delete(route('customer.destroy', id));
+        }
+    };
 
-const resetForm = () => {
-    form.id = null;
-    form.name = '';
-    form.email = '';
-    form.street = '';
-    form.municipality = '';
-    form.city = '';
-    form.tin_no = '';
-    form.phone_no = '';
-};
+    const resetForm = () => {
+        form.id = null;
+        form.name = '';
+        form.email = '';
+        form.street = '';
+        form.municipality = '';
+        form.city = '';
+        form.tin_no = '';
+        form.phone_no = '';
+    };
 
-function toggleFormVisibility() {
-  isFormVisible.value = !isFormVisible.value;
-};
+    function toggleFormVisibility() {
+    isFormVisible.value = !isFormVisible.value;
+    };
 
-const editing = ref(false);
+    const editing = ref(false);
 
-const submit = () => {
-    if (editing.value) {
-        form.put(route('customer.update', form.id), {
-            onSuccess: () => {
-                resetForm();
-                editing.value = false;
-                isFormVisible.value = false; // Close the modal
-            }
-        });
-    } else {
-        form.post(route('customer.store'), {
-            onSuccess: () => {
-                resetForm();
-                isFormVisible.value = false; // Close the modal
-            }
-        });
-    }
-};
+    const submit = () => {
+        if (editing.value) {
+            form.put(route('customer.update', form.id), {
+                onSuccess: () => {
+                    resetForm();
+                    editing.value = false;
+                    isFormVisible.value = false; // Close the modal
+                }
+            });
+        } else {
+            form.post(route('customer.store'), {
+                onSuccess: () => {
+                    resetForm();
+                    isFormVisible.value = false; // Close the modal
+                }
+            });
+        }
+    };
 </script>
 
 <template>
