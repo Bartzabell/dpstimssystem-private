@@ -73,6 +73,10 @@ class PurchaseController extends Controller
                 $inventory->update([
                     'item_qty' => $inventory->item_qty + $item['item_qty'],
                 ]);
+                $status = $this->getStatus($inventory->item_qty, $inventory->min_stock, $inventory->max_stock);
+                $inventory->update([
+                    'status' => $status,
+                ]);
 
                 $bill = TransactionPurchaseBill::find($form->id);
                 $bill->update([
@@ -130,6 +134,10 @@ class PurchaseController extends Controller
                     $inventory->update([
                         'item_qty' => $inventory->item_qty + $item['item_qty'],
                     ]);
+                    $status = $this->getStatus($inventory->item_qty, $inventory->min_stock, $inventory->max_stock);
+                    $inventory->update([
+                        'status' => $status,
+                    ]);
 
                     $bill = TransactionPurchaseBill::find($form->id);
                     $bill->update([
@@ -143,6 +151,17 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('purchase.index');
+    }
+
+    private function getStatus($itemQty, $minStock, $maxStock)
+    {
+        if ($itemQty < $minStock) {
+            return 'low';
+        } elseif ($itemQty > $maxStock) {
+            return 'high';
+        }
+
+        return 'normal';
     }
 
     // FOR DELETE

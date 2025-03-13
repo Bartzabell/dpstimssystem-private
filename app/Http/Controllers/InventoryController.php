@@ -113,6 +113,7 @@ class InventoryController extends Controller
 
         return 'normal';
     }
+
     // FOR DELETE
     public function destroy(InventoryStock $inventory)
     {
