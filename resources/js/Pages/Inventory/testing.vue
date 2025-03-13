@@ -1,4 +1,4 @@
-
+<!--
 <template>
     <AppLayout title="Inventory">
         <template #header>
@@ -100,4 +100,4 @@
             </div>
         </div>
     </AppLayout>
-</template>
+</template> -->
