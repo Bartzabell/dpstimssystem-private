@@ -16,8 +16,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('item_code')->nullable();
+            $table->decimal('item_qty', 10, 2)->default(0);
             $table->foreignIdFor(Category::class,'category_id')->nullable();
-            $table->integer('item_qty')->default(0);
+            $table->string('material')->nullable();
+            $table->string('color')->nullable();
+            $table->string('uom')->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('min_stock', 10, 2)->nullable();
+            $table->decimal('max_stock', 10, 2)->nullable();
+            $table->string('status')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

@@ -1,7 +1,8 @@
 <script setup>
-    import { ref, watch, onMounted } from 'vue';
+    import { ref, watch } from 'vue';
+    import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhListMagnifyingGlass, PhFilePlus, PhPrinter, PhTrash, PhRowsPlusBottom, PhPencilLine } from "@phosphor-icons/vue";
+    import { PhRowsPlusBottom, PhEyeSlash, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
 
     const props = defineProps({
         forms: Object,
@@ -17,7 +18,7 @@
 
     // Fixed: Changed from single value to an array of selected values
     const selectedItems = ref([]);
-    const selectedEmployee = ref(null);
+    const selectedSupplier = ref(null);
 
     function toggleFormVisibility() {
         isFormVisible.value = !isFormVisible.value;
@@ -45,33 +46,32 @@
 
     // Watch for search input and debounce API call
     watch(search, (value) => {
-        router.get(route('receiving-form.index'), { search: value }, { preserveState: true, replace: true });
+        router.get(route('purchase.index'), { search: value }, { preserveState: true, replace: true });
     }, { deep: true });
 
-    const edit = (purchased_form) => {
+    const edit = (purchase_form) => {
         if (!isFormVisible.value) {
             isFormVisible.value = true;
         }
-        form.id = purchased_form.id;
-        form.supplier_id = purchased_form.supplier_id;
-        form.date_purchased = purchased_form.date_purchased;
+        form.id = purchase_form.id;
+        form.supplier_id = purchase_form.supplier_id;
+        form.date_purchased = purchase_form.date_purchased;
 
-
-        if (purchased_form.date_purchased) {
+        if (purchase_form.date_purchased) {
             // Parse the date as UTC and convert it to local time
-            const dateObj = new Date(purchased_form.date_purchased + 'Z'); // Append 'Z' to treat it as UTC
+            const dateObj = new Date(purchase_form.date_purchased + 'Z'); // Append 'Z' to treat it as UTC
             form.date_purchased = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
         } else {
             form.date_purchased= '';
         }
 
         // Load items
-        form.items = purchased_form.items ?
-            [...purchased_form.items] : [];
+        form.items = purchase_form.items ?
+            [...purchase_form.items] : [];
 
         // Fixed: Initialize selectedItems array with the correct number of elements
         selectedItems.value = form.items.map(item => item.stock_id || null);
-        selectedEmployee.value = purchased_form.receiver_id;
+        selectedSupplier.value = purchase_form.supplier_id;
 
         editing.value = true;
     };
@@ -82,7 +82,7 @@
     };
 
     const deleteItem = () => {
-        form.delete(route('receiving-form.destroy', itemToDelete.value), {
+        form.delete(route('purchase.destroy', itemToDelete.value), {
             onSuccess: () => {
                 if (isFormVisible.value) {
                     isFormVisible.value = false;
@@ -99,24 +99,23 @@
 
     const resetForm = () => {
         form.id = '';
-        form.location = '';
-        form.note = '';
-        form.date_received = '';
-        form.status = '';
-        form.received_from = '';
-        form.receiver_id = '';
+        form.supplier_id = '';
+        form.date_purchased = '';
         form.items = [];
         selectedItems.value = [];
-        selectedEmployee.value = null;
+        selectedSupplier.value = null;
     };
 
     // Add a new empty items
     const addItem = () => {
         form.items.push({
             id: null,
-            receiving_form_id: '',
-            inventory_id: '',
+            tpb_id: '',
+            stock_id: '',
             item_qty: '',
+            per_piece: '',
+            total_price: '',
+            bill_no: '',
         });
         // Fixed: Add a corresponding null entry to selectedItems
         selectedItems.value.push(null);
@@ -138,15 +137,11 @@
         });
     };
 
-    // Fixed: Handler for inventory item selection
     const handleInventoryChange = (event, index) => {
-        // Update the inventory_id in the form items
-        form.items[index].inventory_id = event.id;
-        // Update just the selected item at the specific index
+        form.items[index].stock_id = event.id;
         selectedItems.value[index] = event.id;
     };
 
-    // New functions - placed at the end for organization
     const submit = () => {
         dialogAction.value = editing.value ? 'update' : 'add';
         showConfirmDialog.value = true;
@@ -154,7 +149,7 @@
 
     const confirmSubmit = () => {
         if (editing.value) {
-            form.put(route('receiving-form.update', form.id), {
+            form.put(route('purchase.update', form.id), {
                 onSuccess: () => {
                     if (isFormVisible.value) {
                         isFormVisible.value = false;
@@ -170,7 +165,7 @@
                 }
             });
         } else {
-            form.post(route('receiving-form.store'), {
+            form.post(route('purchase.store'), {
                 onSuccess: () => {
                     resetForm();
                     showConfirmDialog.value = false;
@@ -208,175 +203,178 @@
         showConfirmDialog.value = false;
     };
 </script>
+
 <template>
-    <AppLayout title="Purchase">
+    <AppLayout title="Transaction Purchase Form">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Purchase
-            </h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Purchase Forms</h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="absolute flex justify-end w-full right-1 top-1">
+                <div class="absolute top-0 flex justify-end w-full">
                     <ButtonCode
                         @click="toggleFormVisibility"
                         text="Close"
                         color="bg-red-500 hover:bg-red-700"
                     />
                 </div>
-                <h1 class="px-6 py-2 text-2xl font-extrabold">Purchase Form</h1>
-                <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3">
-                    <CustomSelect label="Supplier Name:" name="suppplier_name"
-                                :options="[ { value: 'Filpet Bottles', label: 'Filpet Bottles' },
-                                            { value: 'BottleShop', label: 'BottleShop' } ]" />
-                    <CustomInput name="Phone No.:" readonly />
-                    <CustomInput name="TIN.:" readonly />
-                    <div class="col-span-1 mt-6 md:col-span-3">
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-lg font-bold">Items</h3>
-                        </div>
-
-                        <!-- Conditional display based on items length -->
-                        <div v-if="items.length === 0" class="py-4 text-center rounded bg-gray-50">
-                            <p>No items added yet. Click 'Add Item' to start.</p>
-                        </div>
-
-                        <!-- Table displays when we have items -->
-                        <div v-else class="overflow-visible border rounded-lg">
-                            <table class="w-full">
-                                <thead>
-                                <tr class="text-left bg-gray-100">
-                                    <th class="w-2/6 px-2 py-1 border whitespace-nowrap">Product</th>
-                                    <th class="w-1/6 px-2 py-1 border whitespace-nowrap">Quantity</th>
-                                    <th class="w-1/6 px-2 py-1 border whitespace-nowrap">Price Per Unit</th>
-                                    <th class="w-1/6 px-2 py-1 border whitespace-nowrap">Total Cost</th>
-                                    <th class="w-1/6 px-2 py-1 border whitespace-nowrap">Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="(item, index) in items" :key="index" class="hover:bg-gray-50">
-                                    <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomSelect
-                                        name="product"
-                                        :options="[ { value: 'bottle', label: 'Bottle' },
-                                                    { value: 'cap', label: 'Cap' } ]" />
-                                    </td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomInput
-                                        type="number"
-                                        v-model="item.quantity"
-                                        @update:modelValue="updateTotalCost(index)"
-                                    />
-                                    </td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomInput
-                                        type="number"
-                                        v-model="item.pricePerUnit"
-                                        @update:modelValue="updateTotalCost(index)"
-                                    />
-                                    </td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">
-                                    <CustomInput
-                                        type="number"
-                                        v-model="item.totalCost"
-                                        readonly
-                                    />
-                                    </td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">
-                                    <div class="inline-flex justify-center w-full h-full gap-2">
-                                        <button
-                                            type="button"
-                                            class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
-                                            @click="removeItem(index)"
-                                            >
-                                            Remove
-                                        </button>
-                                    </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="flex justify-end w-full py-2">
-                            <ButtonCode
-                                :icon="PhRowsPlusBottom"
-                                color="bg-green-500 hover:bg-green-700"
-                                text="Add Row"
-                                @click="addItem"
+                <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
+                    <h1 class="px-6 py-2 text-2xl font-extrabold">Purchase Form</h1>
+                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+                        <div class="spanlabel">
+                            <label class="block mb-1 text-sm font-medium">Supplier</label>
+                            <SearchableDropdown
+                                class="border rounded-lg border-slate-600"
+                                v-model="selectedSupplier"
+                                :items="suppliers"
+                                placeholder="Search Supplier..."
+                                @change="form.supplier_id = $event.id"
                             />
                         </div>
+                        <div>
+                            <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased" :message="form.errors.date_purchased" />
+                        </div>
+
+                        <div class="col-span-1 mt-6 md:col-span-2">
+                            <div class="p-5 mt-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-lg font-bold">Items</h3>
+                                </div>
+                                <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
+                                    <p>No items added yet. Click 'Add Item' to start.</p>
+                                </div>
+                                <div v-else class="overflow-visible border rounded-lg">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left bg-gray-100">
+                                                <th class="w-3/5 px-2 py-1 border whitespace-nowrap">ITEM CODE</th>
+                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Quantity</th>
+                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price Per Unit</th>
+                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Total Price</th>
+                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Bill No</th>
+                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50">
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <!-- Fixed: Use index-specific v-model binding -->
+                                                    <SearchableDropdown
+                                                        class="border rounded-lg border-slate-600"
+                                                        v-model="selectedItems[index]"
+                                                        :items="inventories"
+                                                        placeholder="Search Item..."
+                                                        @change="handleInventoryChange($event, index)"
+                                                    />
+                                                </td>
+                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
+                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.per_piece" min="1" /></td>
+                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.total_price" min="1" /></td>
+                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.bill_no" min="1" /></td>
+
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <div class="inline-flex justify-center w-full h-full gap-2 ">
+                                                        <button type="button" @click="removeItem(index)" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="flex justify-end w-full py-2">
+                                    <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center justify-center w-full p-5">
-                    <div class="w-max">
-                        <ButtonCode
-                            text="Add Item"
-                            :icon="PhFilePlus"
-                            color="bg-emerald-700 hover:bg-emerald-900"
-                        />
+                    <div class="flex items-center justify-center gap-2 mt-6">
+                        <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
+                        <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" @click="cancelForm" />
                     </div>
-                </div>
+                </form>
             </div>
         </Modal>
         <div class="p-5">
-            <div class="flex items-center justify-end gap-2 mb-4">
-                <ButtonCode
-                    @click="toggleFormVisibility"
-                    text="Add Purchase"
-                    :icon="PhFilePlus"
-                    color="bg-emerald-700 hover:bg-emerald-900"
-                />
-                <div class="relative">
-                    <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
-                    <input
+            <div class="p-6 mt-2 bg-white rounded shadow">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-4">
+                    <ButtonCode
+                        @click="toggleFormVisibility"
+                        text="Add Purchase"
+                        :icon="PhFilePlus"
+                        color="bg-emerald-700 hover:bg-emerald-900"
+                    />
+                    <div class="relative">
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <input
                         type="text"
                         v-model="search"
                         placeholder="Search..."
                         class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
-                    />
+                        />
+                    </div>
                 </div>
-            </div>
-            <div class="overflow-x-auto border rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Bill No.</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Supplier</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Purchase Item</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Quantity</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Price Per Unit</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Total Price Purchased</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Date Purchased</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Action</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50">
-                            <td class="px-2 py-1 border whitespace-nowrap">000014326</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">Filpet Bottles</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">16oz_PB0091</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">50</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">307</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">15350.00</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">05 January 2025</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">
-                                <div class="flex items-center justify-center w-full gap-2">
-                                    <button class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900">
-                                        <PhPrinter :size="16" />
-                                    </button>
-                                    <button class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
-                                        <PhPencilLine :size="16" />
-                                    </button>
-                                    <button class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                        <PhTrash :size="16" />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- items Table -->
+                <div class="overflow-x-auto border rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">SUPPLIER</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE PURCHASED</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CREATED BY</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE CREATED</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="form in forms.data" :key="form.id">
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.supplier?.name }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_purchased) }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.creator?.name }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">
+                                    <div class="inline-flex justify-center w-full h-full gap-2 ">
+                                        <button class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900"><PhPrinter :size="16" /></button>
+                                        <button @click="edit(form)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900"><PhPencil :size="16" /></button>
+                                        <button @click="confirmDelete(form.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900"><PhTrash :size="16" /></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <PaginationButton :data="forms" />
             </div>
         </div>
+        <SimpleDialog
+            v-model="showDeleteConfirmation"
+            theme="red"
+            :icon="PhWarning"
+            title="Confirm Delete"
+            description="Are you sure you want to delete this? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteItem"
+            @cancel="cancelDelete"
+        />
+        <SimpleDialog
+            v-model="showConfirmDialog"
+            :theme="dialogAction === 'add' || dialogAction === 'update' ? 'blue' : 'yellow'"
+            :icon="dialogAction === 'add' || dialogAction === 'update' ? PhDownloadSimple : PhWarning"
+            :title="dialogAction === 'add' ? 'Confirm Add' : dialogAction === 'update' ? 'Confirm Update' : 'Confirm Cancel'"
+            :description="dialogAction === 'add' ? 'Are you sure you want to add this?' :
+                        dialogAction === 'update' ? 'Are you sure you want to update this?' :
+                        'Are you sure you want to cancel? Any unsaved changes will be lost.'"
+            :confirmText="dialogAction === 'add' ? 'Yes, Add' : dialogAction === 'update' ? 'Yes, Update' : 'Yes, Cancel'"
+            cancelText="No"
+            @confirm="dialogAction === 'add' || dialogAction === 'update' ? confirmSubmit() : confirmCancel()"
+            @cancel="cancelConfirmDialog"
+        />
+
+        <!-- Toast Notification -->
+        <TopToast ref="topToast" />
     </AppLayout>
 </template>

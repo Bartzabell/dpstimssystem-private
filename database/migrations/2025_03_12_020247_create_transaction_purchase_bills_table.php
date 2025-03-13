@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Supplier::class, 'supplier_id')->nullable();
             $table->datetime('date_purchased')->nullable();
+            $table->decimal('total_price', 10, 2)->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

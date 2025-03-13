@@ -17,10 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(TransactionSalesBill::class, 'tsb_id')->nullable();
             $table->foreignIdFor(InventoryStock::class, 'stock_id')->nullable();
-            $table->integer('item_qty')->default(0);
-            $table->string('per_piece')->nullable();
-            $table->integer('total_price')->nullable();
-            $table->string('bill_no')->nullable();
+            $table->decimal('item_qty', 10, 2)->default(0);
+            $table->decimal('item_price', 10, 2)->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
