@@ -132,7 +132,7 @@ class SalesController extends Controller
 
                     $inventory = InventoryStock::find($item['stock_id']);
                     $inventory->update([
-                        'item_qty' => $inventory->item_qty + $item['item_qty'],
+                        'item_qty' => $inventory->item_qty - $item['item_qty'],
                     ]);
                     $status = $this->getStatus($inventory->item_qty, $inventory->min_stock, $inventory->max_stock);
                     $inventory->update([
