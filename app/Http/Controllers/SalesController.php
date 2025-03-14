@@ -62,7 +62,7 @@ class SalesController extends Controller
         if ($request->has('items') && is_array($request->items)) {
             foreach ($request->items as $item) {
                 TransactionSalesItem::create([
-                    'tpb_id' => $form->id,
+                    'tsb_id' => $form->id,
                     'stock_id' => $item['stock_id'],
                     'item_qty' => $item['item_qty'],
                     'item_price' => $item['item_price'],
@@ -71,7 +71,7 @@ class SalesController extends Controller
 
                 $inventory = InventoryStock::find($item['stock_id']);
                 $inventory->update([
-                    'item_qty' => $inventory->item_qty + $item['item_qty'],
+                    'item_qty' => $inventory->item_qty - $item['item_qty'],
                 ]);
                 $status = $this->getStatus($inventory->item_qty, $inventory->min_stock, $inventory->max_stock);
                 $inventory->update([
@@ -80,12 +80,12 @@ class SalesController extends Controller
 
                 $bill = TransactionSalesBill::find($form->id);
                 $bill->update([
-                    'total_price' => $bill->total_price + $item['item_price'],
+                    'total_price' => $bill->total_price - $item['item_price'],
                 ]);
             }
         }
 
-        return redirect()->route('purchase.index');
+        return redirect()->route('sales.index');
     }
 
     //this UPDATE IS FOR EDIT
@@ -114,7 +114,7 @@ class SalesController extends Controller
             foreach ($request->items as $item) {
                 if (isset($item['id']) && $item['id']) {
                     TransactionSalesItem::where('id', $item['id'])->update([
-                        'tpb_id' => $form->id,
+                        'tsb_id' => $form->id,
                         'stock_id' => $item['stock_id'],
                         'item_qty' => $item['item_qty'],
                         'item_price' => $item['item_price'],
@@ -123,7 +123,7 @@ class SalesController extends Controller
                 } else {
                     // Create new product
                     TransactionSalesItem::create([
-                        'tpb_id' => $request->id,
+                        'tsb_id' => $request->id,
                         'stock_id' => $item['stock_id'],
                         'item_qty' => $item['item_qty'],
                         'item_price' => $item['item_price'],
@@ -141,7 +141,7 @@ class SalesController extends Controller
 
                     $bill = TransactionSalesBill::find($form->id);
                     $bill->update([
-                        'total_price' => $bill->total_price + $item['item_price'],
+                        'total_price' => $bill->total_price - $item['item_price'],
                     ]);
                 }
             }
@@ -150,7 +150,7 @@ class SalesController extends Controller
             $form->items()->delete();
         }
 
-        return redirect()->route('purchase.index');
+        return redirect()->route('sales.index');
     }
 
     private function getStatus($itemQty, $minStock, $maxStock)
@@ -165,10 +165,10 @@ class SalesController extends Controller
     }
 
     // FOR DELETE
-    public function destroy(TransactionPurchaseBill $form)
+    public function destroy(TransactionSalesBill $form)
     {
         $form->items()->delete();
         $form->delete();
-        return redirect()->route('purchase.index');
+        return redirect()->route('sales.index');
     }
 }

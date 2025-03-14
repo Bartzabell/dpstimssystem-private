@@ -42,16 +42,17 @@ Route::middleware([
     Route::post('/purchase/{form}', [PurchaseController::class, 'update'])->name('purchase.update');
     Route::delete('/purchase/{form}', [PurchaseController::class, 'destroy'])->name('purchase.destroy');
 
-    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
-
-    // Inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
     Route::post('/inventory/{inventory}', [InventoryController::class, 'update'])->name('inventory.update');
     Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
 
-    // Sales routes
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
+    Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
+    Route::post('/sales/{form}', [SalesController::class, 'update'])->name('sales.update');
+    Route::delete('/sales/{form}', [SalesController::class, 'destroy'])->name('sales.destroy');
+
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     // About route
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
