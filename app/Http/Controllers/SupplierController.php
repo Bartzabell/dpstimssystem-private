@@ -20,7 +20,7 @@ class SupplierController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%")
-                    ->orWhere('phone_number', 'like', "%{$search}%")
+                    ->orWhere('phone_no', 'like', "%{$search}%")
                     ->orWhere('street', 'like', "%{$search}%")
                     ->orWhere('municipality', 'like', "%{$search}%")
                     ->orWhere('city', 'like', "%{$search}%")
