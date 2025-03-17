@@ -18,13 +18,16 @@ class PurchaseController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->input('search');
+        $sortField = $request->input('sort_field', 'id'); // Default sort field
+        $sortDirection = $request->input('sort_direction', 'asc'); // Default sort direction
 
-        //FOR TABLE PAGINATION AND SEARCH
+        //FOR TABLE PAGINATION, SEARCH, AND SORTING
         $forms = TransactionPurchaseBill::query()
             ->with(['creator', 'supplier', 'items']) // Eager load relationships
             ->when($search, function ($query, $search) {
                 return $query->where('id', 'like', "%{$search}%")
                     ->orWhere('date_purchased', 'like', "%{$search}%")
+                    ->orWhere('total_price', 'like', "%{$search}%")
                     ->orWhereHas('supplier', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
                     })
@@ -32,10 +35,13 @@ class PurchaseController extends Controller
                         $q->where('name', 'like', "%{$search}%");
                     });
             })
+            ->when($sortField, function ($query, $sortField) use ($sortDirection) {
+                return $query->orderBy($sortField, $sortDirection);
+            })
             ->paginate(5)
             ->appends($request->query());
 
-        $suppliers = Supplier::select('id', 'name')
+        $suppliers = Supplier::select('id', 'name', 'phone_no', 'tin_no')
             ->get();
         $inventories = InventoryStock::select('id', 'item_code', 'price')
             ->get();
@@ -44,7 +50,7 @@ class PurchaseController extends Controller
             'forms' => $forms,
             'suppliers' => $suppliers,
             'inventories' => $inventories,
-            'filters' => $request->only('search')
+            'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }
 

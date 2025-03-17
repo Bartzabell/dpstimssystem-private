@@ -2,7 +2,7 @@
     import { ref, watch } from 'vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhRowsPlusBottom, PhEyeSlash, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
+    import { PhRowsPlusBottom, PhEyeSlash, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning, PhCaretUp, PhCaretDown } from "@phosphor-icons/vue";
 
     const props = defineProps({
         forms: Object,
@@ -12,6 +12,8 @@
     });
 
     const search = ref(props.filters.search || '');
+    const sortField = ref(props.filters.sort_field || 'id');
+    const sortDirection = ref(props.filters.sort_direction || 'asc');
     const isFormVisible = ref(false);
     const editing = ref(false);
     const topToast = ref(null);
@@ -42,8 +44,18 @@
     });
 
     watch(search, (value) => {
-        router.get(route('purchase.index'), { search: value }, { preserveState: true, replace: true });
+        router.get(route('purchase.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
     }, { deep: true });
+
+    const sort = (field) => {
+        if (sortField.value === field) {
+            sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortField.value = field;
+            sortDirection.value = 'asc';
+        }
+        router.get(route('purchase.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+    };
 
     const edit = (purchase_form) => {
         if (!isFormVisible.value) {
@@ -238,6 +250,12 @@
                         <div>
                             <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased" :message="form.errors.date_purchased" />
                         </div>
+                        <div>
+                            <CustomInput name="Phone Number" type="text" disabled/>
+                        </div>
+                        <div>
+                            <CustomInput name="Tax Identification Number" type="text" disabled/>
+                        </div>
 
                         <div class="col-span-1 mt-6 md:col-span-2">
                             <div class="p-5 mt-6">
@@ -299,20 +317,25 @@
             <div class="p-6 mt-2 bg-white rounded shadow">
                 <!-- Search Bar -->
                 <div class="flex items-center justify-between mb-4">
-                    <ButtonCode
-                        @click="toggleFormVisibility"
-                        text="Add Purchase"
-                        :icon="PhFilePlus"
-                        color="bg-emerald-700 hover:bg-emerald-900"
-                    />
-                    <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
-                        <input
-                        type="text"
-                        v-model="search"
-                        placeholder="Search..."
-                        class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+                    <div>
+                        <h1 class="text-3xl font-extrabold leading-tight text-gray-800 dark:text-gray-200">PURCHASES</h1>
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                        <ButtonCode
+                            @click="toggleFormVisibility"
+                            text="Add Purchase"
+                            :icon="PhFilePlus"
+                            color="bg-emerald-700 hover:bg-emerald-900"
                         />
+                        <div class="relative">
+                            <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                            <input
+                                type="text"
+                                v-model="search"
+                                placeholder="Search..."
+                                class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+                            />
+                        </div>
                     </div>
                 </div>
                 <!-- items Table -->
@@ -320,12 +343,48 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">SUPPLIER</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE PURCHASED</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">TOTAL PRICE</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CREATED BY</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE CREATED</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('id')" class="flex items-center justify-center w-full">
+                                        ID
+                                        <PhCaretUp v-if="sortField === 'id' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'id' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('supplier_id')" class="flex items-center justify-center w-full">
+                                        SUPPLIER
+                                        <PhCaretUp v-if="sortField === 'supplier_id' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'supplier_id' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('date_purchased')" class="flex items-center justify-center w-full">
+                                        DATE PURCHASED
+                                        <PhCaretUp v-if="sortField === 'date_purchased' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'date_purchased' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('total_price')" class="flex items-center justify-center w-full">
+                                        TOTAL PRICE
+                                        <PhCaretUp v-if="sortField === 'total_price' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'total_price' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('created_by')" class="flex items-center justify-center w-full">
+                                        CREATED BY
+                                        <PhCaretUp v-if="sortField === 'created_by' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'created_by' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('created_at')" class="flex items-center justify-center w-full">
+                                        DATE CREATED
+                                        <PhCaretUp v-if="sortField === 'created_at' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'created_at' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
@@ -334,7 +393,7 @@
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.supplier?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_purchased) }}</td>
-                                <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.total_price) }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.total_price }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.creator?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">
