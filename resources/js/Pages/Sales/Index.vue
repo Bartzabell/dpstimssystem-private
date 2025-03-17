@@ -127,7 +127,24 @@
     const handleInventoryChange = (event, index) => {
         form.items[index].stock_id = event.id;
         selectedItems.value[index] = event.id;
+        updatePrice(index);
     };
+
+    const updatePrice = (index) => {
+        const item = form.items[index];
+        const inventory = props.inventories.find(inv => inv.id === item.stock_id);
+        if (inventory && item.item_qty) {
+            item.item_price = inventory.price * item.item_qty;
+        }
+    };
+
+    watch(() => form.items, (newItems) => {
+        newItems.forEach((item, index) => {
+            watch(() => item.item_qty, () => {
+                updatePrice(index);
+            });
+        });
+    }, { deep: true });
 
     const submit = () => {
         dialogAction.value = editing.value ? 'update' : 'add';

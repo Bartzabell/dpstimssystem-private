@@ -115,9 +115,9 @@
         selectedItems.value.splice(index, 1);
     };
 
-    const formatDate = (date_received) => {
-        if (!date_received) return "";
-        return new Date(date_received).toLocaleDateString("en-GB", {
+    const formatDate = (date) => {
+        if (!date) return "";
+        return new Date(date).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "long",
             year: "numeric"

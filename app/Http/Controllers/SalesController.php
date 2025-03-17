@@ -37,7 +37,7 @@ class SalesController extends Controller
 
         $customers = Customer::select('id', 'name')
             ->get();
-        $inventories = InventoryStock::select('id', 'item_code')
+        $inventories = InventoryStock::select('id', 'item_code', 'price')
             ->get();
 
         return Inertia::render('Sales/Index', [
