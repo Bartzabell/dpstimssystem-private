@@ -21,7 +21,7 @@ class InventoryController extends Controller
 
         //FOR TABLE PAGINATION AND SEARCH
         $inventories = InventoryStock::query()
-            ->with(['creator', 'category'])
+            ->with(['creator'])
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%")

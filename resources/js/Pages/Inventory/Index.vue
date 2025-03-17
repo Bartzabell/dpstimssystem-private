@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watch } from 'vue';
+    import { ref, watch, computed } from 'vue';
     import { useForm, router } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
     import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
@@ -41,6 +41,22 @@
         status: '',
     });
 
+    // Watchers for fields that affect item_code
+    watch([selectedColor, form.type, selectedMaterial, selectedCategory, form.size, selectedUom], () => {
+        form.item_code = generateItemCode();
+    }, { deep: true });
+
+    // Method to generate item_code
+    const generateItemCode = () => {
+        const color = selectedColor.value ? selectedColor.value : '';
+        const type = form.type || '';
+        const material = selectedMaterial.value ? selectedMaterial.value : '';
+        const category = selectedCategory.value ? selectedCategory.value : '';
+        const size = form.size || '';
+        const uom = selectedUom.value ? selectedUom.value : '';
+        return `${color}${type}${material}${category}${size}${uom}`;
+    };
+
     function toggleFormVisibility() {
         isFormVisible.value = !isFormVisible.value;
     };
@@ -68,7 +84,6 @@
         selectedMaterial.value = inventory.material;
         selectedColor.value = inventory.color;
         selectedUom.value = inventory.uom;
-
 
         editing.value = true;
     };
@@ -207,7 +222,7 @@
                     <h1 class="px-6 py-2 text-2xl font-extrabold">Inventory Form</h1>
                     <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
                         <CustomInput name="Name" v-model="form.name"/>
-                        <CustomInput name="Item Code" v-model="form.item_code"/>
+                        <CustomInput name="Item Code" v-model="form.item_code" disabled/>
                         <div>
                             <label class="text-sm font-medium">Color</label>
                             <SearchableDropdown
@@ -372,4 +387,3 @@
         <TopToast ref="topToast" />
     </AppLayout>
 </template>
-

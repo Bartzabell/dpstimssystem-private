@@ -35,8 +35,8 @@
         filteredItems.value = props.items
             .filter(item => {
                 const query = searchQuery.value.toLowerCase();
-                const idMatch = item.id.toString().toLowerCase().includes(query);
                 const nameMatch = item.name ? item.name.toLowerCase().includes(query) : false;
+                const idMatch = item.id.toString().toLowerCase().includes(query);
                 const itemCodeMatch = item.item_code ? item.item_code.toLowerCase().includes(query) : false;
                 return idMatch || nameMatch || itemCodeMatch;
             })
@@ -82,7 +82,7 @@
     }, { immediate: true });
 
     const selectItem = (item) => {
-        emit('update:modelValue', item.id);
+        emit('update:modelValue', item.name);
         emit('change', item);
         searchQuery.value = '';
         isOpen.value = false;
