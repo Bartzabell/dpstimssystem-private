@@ -330,7 +330,7 @@
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.item_code }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.item_qty }}</td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.category?.name }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.category }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.material }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.color }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.size }}{{ inventory.uom }}</td>

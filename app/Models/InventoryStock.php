@@ -21,7 +21,7 @@ class InventoryStock extends Model
 
     protected $table = 'inventory_stocks';
 
-    protected $fillable = ['name', 'item_code', 'category', 'item_qty', 'material', 'color', 'type', ' size',
+    protected $fillable = ['name', 'item_code', 'category', 'item_qty', 'material', 'color', 'type', 'size',
      'uom', 'price', 'min_stock', 'max_stock', 'status', 'created_by', 'updated_by'];
 
     public function creator(){
