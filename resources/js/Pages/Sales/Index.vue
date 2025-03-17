@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watch } from 'vue';
+    import { ref, watch, computed } from 'vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
     import { PhRowsPlusBottom, PhEyeSlash, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
@@ -12,6 +12,8 @@
     });
 
     const search = ref(props.filters.search || '');
+    const sortField = ref(props.filters.sort_field || 'id');
+    const sortDirection = ref(props.filters.sort_direction || 'asc');
     const isFormVisible = ref(false);
     const editing = ref(false);
     const topToast = ref(null);
@@ -38,12 +40,32 @@
         id: null,
         customer_id: '',
         date_sold: '',
+        phone_no: '',
+        tin_no: '',
+        address: '',
+        email: '',
         items: [],
     });
 
+    const total_price = computed(() => {
+        return form.items.reduce((total, item) => {
+            return total + (Number(item.item_price) || 0);
+        }, 0);
+    });
+
     watch(search, (value) => {
-        router.get(route('sales.index'), { search: value }, { preserveState: true, replace: true });
+        router.get(route('sales.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
     }, { deep: true });
+
+    const sort = (field) => {
+        if (sortField.value === field) {
+            sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortField.value = field;
+            sortDirection.value = 'asc';
+        }
+        router.get(route('sales.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+    };
 
     const edit = (sales_form) => {
         if (!isFormVisible.value) {
@@ -52,6 +74,8 @@
         form.id = sales_form.id;
         form.customer_id = sales_form.customer_id;
         form.date_sold = sales_form.date_sold;
+        form.phone_no = sales_form.supplier?.phone_no || '';
+        form.tin_no = sales_form.supplier?.tin_no || '';
 
         if (sales_form.date_sold) {
             const dateObj = new Date(sales_form.date_sold + 'Z');
@@ -68,6 +92,23 @@
 
         editing.value = true;
     };
+
+    watch(selectedCustomer, (newCustomerId) => {
+        if (newCustomerId) {
+            const selectedCustomer = props.customers.find(customer => customer.id === newCustomerId);
+            if (selectedCustomer) {
+                form.phone_no = selectedCustomer.phone_no;
+                form.tin_no = selectedCustomer.tin_no;
+                form.email = selectedCustomer.email;
+                form.address = `${selectedCustomer.street}, ${selectedCustomer.municipality}, ${selectedCustomer.city}`;
+            }
+        } else {
+            form.phone_no = '';
+            form.tin_no = '';
+            form.email = '';
+            form.address = '';
+        }
+    });
 
     const confirmDelete = (id) => {
         itemToDelete.value = id;
@@ -206,56 +247,6 @@
     const cancelConfirmDialog = () => {
         showConfirmDialog.value = false;
     };
-
-    // Add this print function
-    function printTest() {
-    // Get content from your template
-    const printContent = document.getElementById('printSection').innerHTML;
-    
-    // Create an invisible iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    
-    // Write the content to the iframe
-    iframe.contentDocument.write(`
-        <html>
-        <head>
-            <title>Print Test</title>
-            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-            <style>
-            @page {
-                size: A4;
-                margin: 20mm;
-            }
-            @media print {
-                body {
-                width: 210mm;
-                height: 297mm;
-                }
-            }
-            </style>
-        </head>
-        <body>
-            ${printContent}
-        </body>
-        </html>
-    `);
-    
-    // Close the document
-    iframe.contentDocument.close();
-    
-    // Wait for resources to load before printing
-    iframe.onload = function() {
-        // Trigger print
-        iframe.contentWindow.print();
-        
-        // Remove the iframe after printing
-        setTimeout(() => {
-        document.body.removeChild(iframe);
-        }, 1000);
-    };
-    }
 </script>
 
 <template>
@@ -263,141 +254,6 @@
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Sales Forms</h2>
         </template>
-        <div id="printSection" class="hidden">
-            <div class="max-w-[210mm] h-full mx-auto">
-                <h1 class="w-full mb-1 text-4xl font-bold text-center">
-                    DELLOSA'S SOAP AND DETERGENTS MANUFACTURING
-                </h1>
-                <p class="w-full text-lg text-center"><b>DEALERS IN: </b>Products</p>
-                <p class="w-full text-lg text-center">Zenaida subdivision, Limaco street, 3930 Brgy, Biñan, 4024 Laguna</p>
-                <p class="w-full text-lg text-center">EMAIL: dellosaspm@gmail.com</p>
-                <div class="grid grid-cols-4 mt-5 border border-black">
-                    <div class="col-span-2 p-1 font-bold border border-black">
-                        NAME OF CONSIGNEE/BUYER
-                    </div>
-                    <div class="p-1 font-bold border border-black">
-                        Invoice No.:
-                    </div>
-                    <div class="p-1 border border-black">
-                        451280-90
-                    </div>
-                    <div class="col-span-2 p-1 border border-black">
-                        Stephanie Hawking
-                    </div>
-                    <div class="p-1 font-bold border border-black">
-                        Date:
-                    </div>
-                    <div class="p-1 border border-black">
-                        March 29, 2025
-                    </div>
-                    <div class="flex items-center justify-center w-full col-span-2 row-span-3 p-1 border border-black">
-                        Signature(Maybe)
-                    </div>
-                    <div class="p-1 font-bold border border-black">
-                        Terms:
-                    </div>
-                    <div class="p-1 border border-black">
-                        Cash on Delivery
-                    </div>
-                    <div class="p-1 font-bold border border-black">
-                        VEH No.:
-                    </div>
-                    <div class="p-1 border border-black">
-                        GHE-785
-                    </div>
-                    <div class="p-1 font-bold border border-black">
-                        Destination:
-                    </div>
-                    <div class="p-1 border border-black">
-                        Tanza, Cavite
-                    </div>
-                    <div class="col-span-2 p-1 border border-black">
-                        <b>TIN: </b>123-456-789-00
-                    </div>
-                    <div class="p-1 font-bold border border-black">
-                        Business Type:
-                    </div>
-                    <div class="p-1 border border-black">
-                        Convenience Store
-                    </div>
-                </div>
-                <div class="grid grid-cols-10 mt-0.5 border border-black">
-                    <div class="p-1 font-bold text-center border border-black">
-                        
-                    </div>
-                    <div class="col-span-3 p-1 font-bold text-center border border-black">
-                        ITEM/S
-                    </div>
-                    <div class="col-span-2 p-1 font-bold text-center border border-black">
-                        QTY
-                    </div>
-                    <div class="col-span-2 p-1 font-bold text-center border border-black">
-                        Unit Price
-                    </div>
-                    <div class="col-span-2 p-1 font-bold text-center border border-black">
-                        Amount
-                    </div>
-                    <!-- Body -->
-                    <div class="p-1 text-center border border-black">
-                        1
-                    </div>
-                    <div class="col-span-3 p-1 text-center border border-black">
-                        16oz_PB0091
-                    </div>
-                    <div class="col-span-2 p-1 text-center border border-black">
-                        50
-                    </div>
-                    <div class="col-span-2 p-1 text-center border border-black">
-                        200
-                    </div>
-                    <div class="col-span-2 p-1 text-center border border-black">
-                        10,000
-                    </div>
-                </div>
-                <div class="grid grid-cols-10 mt-0.5 border border-black">
-                    <div class="col-span-4 p-1 font-bold border border-black">
-                        Total Sales(VAT Inclusive)
-                    </div>
-                    <div class="col-span-6 p-1 border border-black">
-                        10,000
-                    </div>
-                    <div class="col-span-4 p-1 font-bold border border-black">
-                        Less VAT
-                    </div>
-                    <div class="col-span-6 p-1 border border-black">
-                        
-                    </div>
-                    <div class="col-span-4 p-1 font-bold border border-black">
-                        Amount: Net of VAT
-                    </div>
-                    <div class="col-span-6 p-1 border border-black">
-                        500
-                    </div>
-                    <div class="col-span-4 p-1 font-bold border border-black">
-                        Less: SC/PWD-Discount
-                    </div>
-                    <div class="col-span-6 p-1 border border-black">
-                        
-                    </div>
-                    <div class="col-span-4 p-1 font-bold border border-black">
-                        Amount Due
-                    </div>
-                    <div class="col-span-6 p-1 border border-black">
-                        
-                    </div>
-                    <div class="col-span-4 p-1 font-bold border border-black">
-                        Total Due:
-                    </div>
-                    <div class="col-span-6 p-1 border border-black">
-                        10,500
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end w-full mx-auto mt-auto">
-                <!-- name of buyer/consignee -->
-                <h1 class="px-5 pt-1 border-t border-black">Stephanie Hawking</h1>
-            </div>
-        </div>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
                 <div class="absolute top-0 flex justify-end w-full">
@@ -422,6 +278,18 @@
                         </div>
                         <div>
                             <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
+                        </div>
+                        <div>
+                            <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no" disabled/>
+                        </div>
+                        <div>
+                            <CustomInput name="Customer Email" type="text" v-model="form.email" disabled/>
+                        </div>
+                        <div>
+                            <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
+                        </div>
+                        <div>
+                            <CustomInput name="Customer Address" type="text" v-model="form.address" disabled/>
                         </div>
 
                         <div class="col-span-1 mt-6 md:col-span-2">
@@ -467,6 +335,13 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <!-- Display Total Price -->
+                                <div class="flex justify-end w-full py-2">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-lg font-bold">Total Price:</span>
+                                        <span class="text-lg">{{ total_price.toFixed(2) }}</span>
+                                    </div>
+                                </div>
                                 <div class="flex justify-end w-full py-2">
                                     <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
                                 </div>
@@ -505,12 +380,48 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CUSTOMER</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE SOLD</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">TOTAL PRICE</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CREATED BY</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE CREATED</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('id')" class="flex items-center justify-center w-full">
+                                        ID
+                                        <PhCaretUp v-if="sortField === 'id' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'id' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('customer_id')" class="flex items-center justify-center w-full">
+                                        CUSTOMER
+                                        <PhCaretUp v-if="sortField === 'customer_id' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'customer_id' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('date_sold')" class="flex items-center justify-center w-full">
+                                        DATE SOLD
+                                        <PhCaretUp v-if="sortField === 'date_sold' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'date_sold' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('total_price')" class="flex items-center justify-center w-full">
+                                        TOTAL PRICE
+                                        <PhCaretUp v-if="sortField === 'total_price' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'total_price' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('created_by')" class="flex items-center justify-center w-full">
+                                        CREATED BY
+                                        <PhCaretUp v-if="sortField === 'created_by' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'created_by' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('created_at')" class="flex items-center justify-center w-full">
+                                        DATE CREATED
+                                        <PhCaretUp v-if="sortField === 'created_at' && sortDirection === 'asc'" class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'created_at' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                    </button>
+                                </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
