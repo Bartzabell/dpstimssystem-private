@@ -261,7 +261,7 @@
                     </button>
                 </div>
                 <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow">
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-5 px-3 py-1 md:grid-cols-2">
                         <div class="gap-5">
                             <div class="spanlabel">
                                 <label class="block mb-1 text-sm font-medium">Supplier</label>
@@ -338,7 +338,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-center gap-2 mt-6">
+                    <div class="flex items-center justify-center gap-2 mt-2">
                         <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
                         <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" @click="cancelForm" />
                     </div>

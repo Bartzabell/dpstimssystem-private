@@ -2,12 +2,16 @@
     import { ref, watch } from 'vue';
     import { useForm, router } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
+    import { PhWarning, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
 
     const props = defineProps({
         customers: Object,
         filters: Object
     });
+
+    const topToast = ref(null);
+    const itemToDelete = ref(null);
+    const showDeleteConfirmation = ref(false);
 
     const search = ref(props.filters.search || '');
 
@@ -28,6 +32,33 @@
         city: '',
     });
 
+    // FOR DELETE
+    const confirmDelete = (id) => {
+        itemToDelete.value = id;
+        showDeleteConfirmation.value = true;
+    };
+
+    const deleteItem = () => {
+        form.delete(route('customer.destroy', itemToDelete.value), {
+            onSuccess: () => {
+                if (isFormVisible.value) {
+                    isFormVisible.value = false;
+                }
+                topToast.value.showToast('Customer deleted successfully', 'success');
+                showDeleteConfirmation.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete customer', 'error');
+                showDeleteConfirmation.value = false;
+            }
+        });
+    };
+
+    const cancelDelete = () => {
+        showDeleteConfirmation.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
+
     const edit = (customer) => {
         if (!isFormVisible.value) {
             isFormVisible.value = true;
@@ -41,12 +72,6 @@
         form.tin_no = customer.tin_no;
         form.phone_no = customer.phone_no;
         editing.value = true;
-    };
-
-    const deleteItem = (id) => {
-        if (confirm('Are you sure?')) {
-            form.delete(route('customer.destroy', id));
-        }
     };
 
     const resetForm = () => {
@@ -70,16 +95,30 @@
         if (editing.value) {
             form.put(route('customer.update', form.id), {
                 onSuccess: () => {
+                    if (isFormVisible.value) {
+                        isFormVisible.value = false;
+                    }
                     resetForm();
                     editing.value = false;
                     isFormVisible.value = false; // Close the modal
+                    topToast.value.showToast('Customer updated successfully', 'success');
+                },
+                onError: () => {
+                    topToast.value.showToast('Failed to update customer', 'error');
                 }
             });
         } else {
             form.post(route('customer.store'), {
                 onSuccess: () => {
+                    if (isFormVisible.value) {
+                        isFormVisible.value = false;
+                    }
                     resetForm();
                     isFormVisible.value = false; // Close the modal
+                    topToast.value.showToast('Customer successfully', 'success');
+                },
+                onError: () => {
+                    topToast.value.showToast('Failed to add customer', 'error');
                 }
             });
         }
@@ -122,52 +161,71 @@
             </div>
         </Modal>
         <div class="p-5">
-            <div class="flex items-center justify-end gap-2 mb-4">
-                <ButtonCode
-                    @click="toggleFormVisibility"
-                    text="Add Item"
-                    :icon="PhFilePlus"
-                    color="bg-emerald-700 hover:bg-emerald-900"
-                />
-                <div class="relative">
-                    <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
-                    <input
-                    type="text"
-                    v-model="search"
-                    placeholder="Search..."
-                    class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+            <div class="p-6 mt-2 bg-white rounded shadow">
+                <div class="flex items-center justify-end gap-2 mb-4">
+                    <ButtonCode
+                        @click="toggleFormVisibility"
+                        text="Add Customer"
+                        :icon="PhFilePlus"
+                        color="bg-emerald-700 hover:bg-emerald-900"
                     />
+                    <div class="relative">
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <input
+                        type="text"
+                        v-model="search"
+                        placeholder="Search..."
+                        class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+                        />
+                    </div>
+                </div>
+                <div v-if="customers && customers.data && customers.data.length > 0">
+                    <div class="overflow-x-auto border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Customer Name</td>
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Phone Number</td>
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Email</td>
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">TIN</td>
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Address</td>
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Actions</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="customer in customers.data" :key="customer.id">
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ customer.name }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ customer.phone_no}}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ customer.email }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ customer.tin_no }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ customer.street }} {{ customer.municipality }} {{ customer.city }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">
+                                        <div class="inline-flex justify-center w-full h-full gap-2 ">
+                                            <button @click="edit(customer)" class="p-2 text-white bg-blue-500 rounded-full"><PhPencil :size="16" /></button>
+                                            <button @click="confirmDelete(customer.id)" class="p-2 text-white bg-red-500 rounded-full"><PhTrash :size="16" /></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <PaginationButton :data="customers" />
+                </div>
+                <div v-else class="p-4 text-center">
+                    <p>No customers found. Create your first item above.</p>
                 </div>
             </div>
-            <div class="overflow-x-auto border rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Customer Name</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Phone Number</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Email</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">TIN</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Address</td>
-                            <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Actions</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="customer in customers.data" :key="customer.id">
-                            <td class="px-2 py-1 border whitespace-nowrap">{{ customer.name }}</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">{{ customer.phone_no}}</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">{{ customer.email }}</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">{{ customer.tin_no }}</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">{{ customer.street }} {{ customer.municipality }} {{ customer.city }}</td>
-                            <td class="px-2 py-1 border whitespace-nowrap">
-                                <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                    <button @click="edit(customer)" class="p-2 text-white bg-blue-500 rounded-full"><PhPencil :size="16" /></button>
-                                    <button @click="deleteItem(customer.id)" class="p-2 text-white bg-red-500 rounded-full"><PhTrash :size="16" /></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
+        <SimpleDialog
+            v-model="showDeleteConfirmation"
+            theme="red"
+            :icon="PhWarning"
+            title="Confirm Delete"
+            description="Are you sure you want to delete this item? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteItem"
+            @cancel="cancelDelete"
+        />
+        <TopToast ref="topToast" />
     </AppLayout>
 </template>

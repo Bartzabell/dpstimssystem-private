@@ -2,7 +2,7 @@
     import { ref, watch } from 'vue';
     import { useForm, router } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhEyeSlash, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
+    import { PhX, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhDownloadSimple, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
 
     const props = defineProps({
         inventories: Object,
@@ -190,16 +190,16 @@
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="absolute flex justify-end w-full right-1 top-1">
-                    <ButtonCode
-                        @click="toggleFormVisibility"
-                        text="Close"
-                        color="bg-red-500 hover:bg-red-700"
-                    />
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                    <div>
+                        <h1 class="text-2xl font-extrabold">Inventory Form</h1>
+                    </div>
+                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                        <PhX :size="16" />
+                    </button>
                 </div>
                 <form @submit.prevent="submit">
-                    <h1 class="px-6 py-2 text-2xl font-extrabold">Inventory Form</h1>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-5 p-5 mt-10 md:grid-cols-2">
                         <CustomInput name="Name" v-model="form.name"/>
                         <CustomInput name="Item Code" v-model="form.item_code"/>
                         <CustomInput name="Item Quantity" v-model="form.item_qty"/>
@@ -247,7 +247,7 @@
                             />
                         </div>
                     </div>
-                    <div class="flex items-center justify-center gap-2 p-2 mt-6">
+                    <div class="flex items-center justify-center gap-2 p-2 mt-2">
                         <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update Item' : 'Add Item'" />
                         <ButtonCode
                             v-if="editing"
@@ -263,7 +263,7 @@
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow">
                 <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center justify-end gap-5 mb-4">
                     <ButtonCode
                         @click="toggleFormVisibility"
                         text="Add Item"
