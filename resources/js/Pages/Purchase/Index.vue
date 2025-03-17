@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watch } from 'vue';
+    import { ref, watch, computed } from 'vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
     import { PhRowsPlusBottom, PhEyeSlash, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning, PhCaretUp, PhCaretDown } from "@phosphor-icons/vue";
@@ -40,7 +40,15 @@
         id: null,
         supplier_id: '',
         date_purchased: '',
+        phone_no: '',
+        tin_no: '',
         items: [],
+    });
+
+    const total_price = computed(() => {
+        return form.items.reduce((total, item) => {
+            return total + (Number(item.item_price) || 0); // Ensure item_price is a number
+        }, 0);
     });
 
     watch(search, (value) => {
@@ -64,6 +72,8 @@
         form.id = purchase_form.id;
         form.supplier_id = purchase_form.supplier_id;
         form.date_purchased = purchase_form.date_purchased;
+        form.phone_no = purchase_form.supplier?.phone_no || '';
+        form.tin_no = purchase_form.supplier?.tin_no || '';
 
         if (purchase_form.date_purchased) {
             const dateObj = new Date(purchase_form.date_purchased + 'Z');
@@ -80,6 +90,19 @@
 
         editing.value = true;
     };
+
+    watch(selectedSupplier, (newSupplierId) => {
+        if (newSupplierId) {
+            const selectedSupplier = props.suppliers.find(supplier => supplier.id === newSupplierId);
+            if (selectedSupplier) {
+                form.phone_no = selectedSupplier.phone_no;
+                form.tin_no = selectedSupplier.tin_no;
+            }
+        } else {
+            form.phone_no = '';
+            form.tin_no = '';
+        }
+    });
 
     const confirmDelete = (id) => {
         itemToDelete.value = id;
@@ -106,6 +129,8 @@
         form.id = '';
         form.supplier_id = '';
         form.date_purchased = '';
+        form.phone_no = '';
+        form.tin_no = '';
         form.items = [];
         selectedItems.value = [];
         selectedSupplier.value = null;
@@ -251,10 +276,10 @@
                             <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased" :message="form.errors.date_purchased" />
                         </div>
                         <div>
-                            <CustomInput name="Phone Number" type="text" disabled/>
+                            <CustomInput name="Phone Number" type="text" v-model="form.phone_no" disabled/>
                         </div>
                         <div>
-                            <CustomInput name="Tax Identification Number" type="text" disabled/>
+                            <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
                         </div>
 
                         <div class="col-span-1 mt-6 md:col-span-2">
@@ -278,7 +303,6 @@
                                         <tbody>
                                             <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50">
                                                 <td class="px-2 py-1 border whitespace-nowrap">
-                                                    <!-- Fixed: Use index-specific v-model binding -->
                                                     <SearchableDropdown
                                                         class="border rounded-lg border-slate-600"
                                                         v-model="selectedItems[index]"
@@ -299,6 +323,13 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <!-- Display Total Price -->
+                                <div class="flex justify-end w-full py-2">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-lg font-bold">Total Price:</span>
+                                        <span class="text-lg">{{ total_price.toFixed(2) }}</span>
+                                    </div>
                                 </div>
                                 <div class="flex justify-end w-full py-2">
                                     <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
