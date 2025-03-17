@@ -48,10 +48,10 @@ defineExpose({ showToast })
             >
             <div class="flex flex-col gap-2">
                 <div class="flex flex-row items-start">
-                    <img src="/img/imslogo.png" alt="Logo" class="w-10 h-10">
+                    <img src="/img/dpstlogo.png" alt="Logo" class="w-10 h-8">
                     <div class="flex flex-col gap-0 ml-2 text-gray-500">
-                        <h1 class="text-sm font-semibold">Betafoam Corporation</h1>
-                        <span class="text-xs font-thin">Inventory Management System</span>
+                        <h1 class="text-xs font-semibold">Dellosa's Soap and Detergents Manufacturing</h1>
+                        <span class="text-[8px] font-thin">Inventory Management System</span>
                     </div>
                 </div>
                 <div class="flex flex-row items-start justify-start">

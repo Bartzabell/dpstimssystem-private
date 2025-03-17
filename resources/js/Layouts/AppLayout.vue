@@ -35,7 +35,7 @@ const logout = () => {
             <!-- Sidebar -->
             <div class="fixed top-0 left-0 z-30 h-full transition-all duration-300 ease-in-out transform"
                  :class="[sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0']">
-                <div class="h-full overflow-y-auto bg-white shadow-lg dark:bg-gray-800">
+                <div class="flex flex-col justify-between h-full overflow-y-auto bg-white shadow-lg dark:bg-gray-800">
                     <div class="space-y-2" :class="{'opacity-0': !sidebarOpen, 'opacity-100 transition-opacity duration-200 delay-300': sidebarOpen}">
                         <div class="flex flex-col items-center justify-between w-full px-2 py-3 text-white bg-lime-900 md:flex-row">
                             <div class="text-3xl ms-2">
@@ -145,6 +145,9 @@ const logout = () => {
                                 </li>
                             </ul>
                         </nav>
+                    </div>
+                    <div class="flex items-end justify-center w-full">
+                        <img src="/img/dpstlogo.png" alt="Logo" class="w-32 h-24">
                     </div>
                 </div>
             </div>

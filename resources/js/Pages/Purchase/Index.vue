@@ -2,7 +2,7 @@
     import { ref, watch, computed } from 'vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhRowsPlusBottom, PhEyeSlash, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning, PhCaretUp, PhCaretDown } from "@phosphor-icons/vue";
+    import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning, PhCaretUp, PhCaretDown } from "@phosphor-icons/vue";
 
     const props = defineProps({
         forms: Object,
@@ -252,92 +252,93 @@
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="absolute top-0 flex justify-end w-full">
-                    <ButtonCode
-                        @click="toggleFormVisibility"
-                        text="Close"
-                        color="bg-red-500 hover:bg-red-700"
-                    />
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                    <div>
+                        <h1 class="text-2xl font-extrabold">Purchase Form</h1>
+                    </div>
+                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                        <PhX :size="16" />
+                    </button>
                 </div>
-                <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
-                    <h1 class="px-6 py-2 text-2xl font-extrabold">Purchase Form</h1>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div class="spanlabel">
-                            <label class="block mb-1 text-sm font-medium">Supplier</label>
-                            <SearchableDropdown
-                                class="border rounded-lg border-slate-600"
-                                v-model="selectedSupplier"
-                                :items="suppliers"
-                                placeholder="Search Supplier..."
-                                @change="form.supplier_id = $event.id"
-                            />
-                        </div>
-                        <div>
-                            <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased" :message="form.errors.date_purchased" />
-                        </div>
-                        <div>
-                            <CustomInput name="Phone Number" type="text" v-model="form.phone_no" disabled/>
-                        </div>
-                        <div>
-                            <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
+                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow">
+                    <div class="grid grid-cols-1 gap-5 px-3 py-1 md:grid-cols-2">
+                        <div class="gap-5">
+                            <div class="spanlabel">
+                                <label class="block mb-1 text-sm font-medium">Supplier</label>
+                                <SearchableDropdown
+                                    class="border rounded-lg border-slate-600"
+                                    v-model="selectedSupplier"
+                                    :items="suppliers"
+                                    placeholder="Search Supplier..."
+                                    @change="form.supplier_id = $event.id"
+                                />
+                            </div>
+                            <div>
+                                <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased" :message="form.errors.date_purchased" />
+                            </div>
+                            <div>
+                                <CustomInput name="Phone Number" type="text" v-model="form.phone_no" disabled/>
+                            </div>
+                            <div>
+                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
+                            </div>
                         </div>
 
-                        <div class="col-span-1 mt-6 md:col-span-2">
-                            <div class="p-5 mt-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="text-lg font-bold">Items</h3>
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-bold">Items</h3>
+                            </div>
+                            <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
+                                <p>No items added yet. Click 'Add Item' to start.</p>
+                            </div>
+                            <div v-else class="overflow-visible border rounded-lg">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="text-left bg-gray-100">
+                                            <th class="w-3/5 px-2 py-1 border whitespace-nowrap">Item Code</th>
+                                            <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Quantity</th>
+                                            <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price</th>
+                                            <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50">
+                                            <td class="px-2 py-1 border whitespace-nowrap">
+                                                <SearchableDropdown
+                                                    class="border rounded-lg border-slate-600"
+                                                    v-model="selectedItems[index]"
+                                                    :items="inventories"
+                                                    placeholder="Search Item..."
+                                                    @change="handleInventoryChange($event, index)"
+                                                />
+                                            </td>
+                                            <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
+                                            <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_price" min="1" /></td>
+                                            <td class="px-2 py-1 border whitespace-nowrap">
+                                                <div class="inline-flex justify-center w-full h-full gap-2 ">
+                                                    <ButtonCode @click="removeItem(index)" color="bg-red-700 hover:bg-red-900" text="Remove" />
+                                                    <!-- <button type="button" @click="removeItem(index)" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                                                        Remove
+                                                    </button> -->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Display Total Price -->
+                            <div class="flex justify-end w-full">
+                                <div class="flex items-center gap-4 px-1 py-2 bg-gray-300 rounded-bl-lg">
+                                    <span class="text-lg font-bold">Total Price:</span>
+                                    <span class="text-lg">{{ total_price.toFixed(2) }}</span>
                                 </div>
-                                <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
-                                    <p>No items added yet. Click 'Add Item' to start.</p>
-                                </div>
-                                <div v-else class="overflow-visible border rounded-lg">
-                                    <table class="w-full">
-                                        <thead>
-                                            <tr class="text-left bg-gray-100">
-                                                <th class="w-3/5 px-2 py-1 border whitespace-nowrap">Item Code</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Quantity</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50">
-                                                <td class="px-2 py-1 border whitespace-nowrap">
-                                                    <SearchableDropdown
-                                                        class="border rounded-lg border-slate-600"
-                                                        v-model="selectedItems[index]"
-                                                        :items="inventories"
-                                                        placeholder="Search Item..."
-                                                        @change="handleInventoryChange($event, index)"
-                                                    />
-                                                </td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_price" min="1" /></td>
-                                                <td class="px-2 py-1 border whitespace-nowrap">
-                                                    <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                                        <button type="button" @click="removeItem(index)" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-                                                            Remove
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- Display Total Price -->
-                                <div class="flex justify-end w-full py-2">
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-lg font-bold">Total Price:</span>
-                                        <span class="text-lg">{{ total_price.toFixed(2) }}</span>
-                                    </div>
-                                </div>
-                                <div class="flex justify-end w-full py-2">
-                                    <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
-                                </div>
+                            </div>
+                            <div class="flex justify-end w-full py-2">
+                                <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-center gap-2 mt-6">
+                    <div class="flex items-center justify-center gap-2 mt-2">
                         <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
                         <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" @click="cancelForm" />
                     </div>
@@ -429,7 +430,6 @@
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">
                                     <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                        <button class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900"><PhPrinter :size="16" /></button>
                                         <button @click="edit(form)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900"><PhPencil :size="16" /></button>
                                         <button @click="confirmDelete(form.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900"><PhTrash :size="16" /></button>
                                     </div>
