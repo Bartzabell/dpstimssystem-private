@@ -21,12 +21,8 @@ class InventoryStock extends Model
 
     protected $table = 'inventory_stocks';
 
-    protected $fillable = ['name', 'item_code', 'category_id', 'item_qty', 'material', 'color', 'uom', 'price',
-    'min_stock', 'max_stock', 'status', 'created_by', 'updated_by'];
-
-    public function category(){
-        return $this->belongsTo(Category::class, 'category_id', 'id');
-    }
+    protected $fillable = ['name', 'item_code', 'category', 'item_qty', 'material', 'color', 'type', ' size',
+     'uom', 'price', 'min_stock', 'max_stock', 'status', 'created_by', 'updated_by'];
 
     public function creator(){
         return $this->belongsTo(User::class, 'created_by', 'id');

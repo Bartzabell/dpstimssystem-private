@@ -27,9 +27,9 @@ class InventoryController extends Controller
                     ->orWhere('id', 'like', "%{$search}%")
                     ->orWhere('item_code', 'like', "%{$search}%")
                     ->orWhere('item_qty', 'like', "%{$search}%")
-                    ->orWhereHas('category', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    })
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('size', 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%")
                     ->orWhere('material', 'like', "%{$search}%")
                     ->orWhere('color', 'like', "%{$search}%")
                     ->orWhere('uom', 'like', "%{$search}%")
@@ -66,10 +66,12 @@ class InventoryController extends Controller
             'name' => $request->name,
             'item_code' => $request->item_code,
             'item_qty' => $request->item_qty,
-            'category_id' => $request->category_id,
+            'category' => $request->category,
             'material' => $request->material,
             'color' => $request->color,
             'uom' => $request->uom,
+            'type' => $request->type,
+            'size' => $request->size,
             'price' => $request->price,
             'min_stock' => $request->min_stock,
             'max_stock' => $request->max_stock,
@@ -89,10 +91,12 @@ class InventoryController extends Controller
             'name' => $request->name,
             'item_code' => $request->item_code,
             'item_qty' => $request->item_qty,
-            'category_id' => $request->category_id,
+            'category' => $request->category,
             'material' => $request->material,
             'color' => $request->color,
             'uom' => $request->uom,
+            'type' => $request->type,
+            'size' => $request->size,
             'price' => $request->price,
             'min_stock' => $request->min_stock,
             'max_stock' => $request->max_stock,

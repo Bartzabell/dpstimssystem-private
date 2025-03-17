@@ -17,9 +17,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('item_code')->nullable();
             $table->decimal('item_qty', 10, 2)->default(0);
-            $table->foreignIdFor(Category::class,'category_id')->nullable();
+            $table->string('category')->nullable();
+            $table->string('type')->nullable();
             $table->string('material')->nullable();
             $table->string('color')->nullable();
+            $table->string('size')->nullable();
             $table->string('uom')->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('min_stock', 10, 2)->nullable();

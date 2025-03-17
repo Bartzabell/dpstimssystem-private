@@ -29,10 +29,12 @@
         name: '',
         item_code: '',
         item_qty: '',
-        category_id: '',
+        category: '',
         material: '',
         color: '',
         uom: '',
+        type: '',
+        size: '',
         price: '',
         min_stock: '',
         max_stock: '',
@@ -51,16 +53,18 @@
         form.name = inventory.name;
         form.item_code = inventory.item_code;
         form.item_qty = inventory.item_qty;
-        form.category_id = inventory.category_id;
+        form.category = inventory.category;
         form.material = inventory.material;
         form.color = inventory.color;
         form.uom = inventory.uom;
+        form.type = inventory.type;
+        form.size = inventory.size;
         form.price = inventory.price;
         form.min_stock = inventory.min_stock;
         form.max_stock = inventory.max_stock;
         form.status = inventory.status;
 
-        selectedCategory.value = inventory.category_id;
+        selectedCategory.value = inventory.category;
         selectedMaterial.value = inventory.material;
         selectedColor.value = inventory.color;
         selectedUom.value = inventory.uom;
@@ -95,10 +99,12 @@
         form.name = '';
         form.item_code = '';
         form.item_qty = '';
-        form.category_id = '';
+        form.category = '';
         form.material = '';
         form.color = '';
         form.uom = '';
+        form.type = '';
+        form.size = '';
         form.price = '';
         form.min_stock = '';
         form.max_stock = '';
@@ -202,20 +208,17 @@
                     <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
                         <CustomInput name="Name" v-model="form.name"/>
                         <CustomInput name="Item Code" v-model="form.item_code"/>
-                        <CustomInput name="Item Quantity" v-model="form.item_qty"/>
-                        <CustomInput name="Item Price" v-model="form.price"/>
-                        <CustomInput name="Minimum Stock" v-model="form.min_stock"/>
-                        <CustomInput name="Maximum Stock" v-model="form.max_stock"/>
                         <div>
-                            <label class="text-sm font-medium">Category</label>
+                            <label class="text-sm font-medium">Color</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
-                                v-model="selectedCategory"
-                                :items="categories"
-                                placeholder="Search category"
-                                @change="form.category_id = $event.id"
+                                v-model="selectedColor"
+                                :items="colors"
+                                placeholder="Search Colors..."
+                                @change="form.color = $event.name"
                             />
                         </div>
+                        <CustomInput name="Type" v-model="form.type"/>
                         <div>
                             <label class="text-sm font-medium">Material</label>
                             <SearchableDropdown
@@ -227,15 +230,16 @@
                             />
                         </div>
                         <div>
-                            <label class="text-sm font-medium">Color</label>
+                            <label class="text-sm font-medium">Category</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
-                                v-model="selectedColor"
-                                :items="colors"
-                                placeholder="Search Colors..."
-                                @change="form.color = $event.name"
+                                v-model="selectedCategory"
+                                :items="categories"
+                                placeholder="Search category"
+                                @change="form.category = $event.name"
                             />
                         </div>
+                        <CustomInput name="Size" v-model="form.size"/>
                         <div>
                             <label class="text-sm font-medium">UOM</label>
                             <SearchableDropdown
@@ -246,6 +250,10 @@
                                 @change="form.uom = $event.name"
                             />
                         </div>
+                        <CustomInput name="Item Quantity" v-model="form.item_qty"/>
+                        <CustomInput name="Item Price" v-model="form.price"/>
+                        <CustomInput name="Minimum Stock" v-model="form.min_stock"/>
+                        <CustomInput name="Maximum Stock" v-model="form.max_stock"/>
                     </div>
                     <div class="flex items-center justify-center gap-2 p-2 mt-6">
                         <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update Item' : 'Add Item'" />
@@ -293,7 +301,7 @@
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CATEGORY</th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MATERIAL</th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">COLOR</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">UNIT</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">SIZE</th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">PRICE</th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MIN STOCK</th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MAX STOCK</th>
@@ -310,7 +318,7 @@
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.category?.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.material }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.color }}</td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.uom }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.size }}{{ inventory.uom }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.price }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.min_stock }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.max_stock }}</td>
