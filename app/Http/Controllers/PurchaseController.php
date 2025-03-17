@@ -37,7 +37,7 @@ class PurchaseController extends Controller
 
         $suppliers = Supplier::select('id', 'name')
             ->get();
-        $inventories = InventoryStock::select('id', 'item_code')
+        $inventories = InventoryStock::select('id', 'item_code', 'price')
             ->get();
 
         return Inertia::render('Purchase/Index', [
