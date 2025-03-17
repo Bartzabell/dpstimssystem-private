@@ -87,7 +87,23 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('inventory.index') }">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('customer.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhWarningOctagon :size="28" />
+                                            Customer
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('supplier.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhArrowsClockwise :size="28" />
+                                            Suppliers
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('inventory.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhPackage :size="28" />
@@ -111,27 +127,19 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('suppliers.index') }">
-                                    <Link :href="route('suppliers.index')">
-                                        <span class="inline-flex items-center w-full gap-2">
-                                            <PhArrowsClockwise :size="28" />
-                                            Suppliers
-                                        </span>
-                                    </Link>
-                                </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('customer.index') }">
-                                    <Link :href="route('customer.index')">
-                                        <span class="inline-flex items-center w-full gap-2">
-                                            <PhIdentificationCard :size="28" />
-                                            Customer
-                                        </span>
-                                    </Link>
-                                </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('about.index') }">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('about.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhWarningOctagon :size="28" />
                                             About
+                                        </span>
+                                    </Link>
+                                </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('activity-logs.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhWarningOctagon :size="28" />
+                                            Activity Logs
                                         </span>
                                     </Link>
                                 </li>

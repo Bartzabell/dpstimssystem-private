@@ -6,7 +6,7 @@
 
     const props = defineProps({
         forms: Object,
-        suppliers: Array,
+        customers: Array,
         inventories: Array,
         filters: Object
     });
@@ -17,7 +17,7 @@
     const topToast = ref(null);
 
     const selectedItems = ref([]);
-    const selectedSupplier = ref(null);
+    const selectedCustomer = ref(null);
 
     function toggleFormVisibility() {
         isFormVisible.value = !isFormVisible.value;
@@ -37,7 +37,7 @@
     const form = useForm({
         id: null,
         supplier_id: '',
-        date_purchased: '',
+        date_sold: '',
         items: [],
     });
 
@@ -51,20 +51,20 @@
         }
         form.id = purchase_form.id;
         form.supplier_id = purchase_form.supplier_id;
-        form.date_purchased = purchase_form.date_purchased;
+        form.date_sold = purchase_form.date_sold;
 
-        if (purchase_form.date_purchased) {
-            const dateObj = new Date(purchase_form.date_purchased + 'Z');
-            form.date_purchased = dateObj.toISOString().split('T')[0];
+        if (purchase_form.date_sold) {
+            const dateObj = new Date(purchase_form.date_sold + 'Z');
+            form.date_sold = dateObj.toISOString().split('T')[0];
         } else {
-            form.date_purchased= '';
+            form.date_sold= '';
         }
 
         form.items = purchase_form.items ?
             [...purchase_form.items] : [];
 
         selectedItems.value = form.items.map(item => item.stock_id || null);
-        selectedSupplier.value = purchase_form.supplier_id;
+        selectedCustomer.value = purchase_form.supplier_id;
 
         editing.value = true;
     };
@@ -93,19 +93,19 @@
     const resetForm = () => {
         form.id = '';
         form.supplier_id = '';
-        form.date_purchased = '';
+        form.date_sold = '';
         form.items = [];
         selectedItems.value = [];
-        selectedSupplier.value = null;
+        selectedCustomer.value = null;
     };
 
     const addItem = () => {
         form.items.push({
             id: null,
-            tpb_id: '',
+            tsb_id: '',
             stock_id: '',
-            item_qty: 0, // Initialize with 0
-            item_price: 0, // Initialize with 0
+            item_qty: '',
+            item_price: '',
         });
         selectedItems.value.push(null);
     };
@@ -115,9 +115,9 @@
         selectedItems.value.splice(index, 1);
     };
 
-    const formatDate = (date_received) => {
-        if (!date_received) return "";
-        return new Date(date_received).toLocaleDateString("en-GB", {
+    const formatDate = (date) => {
+        if (!date) return "";
+        return new Date(date).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "long",
             year: "numeric"
@@ -127,24 +127,7 @@
     const handleInventoryChange = (event, index) => {
         form.items[index].stock_id = event.id;
         selectedItems.value[index] = event.id;
-        updatePrice(index);
     };
-
-    const updatePrice = (index) => {
-        const item = form.items[index];
-        const inventory = props.inventories.find(inv => inv.id === item.stock_id);
-        if (inventory && item.item_qty) {
-            item.item_price = inventory.price * item.item_qty;
-        }
-    };
-
-    watch(() => form.items, (newItems) => {
-        newItems.forEach((item, index) => {
-            watch(() => item.item_qty, () => {
-                updatePrice(index);
-            });
-        });
-    }, { deep: true });
 
     const submit = () => {
         dialogAction.value = editing.value ? 'update' : 'add';
@@ -153,7 +136,7 @@
 
     const confirmSubmit = () => {
         if (editing.value) {
-            form.post(route('purchase.update', form.id), {
+            form.post(route('sales.update', form.id), {
                 onSuccess: () => {
                     if (isFormVisible.value) {
                         isFormVisible.value = false;
@@ -169,7 +152,7 @@
                 }
             });
         } else {
-            form.post(route('purchase.store'), {
+            form.post(route('sales.store'), {
                 onSuccess: () => {
                     resetForm();
                     showConfirmDialog.value = false;
@@ -209,9 +192,9 @@
 </script>
 
 <template>
-    <AppLayout title="Transaction Purchase Form">
+    <AppLayout title="Transaction Sales Form">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Purchase Forms</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Sales Forms</h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
@@ -223,20 +206,20 @@
                     />
                 </div>
                 <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
-                    <h1 class="px-6 py-2 text-2xl font-extrabold">Purchase Form</h1>
+                    <h1 class="px-6 py-2 text-2xl font-extrabold">Sales Form</h1>
                     <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
                         <div class="spanlabel">
-                            <label class="block mb-1 text-sm font-medium">Supplier</label>
+                            <label class="block mb-1 text-sm font-medium">Customer</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
-                                v-model="selectedSupplier"
-                                :items="suppliers"
-                                placeholder="Search Supplier..."
-                                @change="form.supplier_id = $event.id"
+                                v-model="selectedCustomer"
+                                :items="customers"
+                                placeholder="Search Customer..."
+                                @change="form.customer_id = $event.id"
                             />
                         </div>
                         <div>
-                            <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased" :message="form.errors.date_purchased" />
+                            <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
                         </div>
 
                         <div class="col-span-1 mt-6 md:col-span-2">
@@ -301,7 +284,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <ButtonCode
                         @click="toggleFormVisibility"
-                        text="Add Purchase"
+                        text="Add Sales"
                         :icon="PhFilePlus"
                         color="bg-emerald-700 hover:bg-emerald-900"
                     />
@@ -321,8 +304,8 @@
                         <thead>
                             <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">SUPPLIER</th>
-                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE PURCHASED</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CUSTOMER</th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE SOLD</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">TOTAL PRICE</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CREATED BY</th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">DATE CREATED</th>
@@ -332,8 +315,8 @@
                         <tbody>
                             <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="form in forms.data" :key="form.id">
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
-                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.supplier?.name }}</td>
-                                <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_purchased) }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.customer?.name }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_sold) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.total_price) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.creator?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
