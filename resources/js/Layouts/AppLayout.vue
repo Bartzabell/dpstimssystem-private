@@ -7,7 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { PhGear, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhArrowsClockwise, PhWarningOctagon } from "@phosphor-icons/vue";
+import { PhGear, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhMonitor, PhArrowsClockwise, PhWarningOctagon, PhIdentificationCard } from "@phosphor-icons/vue";
 
 defineProps({
     title: String,
@@ -79,7 +79,7 @@ const logout = () => {
                         </div>
                         <nav class="border-t-2">
                             <ul>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('dashboard') }">
                                     <Link :href="route('dashboard')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhChartLineUp :size="28" />
@@ -90,7 +90,7 @@ const logout = () => {
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('customer.index')">
                                         <span class="inline-flex items-center w-full gap-2">
-                                            <PhWarningOctagon :size="28" />
+                                            <PhIdentificationCard :size="28" />
                                             Customer
                                         </span>
                                     </Link>
@@ -111,7 +111,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('purchase.index') }">
                                     <Link :href="route('purchase.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhBasket :size="28" />
@@ -119,7 +119,7 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
-                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('sales.index') }">
                                     <Link :href="route('sales.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhMoney :size="28" />
@@ -138,7 +138,7 @@ const logout = () => {
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('activity-logs.index')">
                                         <span class="inline-flex items-center w-full gap-2">
-                                            <PhWarningOctagon :size="28" />
+                                            <PhMonitor :size="28" weight="fill" />
                                             Activity Logs
                                         </span>
                                     </Link>
