@@ -189,9 +189,9 @@
 </script>
 
 <template>
-    <AppLayout title="Transaction Sales Form">
+    <AppLayout title="Settings">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Sales Forms</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Settings</h2>
         </template>
         <div class="container px-4 mx-auto">
             <div class="p-6 bg-white rounded-lg shadow">
@@ -301,7 +301,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <PaginationButton :data="categories.links" />
+                    <PaginationButton :data="categories" />
                 </div>
                 </div>
 
@@ -377,7 +377,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <PaginationButton :data="colors.links" />
+                    <PaginationButton :data="colors" />
                 </div>
                 </div>
 
@@ -453,7 +453,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <PaginationButton :data="materials.links" />
+                    <PaginationButton :data="materials" />
                 </div>
                 </div>
 
@@ -529,7 +529,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <PaginationButton :data="uoms.links" />
+                    <PaginationButton :data="uoms" />
                 </div>
                 </div>
 
@@ -633,7 +633,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <PaginationButton :data="discounts.links" />
+                    <PaginationButton :data="discounts" />
                 </div>
                 </div>
             </div>
