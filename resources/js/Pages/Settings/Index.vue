@@ -1,4 +1,4 @@
-<script setup>
+ <script setup>
     import { ref, watch } from 'vue';
     import { router } from '@inertiajs/vue3';
     import debounce from 'lodash/debounce';
@@ -267,7 +267,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="categories && categories.data && categories.data.length > 0">
                     <div class="border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
@@ -343,7 +343,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="colors && colors.data && colors.data.length > 0">
                     <div class="border rounded-md">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
@@ -419,7 +419,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="materials && materials.data && materials.data.length > 0">
                     <div class="border rounded-md">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
@@ -495,7 +495,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="uoms && uoms.data && uoms.data.length > 0">
                     <div class="border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
@@ -595,7 +595,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="discounts && discounts.data && discounts.data.length > 0">
                     <div class="border rounded-md">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
