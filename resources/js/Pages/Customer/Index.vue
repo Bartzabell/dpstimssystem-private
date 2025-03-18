@@ -241,7 +241,7 @@
                     <PaginationButton :data="customers" />
                 </div>
                 <div v-else class="p-4 text-center">
-                    <p>No customers found. Create your first item above.</p>
+                    <p>No customers found. Create your first customer above.</p>
                 </div>
             </div>
         </div>
