@@ -2,7 +2,7 @@
     import { ref, watch } from 'vue';
     import { useForm, router } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhWarning, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass } from "@phosphor-icons/vue";
+    import { PhWarning, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhDownloadSimple } from "@phosphor-icons/vue";
 
     const props = defineProps({
         customers: Object,
@@ -12,6 +12,8 @@
     const topToast = ref(null);
     const itemToDelete = ref(null);
     const showDeleteConfirmation = ref(false);
+    const showConfirmDialog = ref(false);
+    const dialogAction = ref('');
 
     const search = ref(props.filters.search || '');
 
@@ -92,6 +94,11 @@
     const editing = ref(false);
 
     const submit = () => {
+        dialogAction.value = editing.value ? 'update' : 'add';
+        showConfirmDialog.value = true;
+    };
+
+    const confirmSubmit = () => {
         if (editing.value) {
             form.put(route('customer.update', form.id), {
                 onSuccess: () => {
@@ -100,10 +107,11 @@
                     }
                     resetForm();
                     editing.value = false;
-                    isFormVisible.value = false; // Close the modal
+                    showConfirmDialog.value = false; // Close the modal
                     topToast.value.showToast('Customer updated successfully', 'success');
                 },
                 onError: () => {
+                    showConfirmDialog.value = false;
                     topToast.value.showToast('Failed to update customer', 'error');
                 }
             });
@@ -114,14 +122,34 @@
                         isFormVisible.value = false;
                     }
                     resetForm();
-                    isFormVisible.value = false; // Close the modal
+                    showConfirmDialog.value = false;
                     topToast.value.showToast('Customer successfully', 'success');
                 },
                 onError: () => {
+                    showConfirmDialog.value = false;
                     topToast.value.showToast('Failed to add customer', 'error');
                 }
             });
         }
+    };
+
+    const cancelForm = () => {
+        dialogAction.value = 'cancel';
+        showConfirmDialog.value = true;
+    };
+
+    const confirmCancel = () => {
+        if (isFormVisible.value) {
+            isFormVisible.value = false;
+        }
+        resetForm();
+        editing.value = false;
+        showConfirmDialog.value = false;
+        topToast.value.showToast('Operation cancelled', 'info');
+    };
+
+    const cancelConfirmDialog = () => {
+        showConfirmDialog.value = false;
     };
 </script>
 
@@ -152,8 +180,9 @@
                         <CustomInput name="Municipality:" v-model="form.municipality" />
                         <CustomInput name="City:" v-model="form.city" />
                         <div class="flex items-center justify-end w-full">
-                            <div class="w-max">
-                                <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-blue-500 hover:bg-blue-700" :text="editing ? 'Update Customer' : 'Add Customer'" />
+                            <div class="flex items-center justify-center gap-2 mt-2">
+                                <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
+                                <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" @click="cancelForm" />
                             </div>
                         </div>
                     </div>
@@ -225,6 +254,20 @@
             confirmText="Yes, Delete"
             @confirm="deleteItem"
             @cancel="cancelDelete"
+        />
+
+        <SimpleDialog
+            v-model="showConfirmDialog"
+            :theme="dialogAction === 'add' || dialogAction === 'update' ? 'blue' : 'yellow'"
+            :icon="dialogAction === 'add' || dialogAction === 'update' ? PhDownloadSimple : PhWarning"
+            :title="dialogAction === 'add' ? 'Confirm Add' : dialogAction === 'update' ? 'Confirm Update' : 'Confirm Cancel'"
+            :description="dialogAction === 'add' ? 'Are you sure you want to add this?' :
+                        dialogAction === 'update' ? 'Are you sure you want to update this?' :
+                        'Are you sure you want to cancel? Any unsaved changes will be lost.'"
+            :confirmText="dialogAction === 'add' ? 'Yes, Add' : dialogAction === 'update' ? 'Yes, Update' : 'Yes, Cancel'"
+            cancelText="No"
+            @confirm="dialogAction === 'add' || dialogAction === 'update' ? confirmSubmit() : confirmCancel()"
+            @cancel="cancelConfirmDialog"
         />
         <TopToast ref="topToast" />
     </AppLayout>
