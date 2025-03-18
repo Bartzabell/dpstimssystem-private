@@ -143,6 +143,14 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('settings.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhMonitor :size="28" weight="fill" />
+                                            Settings
+                                        </span>
+                                    </Link>
+                                </li>
                             </ul>
                         </nav>
                     </div>
