@@ -48,12 +48,12 @@
 
     // Method to generate item_code
     const generateItemCode = () => {
-        const color = selectedColor.value ? selectedColor.value : '';
+        const color = form.color || '';
         const type = form.type || '';
-        const material = selectedMaterial.value ? selectedMaterial.value : '';
-        const category = selectedCategory.value ? selectedCategory.value : '';
+        const material = form.material || '';
+        const category = form.category || '';
         const size = form.size || '';
-        const uom = selectedUom.value ? selectedUom.value : '';
+        const uom = form.uom || '';
         return `${color}${type}${material}${category}${size}${uom}`;
     };
 

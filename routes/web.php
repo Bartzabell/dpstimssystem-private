@@ -34,7 +34,7 @@ Route::middleware([
 
     Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier.index');
     Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
-    Route::post('/supplier/{supplier}', [SupplierController::class, 'update'])->name('supplier.update');
+    Route::put('/supplier/{supplier}', [SupplierController::class, 'update'])->name('supplier.update');
     Route::delete('/supplier/{supplier}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
     Route::get('/purchase', [PurchaseController::class, 'index'])->name('purchase.index');
