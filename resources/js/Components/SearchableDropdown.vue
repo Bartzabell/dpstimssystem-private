@@ -15,7 +15,7 @@
         }
     });
 
-    const emit = defineEmits(['update:modelValue', 'change']);
+    const emit = defineEmits(['update:modelValue', 'change', 'selectedName']);
 
     const searchQuery = ref('');
     const isOpen = ref(false);
@@ -82,8 +82,9 @@
     }, { immediate: true });
 
     const selectItem = (item) => {
-        emit('update:modelValue', item.name);
+        emit('update:modelValue', item.id);
         emit('change', item);
+        emit('selectedName', item.name); // Emitting item.name separately
         searchQuery.value = '';
         isOpen.value = false;
     };
