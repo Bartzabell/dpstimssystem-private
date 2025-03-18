@@ -1,4 +1,4 @@
-<script setup>
+ <script setup>
     import { ref, watch } from 'vue';
     import { router } from '@inertiajs/vue3';
     import debounce from 'lodash/debounce';
@@ -267,7 +267,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="categories && categories.data && categories.data.length > 0">
                     <div class="border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
@@ -301,7 +301,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <PaginationButton :data="categories.links" />
+                    <PaginationButton :data="categories" />
                 </div>
                 </div>
 
@@ -343,7 +343,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="colors && colors.data && colors.data.length > 0">
                     <div class="border rounded-md">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
@@ -377,7 +377,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <PaginationButton :data="colors.links" />
+                    <PaginationButton :data="colors" />
                 </div>
                 </div>
 
@@ -419,7 +419,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="materials && materials.data && materials.data.length > 0">
                     <div class="border rounded-md">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
@@ -453,7 +453,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <PaginationButton :data="materials.links" />
+                    <PaginationButton :data="materials" />
                 </div>
                 </div>
 
@@ -495,7 +495,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="uoms && uoms.data && uoms.data.length > 0">
                     <div class="border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
@@ -529,7 +529,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <PaginationButton :data="uoms.links" />
+                    <PaginationButton :data="uoms" />
                 </div>
                 </div>
 
@@ -595,7 +595,7 @@
                 </div>
 
                 <!-- Table -->
-                <div>
+                <div v-if="discounts && discounts.data && discounts.data.length > 0">
                     <div class="border rounded-md">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
@@ -633,7 +633,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <PaginationButton :data="discounts.links" />
+                    <PaginationButton :data="discounts" />
                 </div>
                 </div>
             </div>
