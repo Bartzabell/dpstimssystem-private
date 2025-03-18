@@ -48,11 +48,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $colors = [
-            ['name' => 'Clear', 'created_by' => 1],
-            ['name' => 'White', 'created_by' => 1],
-            ['name' => 'Black', 'created_by' => 1],
-            ['name' => 'Blue', 'created_by' => 1],
-            ['name' => 'Red', 'created_by' => 1],
+            ['name' => 'Clear', 'hex' => null, 'created_by' => 1],
+            ['name' => 'White', 'hex' => '#FFFFFF', 'created_by' => 1],
+            ['name' => 'Black', 'hex' => '#000000', 'created_by' => 1],
+            ['name' => 'Blue', 'hex' => '#0000FF', 'created_by' => 1],
+            ['name' => 'Red', 'hex' => '#FF0000', 'created_by' => 1],
         ];
 
         foreach ($colors as $color) {

@@ -21,7 +21,7 @@ class Color extends Model
 
     protected $table = 'colors';
 
-    protected $fillable = ['name', 'created_by'];
+    protected $fillable = ['name', 'hex','created_by'];
 
     public function creator(){
         return $this->belongsTo(User::class, 'created_by', 'id');
