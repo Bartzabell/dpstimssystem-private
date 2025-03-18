@@ -2,7 +2,7 @@
     import { ref, watch } from 'vue';
     import { useForm, router } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhWarning, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhDownloadSimple } from "@phosphor-icons/vue";
+    import { PhWarning, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhDownloadSimple, PhX } from "@phosphor-icons/vue";
 
     const props = defineProps({
         customers: Object,
@@ -162,16 +162,16 @@
         </template>
         <Modal :show="isFormVisible" @close="isFormVisible = false" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="absolute flex justify-end w-full right-1 top-1">
-                    <ButtonCode
-                        @click="toggleFormVisibility"
-                        text="Close"
-                        color="bg-red-500 hover:bg-red-700"
-                    />
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                    <div>
+                        <h1 class="text-2xl font-extrabold">Customer Form</h1>
+                    </div>
+                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                        <PhX :size="16" />
+                    </button>
                 </div>
                 <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
-                    <h1 class="px-6 py-2 text-2xl font-extrabold">Customer Form</h1>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-5 p-5 mt-10 md:grid-cols-2">
                         <CustomInput name="Customer Name:" v-model="form.name" />
                         <CustomInput name="Phone Number:" v-model="form.phone_no"/>
                         <CustomInput name="Email:" v-model="form.email" type="email" />

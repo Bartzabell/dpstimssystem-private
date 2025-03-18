@@ -7,7 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { PhGear, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhMonitor, PhArrowsClockwise, PhWarningOctagon, PhIdentificationCard } from "@phosphor-icons/vue";
+import { PhGear, PhUserCircle, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhMonitor, PhArrowsClockwise, PhWarningOctagon, PhIdentificationCard } from "@phosphor-icons/vue";
 
 defineProps({
     title: String,
@@ -56,7 +56,7 @@ const logout = () => {
 
                                         <span v-else class="inline-flex rounded-full">
                                             <button type="button" class="inline-flex items-center gap-2 p-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out border-2 rounded-full bg-lime-50 border-lime-800 hover:bg-lime-800 hover:text-white dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700">
-                                                <PhGear :size="32" />
+                                                <PhUserCircle :size="32" />
                                             </button>
                                         </span>
                                     </template>
@@ -106,7 +106,7 @@ const logout = () => {
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('inventory.index')">
                                         <span class="inline-flex items-center w-full gap-2">
-                                            <PhPackage :size="28" />
+                                            <PhPackage :size="28" weight="fill" />
                                             Inventory
                                         </span>
                                     </Link>
@@ -146,7 +146,7 @@ const logout = () => {
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
                                     <Link :href="route('settings.index')">
                                         <span class="inline-flex items-center w-full gap-2">
-                                            <PhMonitor :size="28" weight="fill" />
+                                            <PhGear :size="28" />
                                             Settings
                                         </span>
                                     </Link>
