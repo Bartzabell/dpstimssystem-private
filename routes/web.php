@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,23 @@ Route::middleware([
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
     Route::post('/sales/{form}', [SalesController::class, 'update'])->name('sales.update');
     Route::delete('/sales/{form}', [SalesController::class, 'destroy'])->name('sales.destroy');
+
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/category', [SettingsController::class, 'categoryStore'])->name('category.store');
+    Route::put('/category/{category}', [SettingsController::class, 'categoryUpdate'])->name('category.update');
+    Route::delete('/category/{category}', [SettingsController::class, 'categoryDestroy'])->name('category.destroy');
+    Route::post('/color', [SettingsController::class, 'colorStore'])->name('color.store');
+    Route::put('/color/{color}', [SettingsController::class, 'colorUpdate'])->name('color.update');
+    Route::delete('/color/{color}', [SettingsController::class, 'colorDestroy'])->name('color.destroy');
+    Route::post('/material', [SettingsController::class, 'materialStore'])->name('material.store');
+    Route::put('/material/{material}', [SettingsController::class, 'materialUpdate'])->name('material.update');
+    Route::delete('/material/{material}', [SettingsController::class, 'materialDestroy'])->name('material.destroy');
+    Route::post('/uom', [SettingsController::class, 'uomStore'])->name('uom.store');
+    Route::put('/uom/{uom}', [SettingsController::class, 'uomUpdate'])->name('uom.update');
+    Route::delete('/uom/{uom}', [SettingsController::class, 'uomDestroy'])->name('uom.destroy');
+    Route::post('/discount', [SettingsController::class, 'discountStore'])->name('discount.store');
+    Route::put('/discount/{discount}', [SettingsController::class, 'discountUpdate'])->name('discount.update');
+    Route::delete('/discount/{discount}', [SettingsController::class, 'discountDestroy'])->name('discount.destroy');
 
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
