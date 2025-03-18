@@ -36,11 +36,13 @@ class DatabaseSeeder extends Seeder
         );
 
         $uoms = [
-            ['name' => 'Kilogram', 'created_by' => 1],
-            ['name' => 'Gram', 'created_by' => 1],
-            ['name' => 'Liter', 'created_by' => 1],
-            ['name' => 'Piece', 'created_by' => 1],
-            ['name' => 'Meter', 'created_by' => 1],
+            ['name' => 'kg', 'created_by' => 1],
+            ['name' => 'g', 'created_by' => 1],
+            ['name' => 'l', 'created_by' => 1],
+            ['name' => 'pc', 'created_by' => 1],
+            ['name' => 'm', 'created_by' => 1],
+            ['name' => 'ml', 'created_by' => 1],
+            ['name' => 'm', 'created_by' => 1],
         ];
 
         foreach ($uoms as $uom) {
