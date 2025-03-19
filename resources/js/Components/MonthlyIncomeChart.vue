@@ -125,7 +125,7 @@
 <template>
     <div>
         <div>
-            <h4>Monthly Income</h4>
+            <h4 class="p-5 text-4xl font-extrabold">Monthly Sales Income</h4>
             <div>
                 <select v-model="selectedYear" @change="fetchMonthlyIncomeData">
                     <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
