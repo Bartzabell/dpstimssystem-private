@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { PhCheckCircle, PhWarningCircle, PhInfo, PhXCircle } from "@phosphor-icons/vue";
+import { PhCheckCircle, PhWarningCircle, PhInfo, PhXCircle, PhTrash } from "@phosphor-icons/vue";
 
 const props = defineProps({
   duration: {
@@ -42,6 +42,7 @@ defineExpose({ showToast })
         <div v-if="toast.show" class="fixed z-50 flex items-center p-4 rounded-lg shadow-lg top-4 right-4"
             :class="{
                 'bg-green-100 border-l-4 border-green-500': toast.type === 'success',
+                'bg-orange-100 border-l-4 border-orange-500': toast.type === 'delete',
                 'bg-red-100 border-l-4 border-red-500': toast.type === 'error',
                 'bg-blue-100 border-l-4 border-blue-500': toast.type === 'info'
             }"
@@ -58,12 +59,14 @@ defineExpose({ showToast })
                         <div class="mr-3"
                         :class="{
                             'text-green-500': toast.type === 'success',
+                            'text-orange-500': toast.type === 'delete',
                             'text-red-500': toast.type === 'error',
                             'text-blue-500': toast.type === 'info'
                         }"
                     >
                         <!-- Success Icon -->
                         <PhCheckCircle v-if="toast.type === 'success'" :size="24" />
+                        <PhTrash v-if="toast.type === 'delete'" :size="24" />
                         <PhWarningCircle v-if="toast.type === 'error'" :size="24" />
                         <PhInfo v-if="toast.type === 'info'" :size="24" />
                     </div>
