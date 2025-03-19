@@ -38,7 +38,7 @@
     // Forms data
     const forms = ref({
         category: { name: '' },
-        color: { name: '' },
+        color: { name: '', hex: '' },
         material: { name: '' },
         uom: { name: '' },
         discount: { name: '', type: 'percentage', amount: '' }
@@ -76,32 +76,6 @@
     function deleteCategory(category) {
         if (confirm('Are you sure you want to delete this category?')) {
             router.delete(route('category.destroy', category.id));
-        }
-    }
-
-    // Color methods
-    function editColor(color) {
-        editing.value.color = color;
-        forms.value.color = { name: color.name };
-    }
-
-    function resetColorForm() {
-        editing.value.color = null;
-        forms.value.color = { name: '' };
-    }
-
-    function submitColorForm() {
-        if (editing.value.color) {
-            router.put(route('color.update', editing.value.color.id), forms.value.color);
-        } else {
-            router.post(route('color.store'), forms.value.color);
-        }
-        resetColorForm();
-    }
-
-    function deleteColor(color) {
-        if (confirm('Are you sure you want to delete this color?')) {
-            router.delete(route('color.destroy', color.id));
         }
     }
 
@@ -154,6 +128,32 @@
     function deleteUom(uom) {
         if (confirm('Are you sure you want to delete this UOM?')) {
             router.delete(route('uom.destroy', uom.id));
+        }
+    }
+
+    // Color methods
+    function editColor(color) {
+        editing.value.color = color;
+        forms.value.color = { name: color.name, hex: color.hex };
+    }
+
+    function resetColorForm() {
+        editing.value.color = null;
+        forms.value.color = { name: '', hex: '' };
+    }
+
+    function submitColorForm() {
+        if (editing.value.color) {
+            router.put(route('color.update', editing.value.color.id), forms.value.color);
+        } else {
+            router.post(route('color.store'), forms.value.color);
+        }
+        resetColorForm();
+    }
+
+    function deleteColor(color) {
+        if (confirm('Are you sure you want to delete this color?')) {
+            router.delete(route('color.destroy', color.id));
         }
     }
 
@@ -322,6 +322,16 @@
                                     required
                                 />
                             </div>
+                            <div>
+                                <label for="colorHex" class="block text-sm font-medium text-gray-700">Hex Code</label>
+                                <input
+                                    id="colorHex"
+                                    v-model="forms.color.hex"
+                                    placeholder="Enter color hex"
+                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                    required
+                                />
+                            </div>
                             <div class="flex gap-2">
                                 <button
                                     type="submit"
@@ -350,6 +360,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Hex</th>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
                             </tr>
                         </thead>
@@ -357,6 +368,7 @@
                             <tr v-for="color in colors.data" :key="color.id">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ color.id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ color.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ color.hex }}</td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex justify-end gap-2">
                                         <button

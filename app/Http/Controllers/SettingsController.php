@@ -24,6 +24,7 @@ class SettingsController extends Controller
         $colors = Color::query()
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('hex', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%");
             })
             ->paginate(5)
@@ -86,6 +87,7 @@ class SettingsController extends Controller
     {
         Color::create([
             'name' => $request->name,
+            'hex' => $request->hex,
             'created_by' => Auth::id(),
         ]);
 
@@ -139,6 +141,7 @@ class SettingsController extends Controller
     {
         $color->update([
             'name' => $request->name,
+            'hex' => $request->hex,
             'updated_by' => Auth::id(),
         ]);
 
