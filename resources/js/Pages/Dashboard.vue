@@ -1,12 +1,20 @@
-<script setup>
+<script>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import MonthlyIncomeChart from '@/Components/MonthlyIncomeChart.vue';
+
+export default {
+  components: {
+    AppLayout,
+    MonthlyIncomeChart
+  }
+}
 </script>
 
 <template>
     <AppLayout title="Dashboard">
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Dashboard
+            Dashboard
             </h2>
         </template>
 
@@ -31,8 +39,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
                 <div class="col-span-1 md:col-span-4">
                     <p class="p-5 text-4xl font-extrabold">DEMAND FORECAST</p>
                 </div>
-                <div class="col-span-1 px-4 py-1 bg-gray-300 md:col-span-4">
-                    <h1 class="w-full py-5 text-6xl text-center">Chart Here</h1>
+                <div class="col-span-1 px-4 py-1 bg-white md:col-span-4">
+                    <MonthlyIncomeChart />
                 </div>
             </div>
         </div>

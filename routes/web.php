@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
@@ -15,6 +16,11 @@ use Inertia\Inertia;
 // Redirect root to login
 Route::get('/', function () {
     return redirect()->route('login');
+});
+
+Route::prefix('api/sales')->group(function () {
+    Route::get('/monthly-income/{year}', [ChartController::class, 'getMonthlyIncome']);
+    Route::get('/available-years', [ChartController::class, 'getAvailableYears']);
 });
 
 // Authentication middleware group
