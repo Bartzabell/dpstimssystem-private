@@ -4,8 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Customer;
+use App\Models\InventoryStock;
 use App\Models\Material;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\Uom;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -34,6 +37,52 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
             ]
         );
+
+        Customer::firstOrCreate(
+            ['name' => 'sample customer'],
+            [
+                'phone_no' => '09123456789',
+                'street' => '1st Street',
+                'municipality' => 'Carmona',
+                'city' => 'Cavite',
+                'email' => 'customer@sample.com',
+                'tin_no' => '000 - 123 - 456 - 001',
+                'created_by' => 1,
+            ]
+        );
+
+        Supplier::firstOrCreate(
+            ['name' => 'sample supplier'],
+            [
+                'phone_no' => '09123456789',
+                'street' => '1st Street',
+                'municipality' => 'Carmona',
+                'city' => 'Cavite',
+                'email' => 'supplier@sample.com',
+                'tin_no' => '000 - 123 - 456 - 001',
+                'created_by' => 1,
+            ]
+        );
+
+        InventoryStock::firstOrCreate(
+            ['item_code' => 'WhiteStandardPlasticCup100Meter',],
+            [
+                'name' => 'Sample Item',
+                'item_qty' => 100,
+                'category' => 'Cup',
+                'type' => 'Standard',
+                'material' => 'Plastic',
+                'color' => 'White',
+                'size' => '100',
+                'uom' => 'ml',
+                'price' => 20,
+                'min_stock' => 10,
+                'max_stock' => 100,
+                'status' => 'normal',
+                'created_by' => 1,
+            ]
+        );
+
 
         $uoms = [
             ['name' => 'kg', 'created_by' => 1],
