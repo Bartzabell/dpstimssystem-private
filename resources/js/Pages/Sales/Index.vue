@@ -8,6 +8,7 @@
         forms: Object,
         customers: Array,
         inventories: Array,
+        discounts: Array,
         filters: Object
     });
 
@@ -20,6 +21,7 @@
 
     const selectedItems = ref([]);
     const selectedCustomer = ref(null);
+    const selectedDiscount = ref(null);
 
     function toggleFormVisibility() {
         isFormVisible.value = !isFormVisible.value;
@@ -39,6 +41,7 @@
     const form = useForm({
         id: null,
         customer_id: '',
+        discount_id: '',
         date_sold: '',
         phone_no: '',
         tin_no: '',
@@ -47,10 +50,49 @@
         items: [],
     });
 
-    const total_price = computed(() => {
+    const getSubtotal = () => {
         return form.items.reduce((total, item) => {
             return total + (Number(item.item_price) || 0);
         }, 0);
+    };
+
+    const getDiscountInfo = () => {
+        const result = {
+            applied: false,
+            name: '',
+            description: '',
+            amount: 0
+        };
+
+        if (selectedDiscount.value) {
+            const discount = props.discounts.find(d => d.id === selectedDiscount.value);
+            if (discount) {
+                const subtotal = getSubtotal();
+                result.applied = true;
+                result.name = discount.name;
+
+                if (discount.type === "Percentage") {
+                    result.description = `${discount.amount}%`;
+                    result.amount = subtotal * (discount.amount / 100);
+                } else if (discount.type === "Fixed Amount") {
+                    result.description = 'Fixed Amount';
+                    result.amount = discount.amount;
+                }
+            }
+        }
+
+        return result;
+    };
+
+    const total_price = computed(() => {
+        const subtotal = getSubtotal();
+        const discountInfo = getDiscountInfo();
+
+        if (discountInfo.applied) {
+            return subtotal - discountInfo.amount;
+        }
+
+        return subtotal;
     });
 
     watch(search, (value) => {
@@ -73,6 +115,7 @@
         }
         form.id = sales_form.id;
         form.customer_id = sales_form.customer_id;
+        form.discount_id = sales_form.discount_id;
         form.date_sold = sales_form.date_sold;
         form.phone_no = sales_form.supplier?.phone_no || '';
         form.tin_no = sales_form.supplier?.tin_no || '';
@@ -89,7 +132,7 @@
 
         selectedItems.value = form.items.map(item => item.stock_id || null);
         selectedCustomer.value = sales_form.customer_id;
-
+        selectedDiscount.value = sales_form.discount_id;
         editing.value = true;
     };
 
@@ -134,10 +177,12 @@
     const resetForm = () => {
         form.id = '';
         form.customer_id = '';
+        form.discount_id = '';
         form.date_sold = '';
         form.items = [];
         selectedItems.value = [];
         selectedCustomer.value = null;
+        selectedDiscount.value = null;
     };
 
     const addItem = () => {
@@ -335,15 +380,37 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <!-- Display Total Price -->
-                                <div class="flex justify-end w-full py-2">
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-lg font-bold">Total Price:</span>
-                                        <span class="text-lg">{{ total_price.toFixed(2) }}</span>
-                                    </div>
-                                </div>
                                 <div class="flex justify-end w-full py-2">
                                     <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
+                                </div>
+                                <!-- Display Total Price -->
+                                <div class="flex justify-end w-full py-2">
+                                    <span class="flex items-center px-2 text-lg font-bold">Discount:</span>
+                                    <SearchableDropdown
+                                        class="border rounded-lg border-slate-600"
+                                        v-model="selectedDiscount"
+                                        :items="discounts"
+                                        placeholder="Search Discount..."
+                                        @change="form.discount_id = $event.id"
+                                    />
+                                </div>
+                                <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg bg-gray-50">
+                                    <div class="flex justify-between w-full py-1">
+                                        <span class="font-medium text-md">Subtotal:</span>
+                                        <span class="text-md">{{ getSubtotal().toFixed(2) }}</span>
+                                    </div>
+
+                                    <div v-if="getDiscountInfo().applied" class="flex justify-between w-full py-1">
+                                        <span class="font-medium text-md">
+                                            {{ getDiscountInfo().name }} ({{ getDiscountInfo().description }}):
+                                        </span>
+                                        <span class="text-red-600 text-md">-{{ getDiscountInfo().amount.toFixed(2) }}</span>
+                                    </div>
+
+                                    <div class="flex justify-between w-full py-1 pt-2 mt-1 border-t border-gray-200">
+                                        <span class="text-lg font-bold">Total Price:</span>
+                                        <span class="text-lg font-bold">{{ total_price.toFixed(2) }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

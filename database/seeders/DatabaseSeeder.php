@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Customer;
+use App\Models\Discount;
 use App\Models\InventoryStock;
 use App\Models\Material;
 use App\Models\Role;
@@ -128,5 +129,14 @@ class DatabaseSeeder extends Seeder
         foreach ($categories as $category) {
             Category::firstOrCreate(['name' => $category['name']], $category);
         }
+
+        Discount::firstOrCreate(
+            ['name' => 'Student Discount'],
+            [
+                'type' => 'Percentage',
+                'amount' => 20,
+                'created_by' => 1,
+            ]
+        );
     }
 }
