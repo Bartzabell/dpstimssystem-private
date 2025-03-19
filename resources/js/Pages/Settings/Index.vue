@@ -189,9 +189,9 @@
 </script>
 
 <template>
-    <AppLayout title="Transaction Sales Form">
+    <AppLayout title="Settings">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Sales Forms</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Settings</h2>
         </template>
         <div class="container px-4 mx-auto">
             <div class="p-6 bg-white rounded-lg shadow">
