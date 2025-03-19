@@ -107,12 +107,12 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
     // Color methods
     function editColor(color) {
         editing.value.color = color;
-        forms.value.color = { name: color.name };
+        forms.value.color = { name: color.name, hex: color.hex };
     }
 
     function resetColorForm() {
         editing.value.color = null;
-        forms.value.color = { name: '' };
+        forms.value.color = { name: '', hex: '' };
     }
 
     function submitColorForm() {
