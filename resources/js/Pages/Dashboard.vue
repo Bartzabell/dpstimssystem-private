@@ -1,13 +1,21 @@
-<script>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import MonthlyIncomeChart from '@/Components/MonthlyIncomeChart.vue';
+<script setup>
+    import { ref, watch, computed } from 'vue';
+    import { useForm, router, usePage } from '@inertiajs/vue3';
+    import AppLayout from '@/Layouts/AppLayout.vue';
+    import MonthlyIncomeChart from '@/Components/MonthlyIncomeChart.vue';
 
-export default {
-  components: {
-    AppLayout,
-    MonthlyIncomeChart
-  }
-}
+    const props = defineProps({
+        sales: Object,
+        todayTotalSales: {
+            type: Number,
+            default: 0,
+        },
+        januaryTotalSales: {
+            type: Number,
+            default: 0,
+        },
+        filters: Object,
+    });
 </script>
 
 <template>
@@ -22,11 +30,11 @@ export default {
             <div class="grid grid-cols-1 gap-2 md:grid-cols-4">
                 <div class="px-4 py-1 text-white bg-lime-600">
                     <p class="py-3">Today's Total Sales</p>
-                    <h1 class="w-full py-5 text-6xl text-center">Php 2,955.00</h1>
+                    <h1 class="w-full py-5 text-6xl text-center">Php {{ todayTotalSales.toLocaleString() }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-lime-800">
                     <p class="py-3">January Total Sales</p>
-                    <h1 class="w-full py-5 text-6xl text-center">Php 120,080.00</h1>
+                    <h1 class="w-full py-5 text-6xl text-center">Php {{ januaryTotalSales.toLocaleString() }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-green-900">
                     <p class="py-3">Available Products</p>
