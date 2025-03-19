@@ -16,7 +16,7 @@ class TransactionSalesBill extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Form | Sales Module');
     }
 
     protected $table = 'transaction_sales_bills';

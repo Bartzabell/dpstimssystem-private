@@ -16,7 +16,7 @@ class Color extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Color | Settings Module');
     }
 
     protected $table = 'colors';

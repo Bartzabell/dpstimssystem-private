@@ -16,7 +16,7 @@ class TransactionSalesItem extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Items | Sales Module');
     }
 
     protected $table = 'transaction_sales_items';

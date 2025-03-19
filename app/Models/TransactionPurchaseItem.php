@@ -16,7 +16,7 @@ class TransactionPurchaseItem extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Items | Purchase Module');
     }
 
     protected $table = 'transaction_purchase_items';

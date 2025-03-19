@@ -16,7 +16,7 @@ class Role extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Role | User Module');
     }
 
     protected $table = 'roles';

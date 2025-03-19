@@ -16,7 +16,7 @@ class Category extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Category | Settings Module');
     }
 
     protected $table = 'categories';

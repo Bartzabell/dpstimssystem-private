@@ -16,7 +16,7 @@ class Customer extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Customer Module');
     }
 
     protected $table = 'customers';

@@ -16,7 +16,7 @@ class Uom extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('UOM | Settings Module');
     }
 
     protected $table = 'uoms';

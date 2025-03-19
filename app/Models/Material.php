@@ -16,7 +16,7 @@ class Material extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Material | Settings Module');
     }
 
     protected $table = 'materials';

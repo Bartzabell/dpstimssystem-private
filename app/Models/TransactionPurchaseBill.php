@@ -16,7 +16,7 @@ class TransactionPurchaseBill extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Form | Purchase Module');
     }
 
     protected $table = 'transaction_purchase_bills';

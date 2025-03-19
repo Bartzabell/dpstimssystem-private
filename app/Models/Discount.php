@@ -16,7 +16,7 @@ class Discount extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Discount | Settings Module');
     }
 
     protected $table = 'discounts';

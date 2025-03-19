@@ -16,7 +16,7 @@ class InventoryStock extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Inventory Module');
     }
 
     protected $table = 'inventory_stocks';

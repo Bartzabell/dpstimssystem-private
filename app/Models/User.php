@@ -76,6 +76,6 @@ class User extends Authenticatable
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('User Module');
     }
 }

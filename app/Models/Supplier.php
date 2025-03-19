@@ -16,7 +16,7 @@ class Supplier extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('your_model_logs');
+            ->useLogName('Supplier Module');
     }
 
     protected $table = 'suppliers';
