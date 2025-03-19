@@ -3,6 +3,7 @@
     import { router } from '@inertiajs/vue3';
     import debounce from 'lodash/debounce';
     import AppLayout from '@/Layouts/AppLayout.vue';
+import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhWarning, PhStack, PhPaintBucket, PhCube, PhRuler, PhPercent } from '@phosphor-icons/vue';
 
     // Props
     const props = defineProps({
@@ -14,13 +15,15 @@
         filters: Object
     });
 
+    const topToast = ref(null);
+
     // Tabs
     const tabs = [
-        { label: 'Categories', value: 'category' },
-        { label: 'Colors', value: 'color' },
-        { label: 'Materials', value: 'material' },
-        { label: 'UOMs', value: 'uom' },
-        { label: 'Discounts', value: 'discount' }
+        { label: 'Categories', value: 'category', icon: PhStack },
+        { label: 'Colors', value: 'color', icon: PhPaintBucket },
+        { label: 'Materials', value: 'material', icon: PhCube },
+        { label: 'UOMs', value: 'uom', icon: PhRuler },
+        { label: 'Discounts', value: 'discount', icon: PhPercent }
     ];
 
     const activeTab = ref('category');
@@ -67,69 +70,39 @@
     function submitCategoryForm() {
         if (editing.value.category) {
             router.put(route('category.update', editing.value.category.id), forms.value.category);
+            topToast.value.showToast('Category updated successfully', 'success');
         } else {
             router.post(route('category.store'), forms.value.category);
+            topToast.value.showToast('Category added successfully', 'success');
         }
         resetCategoryForm();
     }
 
-    function deleteCategory(category) {
-        if (confirm('Are you sure you want to delete this category?')) {
-            router.delete(route('category.destroy', category.id));
-        }
-    }
+    const categoryToDelete = ref(null);
+    const showDeleteCategory = ref(false);
 
-    // Material methods
-    function editMaterial(material) {
-        editing.value.material = material;
-        forms.value.material = { name: material.name };
-    }
+    const confirmCategoryDelete = (id) => {
+        categoryToDelete.value = id;
+        showDeleteCategory.value = true;
+    };
 
-    function resetMaterialForm() {
-        editing.value.material = null;
-        forms.value.material = { name: '' };
-    }
+    const deleteCategory = () => {
+        router.delete(route('category.destroy', categoryToDelete.value), {
+            onSuccess: () => {
+                topToast.value.showToast('Category deleted successfully', 'delete');
+                showDeleteCategory.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete category', 'error');
+                showDeleteCategory.value = false;
+            }
+        });
+    };
 
-    function submitMaterialForm() {
-        if (editing.value.material) {
-            router.put(route('material.update', editing.value.material.id), forms.value.material);
-        } else {
-            router.post(route('material.store'), forms.value.material);
-        }
-        resetMaterialForm();
-    }
-
-    function deleteMaterial(material) {
-        if (confirm('Are you sure you want to delete this material?')) {
-            router.delete(route('material.destroy', material.id));
-        }
-    }
-
-    // UOM methods
-    function editUom(uom) {
-        editing.value.uom = uom;
-        forms.value.uom = { name: uom.name };
-    }
-
-    function resetUomForm() {
-        editing.value.uom = null;
-        forms.value.uom = { name: '' };
-    }
-
-    function submitUomForm() {
-        if (editing.value.uom) {
-            router.put(route('uom.update', editing.value.uom.id), forms.value.uom);
-        } else {
-            router.post(route('uom.store'), forms.value.uom);
-        }
-        resetUomForm();
-    }
-
-    function deleteUom(uom) {
-        if (confirm('Are you sure you want to delete this UOM?')) {
-            router.delete(route('uom.destroy', uom.id));
-        }
-    }
+    const cancelCategoryDelete = () => {
+        showDeleteCategory.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
 
     // Color methods
     function editColor(color) {
@@ -145,17 +118,135 @@
     function submitColorForm() {
         if (editing.value.color) {
             router.put(route('color.update', editing.value.color.id), forms.value.color);
+            topToast.value.showToast('Color updated successfully', 'success');
         } else {
             router.post(route('color.store'), forms.value.color);
+            topToast.value.showToast('Color added successfully', 'success');
         }
         resetColorForm();
     }
 
-    function deleteColor(color) {
-        if (confirm('Are you sure you want to delete this color?')) {
-            router.delete(route('color.destroy', color.id));
-        }
+    const colorToDelete = ref(null);
+    const showDeleteColor = ref(false);
+
+    const confirmColorDelete = (id) => {
+        colorToDelete.value = id;
+        showDeleteColor.value = true;
+    };
+
+    const deleteColor = () => {
+        router.delete(route('color.destroy', colorToDelete.value), {
+            onSuccess: () => {
+                topToast.value.showToast('Color deleted successfully', 'delete');
+                showDeleteColor.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete color', 'error');
+                showDeleteColor.value = false;
+            }
+        });
+    };
+
+    const cancelColorDelete = () => {
+        showDeleteColor.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
+
+    // Material methods
+    function editMaterial(material) {
+        editing.value.material = material;
+        forms.value.material = { name: material.name };
     }
+
+    function resetMaterialForm() {
+        editing.value.material = null;
+        forms.value.material = { name: '' };
+    }
+
+    function submitMaterialForm() {
+        if (editing.value.material) {
+            router.put(route('material.update', editing.value.material.id), forms.value.material);
+            topToast.value.showToast('Material updated successfully', 'success');
+        } else {
+            router.post(route('material.store'), forms.value.material);
+            topToast.value.showToast('Material added successfully', 'success');
+        }
+        resetMaterialForm();
+    }
+
+    const materialToDelete = ref(null);
+    const showDeleteMaterial = ref(false);
+
+    const confirmMaterialDelete = (id) => {
+        materialToDelete.value = id;
+        showDeleteMaterial.value = true;
+    };
+
+    const deleteMaterial = () => {
+        router.delete(route('material.destroy', materialToDelete.value), {
+            onSuccess: () => {
+                topToast.value.showToast('Material deleted successfully', 'delete');
+                showDeleteMaterial.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete material', 'error');
+                showDeleteMaterial.value = false;
+            }
+        });
+    };
+
+    const cancelMaterialDelete = () => {
+        showDeleteMaterial.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
+
+    // UOM methods
+    function editUom(uom) {
+        editing.value.uom = uom;
+        forms.value.uom = { name: uom.name };
+    }
+
+    function resetUomForm() {
+        editing.value.uom = null;
+        forms.value.uom = { name: '' };
+    }
+
+    function submitUomForm() {
+        if (editing.value.uom) {
+            router.put(route('uom.update', editing.value.uom.id), forms.value.uom);
+            topToast.value.showToast('UOM updated successfully', 'success');
+        } else {
+            router.post(route('uom.store'), forms.value.uom);
+            topToast.value.showToast('UOM added successfully', 'success');
+        }
+        resetUomForm();
+    }
+
+    const uomToDelete = ref(null);
+    const showDeleteUom = ref(false);
+
+    const confirmUomDelete = (id) => {
+        uomToDelete.value = id;
+        showDeleteUom.value = true;
+    };
+
+    const deleteUom = () => {
+        router.delete(route('uom.destroy', uomToDelete.value), {
+            onSuccess: () => {
+                topToast.value.showToast('UOM deleted successfully', 'delete');
+                showDeleteUom.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete uom', 'error');
+                showDeleteUom.value = false;
+            }
+        });
+    };
+
+    const cancelUomDelete = () => {
+        showDeleteUom.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
 
     // Discount methods
     function editDiscount(discount) {
@@ -175,17 +266,39 @@
     function submitDiscountForm() {
         if (editing.value.discount) {
             router.put(route('discount.update', editing.value.discount.id), forms.value.discount);
+            topToast.value.showToast('Discount updated successfully', 'success');
         } else {
             router.post(route('discount.store'), forms.value.discount);
+            topToast.value.showToast('Discount added successfully', 'success');
         }
         resetDiscountForm();
     }
 
-    function deleteDiscount(discount) {
-        if (confirm('Are you sure you want to delete this discount?')) {
-            router.delete(route('discount.destroy', discount.id));
-        }
-    }
+    const discountToDelete = ref(null);
+    const showDeleteDiscount = ref(false);
+
+    const confirmDiscountDelete = (id) => {
+        discountToDelete.value = id;
+        showDeleteDiscount.value = true;
+    };
+
+    const deleteDiscount = () => {
+        router.delete(route('discount.destroy', discountToDelete.value), {
+            onSuccess: () => {
+                topToast.value.showToast('Discount deleted successfully', 'delete');
+                showDeleteDiscount.value = false;
+            },
+            onError: () => {
+                topToast.value.showToast('Failed to delete discount', 'error');
+                showDeleteDiscount.value = false;
+            }
+        });
+    };
+
+    const cancelDiscountDelete = () => {
+        showDeleteDiscount.value = false;
+        topToast.value.showToast('Delete operation cancelled', 'info');
+    };
 </script>
 
 <template>
@@ -193,19 +306,20 @@
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Settings</h2>
         </template>
-        <div class="container px-4 mx-auto">
-            <div class="p-6 bg-white rounded-lg shadow">
-                <h1 class="mb-6 text-2xl font-bold">Settings</h1>
-
+        <div class="flex items-center justify-center w-full px-4 md:mt-10">
+            <div class="w-full md:w-[90vw] p-6 bg-white rounded-lg shadow">
                 <!-- Search Bar -->
-                <div class="mb-6">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        v-model="search"
-                        class="w-full px-3 py-2 border rounded-md md:w-72"
-                        @input="debouncedSearch"
-                    />
+                <div class="md:flex md:items-center md:w-full md:justify-end">
+                    <div class="relative">
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <input
+                            type="text"
+                            v-model="search"
+                            placeholder="Search..."
+                            class="w-full py-2 pl-8 pr-2 text-sm border md:w-72 rounded-2xl"
+                            @input="debouncedSearch"
+                        />
+                    </div>
                 </div>
 
                 <!-- Tabs -->
@@ -215,13 +329,14 @@
                             v-for="tab in tabs"
                             :key="tab.value"
                             @click="activeTab = tab.value"
-                            class="px-4 py-2 font-medium"
+                            class="flex items-center px-4 py-2 font-medium"
                             :class="[
                                 activeTab === tab.value
                                 ? 'border-b-2 border-blue-500 text-blue-600'
                                 : 'text-gray-500 hover:text-gray-700'
                             ]"
-                            >
+                        >
+                            <component :is="tab.icon" size="20" v-if="tab.icon" class="mr-1" />
                             {{ tab.label }}
                         </button>
                     </div>
@@ -247,20 +362,8 @@
                                 />
                             </div>
                             <div class="flex gap-2">
-                                <button
-                                    type="submit"
-                                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                                >
-                                    {{ editing.category ? 'Update' : 'Save' }}
-                                </button>
-                                <button
-                                    v-if="editing.category"
-                                    type="button"
-                                    class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                                    @click="resetCategoryForm"
-                                >
-                                    Cancel
-                                </button>
+                                <ButtonCode type="submit" :icon="editing.category ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.category ? 'Update' : 'Add'" />
+                                <ButtonCode v-if="editing.category" @click="resetCategoryForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
                             </div>
                         </div>
                     </form>
@@ -283,17 +386,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
-                                            <button
-                                            class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                            @click="editCategory(category)"
-                                            >
-                                            Edit
+                                            <button @click="editCategory(category)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                <PhPencil :size="16" />
                                             </button>
-                                            <button
-                                            class="px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700"
-                                            @click="deleteCategory(category)"
-                                            >
-                                            Delete
+                                            <button @click="confirmCategoryDelete(category.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                <PhTrash :size="16" />
                                             </button>
                                         </div>
                                     </td>
@@ -333,20 +430,8 @@
                                 />
                             </div>
                             <div class="flex gap-2">
-                                <button
-                                    type="submit"
-                                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                                >
-                                    {{ editing.color ? 'Update' : 'Save' }}
-                                </button>
-                                <button
-                                    v-if="editing.color"
-                                    type="button"
-                                    class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                                    @click="resetColorForm"
-                                >
-                                    Cancel
-                                </button>
+                                <ButtonCode type="submit" :icon="editing.color ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.color ? 'Update' : 'Add'" />
+                                <ButtonCode v-if="editing.color" @click="resetColorForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
                             </div>
                         </div>
                     </form>
@@ -371,17 +456,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ color.hex }}</td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex justify-end gap-2">
-                                        <button
-                                        class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                        @click="editColor(color)"
-                                        >
-                                        Edit
+                                        <button @click="editColor(color)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                            <PhPencil :size="16" />
                                         </button>
-                                        <button
-                                        class="px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700"
-                                        @click="deleteColor(color)"
-                                        >
-                                        Delete
+                                        <button @click="confirmColorDelete(color.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                            <PhTrash :size="16" />
                                         </button>
                                     </div>
                                 </td>
@@ -411,20 +490,8 @@
                             />
                         </div>
                         <div class="flex gap-2">
-                            <button
-                                type="submit"
-                                class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                            >
-                                {{ editing.material ? 'Update' : 'Save' }}
-                            </button>
-                            <button
-                                v-if="editing.material"
-                                type="button"
-                                class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                                @click="resetMaterialForm"
-                            >
-                                Cancel
-                            </button>
+                            <ButtonCode type="submit" :icon="editing.material ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.material ? 'Update' : 'Add'" />
+                            <ButtonCode v-if="editing.material" @click="resetMaterialForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
                         </div>
                     </div>
                     </form>
@@ -447,17 +514,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ material.name }}</td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex justify-end gap-2">
-                                        <button
-                                        class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                        @click="editMaterial(material)"
-                                        >
-                                        Edit
+                                        <button @click="editMaterial(material)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                            <PhPencil :size="16" />
                                         </button>
-                                        <button
-                                        class="px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700"
-                                        @click="deleteMaterial(material)"
-                                        >
-                                        Delete
+                                        <button @click="confirmMaterialDelete(material.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                            <PhTrash :size="16" />
                                         </button>
                                     </div>
                                 </td>
@@ -487,20 +548,8 @@
                             />
                         </div>
                         <div class="flex gap-2">
-                            <button
-                                type="submit"
-                                class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                            >
-                                {{ editing.uom ? 'Update' : 'Save' }}
-                            </button>
-                            <button
-                                v-if="editing.uom"
-                                type="button"
-                                class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                                @click="resetUomForm"
-                            >
-                                Cancel
-                            </button>
+                            <ButtonCode type="submit" :icon="editing.uom ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.uom ? 'Update' : 'Add'" />
+                            <ButtonCode v-if="editing.uom" @click="resetUomForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
                         </div>
                     </div>
                     </form>
@@ -523,17 +572,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap">{{ uom.name }}</td>
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
-                                            <button
-                                            class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                            @click="editUom(uom)"
-                                            >
-                                            Edit
+                                            <button @click="editUom(uom)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                <PhPencil :size="16" />
                                             </button>
-                                            <button
-                                            class="px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700"
-                                            @click="deleteUom(uom)"
-                                            >
-                                            Delete
+                                            <button @click="confirmUomDelete(uom.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                <PhTrash :size="16" />
                                             </button>
                                         </div>
                                     </td>
@@ -587,20 +630,8 @@
                                 />
                             </div>
                             <div class="flex gap-2">
-                                <button
-                                    type="submit"
-                                    class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                                >
-                                    {{ editing.discount ? 'Update' : 'Save' }}
-                                </button>
-                                <button
-                                    v-if="editing.discount"
-                                    type="button"
-                                    class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                                    @click="resetDiscountForm"
-                                >
-                                    Cancel
-                                </button>
+                                <ButtonCode type="submit" :icon="editing.discount ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.discount ? 'Update' : 'Add'" />
+                                <ButtonCode v-if="editing.discount" @click="resetDiscountForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
                             </div>
                         </div>
                     </form>
@@ -627,17 +658,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ discount.amount }}</td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex justify-end gap-2">
-                                        <button
-                                        class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                        @click="editDiscount(discount)"
-                                        >
-                                        Edit
+                                        <button @click="editDiscount(discount)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                            <PhPencil :size="16" />
                                         </button>
-                                        <button
-                                        class="px-3 py-1 text-sm text-white bg-red-600 rounded-md hover:bg-red-700"
-                                        @click="deleteDiscount(discount)"
-                                        >
-                                        Delete
+                                        <button @click="confirmDiscountDelete(discount.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                            <PhTrash :size="16" />
                                         </button>
                                     </div>
                                 </td>
@@ -650,5 +675,56 @@
                 </div>
             </div>
         </div>
+        <SimpleDialog
+            v-model="showDeleteCategory"
+            theme="red"
+            :icon="PhWarning"
+            title="Deleting Category"
+            description="Are you sure you want to delete this category? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteCategory"
+            @cancel="cancelCategoryDelete"
+        />
+        <SimpleDialog
+            v-model="showDeleteColor"
+            theme="red"
+            :icon="PhWarning"
+            title="Deleting Color"
+            description="Are you sure you want to delete this color? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteColor"
+            @cancel="cancelColorDelete"
+        />
+        <SimpleDialog
+            v-model="showDeleteMaterial"
+            theme="red"
+            :icon="PhWarning"
+            title="Deleting Material"
+            description="Are you sure you want to delete this material? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteMaterial"
+            @cancel="cancelMaterialDelete"
+        />
+        <SimpleDialog
+            v-model="showDeleteUom"
+            theme="red"
+            :icon="PhWarning"
+            title="Deleting UOM"
+            description="Are you sure you want to delete this uom? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteUom"
+            @cancel="cancelUomDelete"
+        />
+        <SimpleDialog
+            v-model="showDeleteDiscount"
+            theme="red"
+            :icon="PhWarning"
+            title="Deleting Discount"
+            description="Are you sure you want to delete this discount? This action cannot be undone."
+            confirmText="Yes, Delete"
+            @confirm="deleteDiscount"
+            @cancel="cancelDiscountDelete"
+        />
+        <TopToast ref="topToast" />
     </AppLayout>
 </template>
