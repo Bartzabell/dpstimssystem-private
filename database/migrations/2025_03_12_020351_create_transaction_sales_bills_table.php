@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Customer;
+use App\Models\Discount;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Customer::class, 'customer_id')->nullable();
             $table->datetime('date_sold')->nullable();
+            $table->foreignIdFor(Discount::class, 'discount_id')->nullable();
             $table->decimal('total_price', 10, 2)->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

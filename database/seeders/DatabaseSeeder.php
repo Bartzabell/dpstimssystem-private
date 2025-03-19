@@ -4,8 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\Customer;
+use App\Models\Discount;
+use App\Models\InventoryStock;
 use App\Models\Material;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\Uom;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -35,12 +39,60 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        Customer::firstOrCreate(
+            ['name' => 'sample customer'],
+            [
+                'phone_no' => '09123456789',
+                'street' => '1st Street',
+                'municipality' => 'Carmona',
+                'city' => 'Cavite',
+                'email' => 'customer@sample.com',
+                'tin_no' => '000 - 123 - 456 - 001',
+                'created_by' => 1,
+            ]
+        );
+
+        Supplier::firstOrCreate(
+            ['name' => 'sample supplier'],
+            [
+                'phone_no' => '09123456789',
+                'street' => '1st Street',
+                'municipality' => 'Carmona',
+                'city' => 'Cavite',
+                'email' => 'supplier@sample.com',
+                'tin_no' => '000 - 123 - 456 - 001',
+                'created_by' => 1,
+            ]
+        );
+
+        InventoryStock::firstOrCreate(
+            ['item_code' => 'WhiteStandardPlasticCup100Meter',],
+            [
+                'name' => 'Sample Item',
+                'item_qty' => 100,
+                'category' => 'Cup',
+                'type' => 'Standard',
+                'material' => 'Plastic',
+                'color' => 'White',
+                'size' => '100',
+                'uom' => 'ml',
+                'price' => 20,
+                'min_stock' => 10,
+                'max_stock' => 100,
+                'status' => 'normal',
+                'created_by' => 1,
+            ]
+        );
+
+
         $uoms = [
-            ['name' => 'Kilogram', 'created_by' => 1],
-            ['name' => 'Gram', 'created_by' => 1],
-            ['name' => 'Liter', 'created_by' => 1],
-            ['name' => 'Piece', 'created_by' => 1],
-            ['name' => 'Meter', 'created_by' => 1],
+            ['name' => 'kg', 'created_by' => 1],
+            ['name' => 'g', 'created_by' => 1],
+            ['name' => 'l', 'created_by' => 1],
+            ['name' => 'pc', 'created_by' => 1],
+            ['name' => 'm', 'created_by' => 1],
+            ['name' => 'ml', 'created_by' => 1],
+            ['name' => 'm', 'created_by' => 1],
         ];
 
         foreach ($uoms as $uom) {
@@ -48,11 +100,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $colors = [
-            ['name' => 'Clear', 'created_by' => 1],
-            ['name' => 'White', 'created_by' => 1],
-            ['name' => 'Black', 'created_by' => 1],
-            ['name' => 'Blue', 'created_by' => 1],
-            ['name' => 'Red', 'created_by' => 1],
+            ['name' => 'Clear', 'hex' => null, 'created_by' => 1],
+            ['name' => 'White', 'hex' => '#FFFFFF', 'created_by' => 1],
+            ['name' => 'Black', 'hex' => '#000000', 'created_by' => 1],
+            ['name' => 'Blue', 'hex' => '#0000FF', 'created_by' => 1],
+            ['name' => 'Red', 'hex' => '#FF0000', 'created_by' => 1],
         ];
 
         foreach ($colors as $color) {
@@ -77,5 +129,14 @@ class DatabaseSeeder extends Seeder
         foreach ($categories as $category) {
             Category::firstOrCreate(['name' => $category['name']], $category);
         }
+
+        Discount::firstOrCreate(
+            ['name' => 'Student Discount'],
+            [
+                'type' => 'Percentage',
+                'amount' => 20,
+                'created_by' => 1,
+            ]
+        );
     }
 }

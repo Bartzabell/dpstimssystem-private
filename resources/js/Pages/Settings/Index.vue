@@ -41,7 +41,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
     // Forms data
     const forms = ref({
         category: { name: '' },
-        color: { name: '' },
+        color: { name: '', hex: '' },
         material: { name: '' },
         uom: { name: '' },
         discount: { name: '', type: 'percentage', amount: '' }
@@ -419,6 +419,16 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                                     required
                                 />
                             </div>
+                            <div>
+                                <label for="colorHex" class="block text-sm font-medium text-gray-700">Hex Code</label>
+                                <input
+                                    id="colorHex"
+                                    v-model="forms.color.hex"
+                                    placeholder="Enter color hex"
+                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                    required
+                                />
+                            </div>
                             <div class="flex gap-2">
                                 <ButtonCode type="submit" :icon="editing.color ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.color ? 'Update' : 'Add'" />
                                 <ButtonCode v-if="editing.color" @click="resetColorForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
@@ -435,6 +445,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                             <tr>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Hex</th>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
                             </tr>
                         </thead>
@@ -442,6 +453,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                             <tr v-for="color in colors.data" :key="color.id">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ color.id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ color.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ color.hex }}</td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex justify-end gap-2">
                                         <button @click="editColor(color)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">

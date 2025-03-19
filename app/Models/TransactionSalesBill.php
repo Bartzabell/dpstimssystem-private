@@ -21,10 +21,14 @@ class TransactionSalesBill extends Model
 
     protected $table = 'transaction_sales_bills';
 
-    protected $fillable = ['customer_id', 'date_sold', 'total_price', 'created_by', 'updated_by'];
+    protected $fillable = ['customer_id', 'date_sold', 'total_price', 'discount_id', 'created_by', 'updated_by'];
 
     public function customer(){
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
+    }
+
+    public function discount(){
+        return $this->belongsTo(Discount::class, 'discount_id', 'id');
     }
 
     public function items(){

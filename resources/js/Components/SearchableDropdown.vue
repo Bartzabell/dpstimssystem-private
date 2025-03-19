@@ -12,6 +12,10 @@
         placeholder: {
             type: String,
             default: 'Search items...'
+        },
+        hasColorSwatches: {
+            type: Boolean,
+            default: false  // Control whether to show color swatches
         }
     });
 
@@ -48,6 +52,11 @@
         // Return the first available value in this priority: name, item_code, id
         return item.name || (item.item_code ? item.item_code : item.id.toString());
     };
+
+    // Detect if the items include hex color values
+    const hasHexColors = computed(() => {
+        return props.hasColorSwatches || (props.items.length > 0 && 'hex' in props.items[0]);
+    });
 
     // Call updateFilteredItems immediately on mount
     onMounted(() => {
@@ -125,7 +134,13 @@
                     <input ref="inputRef" v-model="searchQuery" type="text" class="w-full py-0.5 outline-none cursor-text" :placeholder="placeholder" >
                 </template>
                 <template v-else>
-                    <span class="block w-full truncate"> {{ selectedLabel || placeholder }} </span>
+                    <div class="flex items-center">
+                        <span v-if="selectedItem && hasHexColors && selectedItem.hex"
+                              class="inline-block w-4 h-4 mr-2 rounded-full"
+                              :style="{ backgroundColor: selectedItem.hex }">
+                        </span>
+                        <span class="block w-full truncate">{{ selectedLabel || placeholder }}</span>
+                    </div>
                 </template>
             </div>
         </div>
@@ -136,10 +151,14 @@
                 v-for="item in filteredItems"
                 :key="item.id"
                 @mousedown.prevent="selectItem(item)"
-                class="px-4 py-1 cursor-pointer hover:bg-gray-100"
+                class="flex items-center px-4 py-1 cursor-pointer hover:bg-gray-100"
                 :class="{ 'bg-blue-100': item.id == modelValue }"
             >
-                {{ getItemDisplayLabel(item) }}
+                <span v-if="hasHexColors && item.hex"
+                      class="inline-block w-4 h-4 mr-2 border border-black rounded-full"
+                      :style="{ backgroundColor: item.hex }">
+                </span>
+                <span>{{ getItemDisplayLabel(item) }}</span>
             </div>
             <div v-if="filteredItems.length === 100" class="p-1 text-sm text-gray-500 bg-gray-50">
                 Showing first 100 results. Please refine your search if needed.

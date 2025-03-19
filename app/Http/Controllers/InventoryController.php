@@ -43,7 +43,7 @@ class InventoryController extends Controller
             ->get();
         $materials = Material::select('id', 'name')
             ->get();
-        $colors = Color::select('id', 'name')
+        $colors = Color::select('id', 'name', 'hex')
             ->get();
         $uoms = Uom::select('id', 'name')
             ->get();

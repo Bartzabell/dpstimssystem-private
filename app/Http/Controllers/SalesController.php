@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
 use App\Models\InventoryStock;
 use App\Models\Customer;
+use App\Models\Discount;
 use App\Models\TransactionSalesBill;
 use App\Models\TransactionSalesItem;
 use Illuminate\Http\Request;
@@ -23,12 +23,15 @@ class SalesController extends Controller
 
         //FOR TABLE PAGINATION AND SEARCH
         $forms = TransactionSalesBill::query()
-            ->with(['creator', 'customer', 'items']) // Eager load relationships
+            ->with(['creator', 'customer', 'items', 'discount']) // Eager load relationships
             ->when($search, function ($query, $search) {
                 return $query->where('id', 'like', "%{$search}%")
                     ->orWhere('date_sold', 'like', "%{$search}%")
                     ->orWhere('total_price', 'like', "%{$search}%")
                     ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('discount', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
                     })
                     ->orWhereHas('creator', function ($q) use ($search) {
@@ -45,11 +48,14 @@ class SalesController extends Controller
             ->get();
         $inventories = InventoryStock::select('id', 'item_code', 'price')
             ->get();
+        $discounts = Discount::select('*')
+            ->get();
 
         return Inertia::render('Sales/Index', [
             'forms' => $forms,
             'customers' => $customers,
             'inventories' => $inventories,
+            'discounts' => $discounts,
             'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }
@@ -61,6 +67,7 @@ class SalesController extends Controller
         $form = TransactionSalesBill::create([
             'customer_id' => $request->customer_id,
             'date_sold' => $request->date_sold,
+            'discount_id' => $request->discount_id,
             'created_by' => Auth::id(),
         ]);
 
@@ -101,6 +108,7 @@ class SalesController extends Controller
         $form->update([
             'customer_id' => $request->customer_id,
             'date_sold' => $request->date_sold,
+            'discount_id' => $request->discount_id,
             'updated_by' => Auth::id(),
         ]);
 
