@@ -4,6 +4,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesController;
@@ -30,9 +31,7 @@ Route::middleware([
     'verified',
 ])->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
     Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
