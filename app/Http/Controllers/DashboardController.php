@@ -13,11 +13,12 @@ class DashboardController extends Controller
         $today = Carbon::today()->toDateString();
         $firstDayOfMonth = Carbon::now()->startOfMonth()->toDateString();
         $lastDayOfMonth = Carbon::now()->endOfMonth()->toDateString();
+        $currentMonth = Carbon::now()->format('F');
 
         // Sales data
         $todayTotalSales = TransactionSalesBill::whereDate('date_sold', $today)
             ->sum('total_price');
-        $januaryTotalSales = TransactionSalesBill::whereBetween('date_sold', [$firstDayOfMonth, $lastDayOfMonth])
+        $monthlySales = TransactionSalesBill::whereBetween('date_sold', [$firstDayOfMonth, $lastDayOfMonth])
             ->sum('total_price');
         $sales = TransactionSalesBill::query()
             ->with(['creator', 'customer', 'items', 'discount'])
@@ -32,10 +33,11 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'sales' => $sales,
             'todayTotalSales' => $todayTotalSales ?? 0,
-            'januaryTotalSales' => $januaryTotalSales ?? 0,
+            'monthlySales' => $monthlySales ?? 0,
             'availableProducts' => $availableProducts,
             'lowStatusProducts' => $lowStatusProducts,
             'exceedingProducts' => $exceedingProducts,
+            'currentMonth' => $currentMonth,
         ]);
     }
 }

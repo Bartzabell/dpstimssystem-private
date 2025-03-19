@@ -5,27 +5,13 @@
     import MonthlyIncomeChart from '@/Components/MonthlyIncomeChart.vue';
     const props = defineProps({
         sales: Object,
-        todayTotalSales: {
-            type: Number,
-            default: 0,
-        },
-        januaryTotalSales: {
-            type: Number,
-            default: 0,
-        },
-        availableProducts: {
-            type: Number,
-            default: 0,
-        },
-        lowStatusProducts: {
-            type: Number,
-            default: 0,
-        },
-        exceedingProducts: {
-            type: Number,
-            default: 0,
-        },
+        todayTotalSales: { type: Number, default: 0, },
+        monthlySales: { type: Number, default: 0, },
+        availableProducts: { type: Number, default: 0, },
+        lowStatusProducts: { type: Number, default: 0, },
+        exceedingProducts: { type: Number, default: 0, },
         filters: Object,
+        currentMonth: String,
     });
 </script>
 <template>
@@ -42,8 +28,8 @@
                     <h1 class="w-full py-5 text-4xl text-center">Php {{ todayTotalSales.toLocaleString() }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-lime-800">
-                    <p class="py-3">January Total Sales</p>
-                    <h1 class="w-full py-5 text-4xl text-center">Php {{ januaryTotalSales.toLocaleString() }}</h1>
+                    <p class="py-3">{{ currentMonth }} Total Sales</p>
+                    <h1 class="w-full py-5 text-4xl text-center">Php {{ monthlySales.toLocaleString() }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-green-900">
                     <p class="py-3">Available Products</p>
