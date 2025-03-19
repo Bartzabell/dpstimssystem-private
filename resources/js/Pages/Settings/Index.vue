@@ -346,236 +346,120 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                 <!-- Category Tab -->
                 <div v-if="activeTab === 'category'" class="grid gap-6 md:grid-cols-2">
-                <!-- Form -->
-                <div>
-                    <form @submit.prevent="submitCategoryForm">
-                        <div class="space-y-4">
-                            <h2 class="text-lg font-semibold">{{ editing.category ? 'Edit' : 'Add' }} Category</h2>
-                            <div>
-                                <label for="categoryName" class="block text-sm font-medium text-gray-700">Name</label>
-                                <input
-                                    id="categoryName"
-                                    v-model="forms.category.name"
-                                    placeholder="Enter category name"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                    required
-                                />
+                    <!-- Form -->
+                    <div>
+                        <form @submit.prevent="submitCategoryForm">
+                            <div class="space-y-4">
+                                <h2 class="text-lg font-semibold">{{ editing.category ? 'Edit' : 'Add' }} Category</h2>
+                                <div>
+                                    <label for="categoryName" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <input
+                                        id="categoryName"
+                                        v-model="forms.category.name"
+                                        placeholder="Enter category name"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    />
+                                </div>
+                                <div class="flex gap-2">
+                                    <ButtonCode type="submit" :icon="editing.category ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.category ? 'Update' : 'Add'" />
+                                    <ButtonCode v-if="editing.category" @click="resetCategoryForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
+                                </div>
                             </div>
-                            <div class="flex gap-2">
-                                <ButtonCode type="submit" :icon="editing.category ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.category ? 'Update' : 'Add'" />
-                                <ButtonCode v-if="editing.category" @click="resetCategoryForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Table -->
-                <div v-if="categories && categories.data && categories.data.length > 0">
-                    <div class="border rounded-md">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="category in categories.data" :key="category.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ category.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
-                                    <td class="px-6 py-4 text-right whitespace-nowrap">
-                                        <div class="flex justify-end gap-2">
-                                            <button @click="editCategory(category)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
-                                                <PhPencil :size="16" />
-                                            </button>
-                                            <button @click="confirmCategoryDelete(category.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                                <PhTrash :size="16" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        </form>
                     </div>
-                    <PaginationButton :data="categories" />
-                </div>
+
+                    <!-- Table -->
+                    <div v-if="categories && categories.data && categories.data.length > 0">
+                        <div class="border rounded-md">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="category in categories.data" :key="category.id">
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
+                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                            <div class="flex justify-end gap-2">
+                                                <button @click="editCategory(category)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                    <PhPencil :size="16" />
+                                                </button>
+                                                <button @click="confirmCategoryDelete(category.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                    <PhTrash :size="16" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <PaginationButton :data="categories" />
+                    </div>
                 </div>
 
                 <!-- Color Tab -->
                 <div v-if="activeTab === 'color'" class="grid gap-6 md:grid-cols-2">
-                <!-- Form -->
-                <div>
-                    <form @submit.prevent="submitColorForm">
-                        <div class="space-y-4">
-                            <h2 class="text-lg font-semibold">{{ editing.color ? 'Edit' : 'Add' }} Color</h2>
-                            <div>
-                                <label for="colorName" class="block text-sm font-medium text-gray-700">Name</label>
-                                <input
-                                    id="colorName"
-                                    v-model="forms.color.name"
-                                    placeholder="Enter color name"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                    required
-                                />
+                    <!-- Form -->
+                    <div>
+                        <form @submit.prevent="submitColorForm">
+                            <div class="space-y-4">
+                                <h2 class="text-lg font-semibold">{{ editing.color ? 'Edit' : 'Add' }} Color</h2>
+                                <div>
+                                    <label for="colorName" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <input
+                                        id="colorName"
+                                        v-model="forms.color.name"
+                                        placeholder="Enter color name"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label for="colorHex" class="block text-sm font-medium text-gray-700">Hex Code</label>
+                                    <input
+                                        id="colorHex"
+                                        v-model="forms.color.hex"
+                                        placeholder="Enter color hex"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    />
+                                </div>
+                                <div class="flex gap-2">
+                                    <ButtonCode type="submit" :icon="editing.color ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.color ? 'Update' : 'Add'" />
+                                    <ButtonCode v-if="editing.color" @click="resetColorForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
+                                </div>
                             </div>
-                            <div>
-                                <label for="colorHex" class="block text-sm font-medium text-gray-700">Hex Code</label>
-                                <input
-                                    id="colorHex"
-                                    v-model="forms.color.hex"
-                                    placeholder="Enter color hex"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                    required
-                                />
-                            </div>
-                            <div class="flex gap-2">
-                                <ButtonCode type="submit" :icon="editing.color ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.color ? 'Update' : 'Add'" />
-                                <ButtonCode v-if="editing.color" @click="resetColorForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Table -->
-                <div v-if="colors && colors.data && colors.data.length > 0">
-                    <div class="border rounded-md">
-                    <table class="min-w-full divide-y divide-gray-300">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Hex</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="color in colors.data" :key="color.id">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ color.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ color.name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ color.hex }}</td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <div class="flex justify-end gap-2">
-                                        <button @click="editColor(color)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
-                                            <PhPencil :size="16" />
-                                        </button>
-                                        <button @click="confirmColorDelete(color.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                            <PhTrash :size="16" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        </form>
                     </div>
-                    <PaginationButton :data="colors" />
-                </div>
-                </div>
 
-                <!-- Material Tab -->
-                <div v-if="activeTab === 'material'" class="grid gap-6 md:grid-cols-2">
-                <!-- Form -->
-                <div>
-                    <form @submit.prevent="submitMaterialForm">
-                    <div class="space-y-4">
-                        <h2 class="text-lg font-semibold">{{ editing.material ? 'Edit' : 'Add' }} Material</h2>
-                        <div>
-                            <label for="materialName" class="block text-sm font-medium text-gray-700">Name</label>
-                            <input
-                                id="materialName"
-                                v-model="forms.material.name"
-                                placeholder="Enter material name"
-                                class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                required
-                            />
-                        </div>
-                        <div class="flex gap-2">
-                            <ButtonCode type="submit" :icon="editing.material ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.material ? 'Update' : 'Add'" />
-                            <ButtonCode v-if="editing.material" @click="resetMaterialForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
-                        </div>
-                    </div>
-                    </form>
-                </div>
-
-                <!-- Table -->
-                <div v-if="materials && materials.data && materials.data.length > 0">
-                    <div class="border rounded-md">
-                    <table class="min-w-full divide-y divide-gray-300">
-                        <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                            <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                            <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="material in materials.data" :key="material.id">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ material.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ material.name }}</td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <div class="flex justify-end gap-2">
-                                        <button @click="editMaterial(material)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
-                                            <PhPencil :size="16" />
-                                        </button>
-                                        <button @click="confirmMaterialDelete(material.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                            <PhTrash :size="16" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </div>
-                    <PaginationButton :data="materials" />
-                </div>
-                </div>
-
-                <!-- UOM Tab -->
-                <div v-if="activeTab === 'uom'" class="grid gap-6 md:grid-cols-2">
-                <!-- Form -->
-                <div>
-                    <form @submit.prevent="submitUomForm">
-                    <div class="space-y-4">
-                        <h2 class="text-lg font-semibold">{{ editing.uom ? 'Edit' : 'Add' }} UOM</h2>
-                        <div>
-                            <label for="uomName" class="block text-sm font-medium text-gray-700">Name</label>
-                            <input
-                                id="uomName"
-                                v-model="forms.uom.name"
-                                placeholder="Enter UOM name"
-                                class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                required
-                            />
-                        </div>
-                        <div class="flex gap-2">
-                            <ButtonCode type="submit" :icon="editing.uom ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.uom ? 'Update' : 'Add'" />
-                            <ButtonCode v-if="editing.uom" @click="resetUomForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
-                        </div>
-                    </div>
-                    </form>
-                </div>
-
-                <!-- Table -->
-                <div v-if="uoms && uoms.data && uoms.data.length > 0">
-                    <div class="border rounded-md">
+                    <!-- Table -->
+                    <div v-if="colors && colors.data && colors.data.length > 0">
+                        <div class="border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
                                     <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Hex</th>
                                     <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="uom in uoms.data" :key="uom.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ uom.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ uom.name }}</td>
+                                <tr v-for="color in colors.data" :key="color.id">
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ color.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ color.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ color.hex }}</td>
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
-                                            <button @click="editUom(uom)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                            <button @click="editColor(color)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
                                                 <PhPencil :size="16" />
                                             </button>
-                                            <button @click="confirmUomDelete(uom.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                            <button @click="confirmColorDelete(color.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                                                 <PhTrash :size="16" />
                                             </button>
                                         </div>
@@ -583,148 +467,219 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
+                        <PaginationButton :data="colors" />
                     </div>
-                    <PaginationButton :data="uoms" />
-                </div>
                 </div>
 
-                <!-- Discount Tab -->
-                <div v-if="activeTab === 'discount'" class="grid gap-6 md:grid-cols-2">
-                <!-- Form -->
-                <div>
-                    <form @submit.prevent="submitDiscountForm">
+                <!-- Material Tab -->
+                <div v-if="activeTab === 'material'" class="grid gap-6 md:grid-cols-2">
+                    <!-- Form -->
+                    <div>
+                        <form @submit.prevent="submitMaterialForm">
                         <div class="space-y-4">
-                            <h2 class="text-lg font-semibold">{{ editing.discount ? 'Edit' : 'Add' }} Discount</h2>
+                            <h2 class="text-lg font-semibold">{{ editing.material ? 'Edit' : 'Add' }} Material</h2>
                             <div>
-                                <label for="discountName" class="block text-sm font-medium text-gray-700">Name</label>
+                                <label for="materialName" class="block text-sm font-medium text-gray-700">Name</label>
                                 <input
-                                    id="discountName"
-                                    v-model="forms.discount.name"
-                                    placeholder="Enter discount name"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                    required
-                                />
-                            </div>
-                            <div class="mt-4">
-                                <label for="discountType" class="block text-sm font-medium text-gray-700">Type</label>
-                                <select
-                                    id="discountType"
-                                    v-model="forms.discount.type"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
-                                    required
-                                >
-                                    <option value="percentage">Percentage</option>
-                                    <option value="fixed">Fixed Amount</option>
-                                </select>
-                            </div>
-                            <div class="mt-4">
-                                <label for="discountAmount" class="block text-sm font-medium text-gray-700">Amount</label>
-                                <input
-                                    id="discountAmount"
-                                    v-model="forms.discount.amount"
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="Enter amount"
+                                    id="materialName"
+                                    v-model="forms.material.name"
+                                    placeholder="Enter material name"
                                     class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
                                     required
                                 />
                             </div>
                             <div class="flex gap-2">
-                                <ButtonCode type="submit" :icon="editing.discount ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.discount ? 'Update' : 'Add'" />
-                                <ButtonCode v-if="editing.discount" @click="resetDiscountForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
+                                <ButtonCode type="submit" :icon="editing.material ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.material ? 'Update' : 'Add'" />
+                                <ButtonCode v-if="editing.material" @click="resetMaterialForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
                             </div>
                         </div>
-                    </form>
-                </div>
+                        </form>
+                    </div>
 
-                <!-- Table -->
-                <div v-if="discounts && discounts.data && discounts.data.length > 0">
-                    <div class="border rounded-md">
-                    <table class="min-w-full divide-y divide-gray-300">
-                        <thead class="bg-gray-50">
+                    <!-- Table -->
+                    <div v-if="materials && materials.data && materials.data.length > 0">
+                        <div class="border rounded-md">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
                                 <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
                             </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="discount in discounts.data" :key="discount.id">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ discount.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ discount.name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ discount.type }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ discount.amount }}</td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <div class="flex justify-end gap-2">
-                                        <button @click="editDiscount(discount)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
-                                            <PhPencil :size="16" />
-                                        </button>
-                                        <button @click="confirmDiscountDelete(discount.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                            <PhTrash :size="16" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr v-for="material in materials.data" :key="material.id">
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ material.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ material.name }}</td>
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <div class="flex justify-end gap-2">
+                                            <button @click="editMaterial(material)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                <PhPencil :size="16" />
+                                            </button>
+                                            <button @click="confirmMaterialDelete(material.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                <PhTrash :size="16" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <PaginationButton :data="materials" />
                     </div>
-                    <PaginationButton :data="discounts" />
                 </div>
+
+                <!-- UOM Tab -->
+                <div v-if="activeTab === 'uom'" class="grid gap-6 md:grid-cols-2">
+                    <!-- Form -->
+                    <div>
+                        <form @submit.prevent="submitUomForm">
+                        <div class="space-y-4">
+                            <h2 class="text-lg font-semibold">{{ editing.uom ? 'Edit' : 'Add' }} UOM</h2>
+                            <div>
+                                <label for="uomName" class="block text-sm font-medium text-gray-700">Name</label>
+                                <input
+                                    id="uomName"
+                                    v-model="forms.uom.name"
+                                    placeholder="Enter UOM name"
+                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                    required
+                                />
+                            </div>
+                            <div class="flex gap-2">
+                                <ButtonCode type="submit" :icon="editing.uom ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.uom ? 'Update' : 'Add'" />
+                                <ButtonCode v-if="editing.uom" @click="resetUomForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+
+                    <!-- Table -->
+                    <div v-if="uoms && uoms.data && uoms.data.length > 0">
+                        <div class="border rounded-md">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="uom in uoms.data" :key="uom.id">
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ uom.id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ uom.name }}</td>
+                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                            <div class="flex justify-end gap-2">
+                                                <button @click="editUom(uom)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                    <PhPencil :size="16" />
+                                                </button>
+                                                <button @click="confirmUomDelete(uom.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                    <PhTrash :size="16" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <PaginationButton :data="uoms" />
+                    </div>
+                </div>
+
+                <!-- Discount Tab -->
+                <div v-if="activeTab === 'discount'" class="grid gap-6 md:grid-cols-2">
+                    <!-- Form -->
+                    <div>
+                        <form @submit.prevent="submitDiscountForm">
+                            <div class="space-y-4">
+                                <h2 class="text-lg font-semibold">{{ editing.discount ? 'Edit' : 'Add' }} Discount</h2>
+                                <div>
+                                    <label for="discountName" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <input
+                                        id="discountName"
+                                        v-model="forms.discount.name"
+                                        placeholder="Enter discount name"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    />
+                                </div>
+                                <div class="mt-4">
+                                    <label for="discountType" class="block text-sm font-medium text-gray-700">Type</label>
+                                    <select
+                                        id="discountType"
+                                        v-model="forms.discount.type"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    >
+                                        <option value="percentage">Percentage</option>
+                                        <option value="fixed">Fixed Amount</option>
+                                    </select>
+                                </div>
+                                <div class="mt-4">
+                                    <label for="discountAmount" class="block text-sm font-medium text-gray-700">Amount</label>
+                                    <input
+                                        id="discountAmount"
+                                        v-model="forms.discount.amount"
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Enter amount"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        required
+                                    />
+                                </div>
+                                <div class="flex gap-2">
+                                    <ButtonCode type="submit" :icon="editing.discount ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing.discount ? 'Update' : 'Add'" />
+                                    <ButtonCode v-if="editing.discount" @click="resetDiscountForm" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Table -->
+                    <div v-if="discounts && discounts.data && discounts.data.length > 0">
+                        <div class="border rounded-md">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr v-for="discount in discounts.data" :key="discount.id">
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.type }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.amount }}</td>
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <div class="flex justify-end gap-2">
+                                            <button @click="editDiscount(discount)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                <PhPencil :size="16" />
+                                            </button>
+                                            <button @click="confirmDiscountDelete(discount.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                <PhTrash :size="16" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <PaginationButton :data="discounts" />
+                    </div>
                 </div>
             </div>
         </div>
-        <SimpleDialog
-            v-model="showDeleteCategory"
-            theme="red"
-            :icon="PhWarning"
-            title="Deleting Category"
-            description="Are you sure you want to delete this category? This action cannot be undone."
-            confirmText="Yes, Delete"
-            @confirm="deleteCategory"
-            @cancel="cancelCategoryDelete"
-        />
-        <SimpleDialog
-            v-model="showDeleteColor"
-            theme="red"
-            :icon="PhWarning"
-            title="Deleting Color"
-            description="Are you sure you want to delete this color? This action cannot be undone."
-            confirmText="Yes, Delete"
-            @confirm="deleteColor"
-            @cancel="cancelColorDelete"
-        />
-        <SimpleDialog
-            v-model="showDeleteMaterial"
-            theme="red"
-            :icon="PhWarning"
-            title="Deleting Material"
-            description="Are you sure you want to delete this material? This action cannot be undone."
-            confirmText="Yes, Delete"
-            @confirm="deleteMaterial"
-            @cancel="cancelMaterialDelete"
-        />
-        <SimpleDialog
-            v-model="showDeleteUom"
-            theme="red"
-            :icon="PhWarning"
-            title="Deleting UOM"
-            description="Are you sure you want to delete this uom? This action cannot be undone."
-            confirmText="Yes, Delete"
-            @confirm="deleteUom"
-            @cancel="cancelUomDelete"
-        />
-        <SimpleDialog
-            v-model="showDeleteDiscount"
-            theme="red"
-            :icon="PhWarning"
-            title="Deleting Discount"
-            description="Are you sure you want to delete this discount? This action cannot be undone."
-            confirmText="Yes, Delete"
-            @confirm="deleteDiscount"
-            @cancel="cancelDiscountDelete"
-        />
+        <SimpleDialog v-model="showDeleteCategory" theme="red" :icon="PhWarning" title="Deleting Category" description="Are you sure you want to delete this category? This action cannot be undone." confirmText="Yes, Delete" @confirm="deleteCategory" @cancel="cancelCategoryDelete" />
+        <SimpleDialog v-model="showDeleteColor" theme="red" :icon="PhWarning" title="Deleting Color" description="Are you sure you want to delete this color? This action cannot be undone." confirmText="Yes, Delete" @confirm="deleteColor" @cancel="cancelColorDelete" />
+        <SimpleDialog v-model="showDeleteMaterial" theme="red" :icon="PhWarning" title="Deleting Material" description="Are you sure you want to delete this material? This action cannot be undone." confirmText="Yes, Delete" @confirm="deleteMaterial" @cancel="cancelMaterialDelete" />
+        <SimpleDialog v-model="showDeleteUom" theme="red" :icon="PhWarning" title="Deleting UOM" description="Are you sure you want to delete this uom? This action cannot be undone." confirmText="Yes, Delete" @confirm="deleteUom" @cancel="cancelUomDelete" />
+        <SimpleDialog v-model="showDeleteDiscount" theme="red" :icon="PhWarning" title="Deleting Discount" description="Are you sure you want to delete this discount? This action cannot be undone." confirmText="Yes, Delete" @confirm="deleteDiscount" @cancel="cancelDiscountDelete" />
         <TopToast ref="topToast" />
     </AppLayout>
 </template>
