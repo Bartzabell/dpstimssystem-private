@@ -185,19 +185,19 @@
         <!-- Items Body -->
         <template v-if="transaction && transaction.items && transaction.items.length > 0">
           <template v-for="(item, index) in transaction.items" :key="item.id">
-            <div class="p-1 text-center border border-black">
+            <div class="flex items-center justify-center w-full p-1 border border-black">
               {{ index + 1 }}
             </div>
-            <div class="col-span-3 p-1 text-center border border-black">
+            <div class="items-center justify-center block w-full col-span-3 p-1 text-center break-words border border-black">
               {{ item.stock?.item_code || 'N/A' }}
             </div>
-            <div class="col-span-2 p-1 text-center border border-black">
+            <div class="flex items-center justify-center w-full col-span-2 p-1 border border-black">
               {{ item.item_qty }}
             </div>
-            <div class="col-span-2 p-1 text-center border border-black">
+            <div class="flex items-center justify-center w-full col-span-2 p-1 border border-black">
               {{ parseFloat(item.stock?.price).toFixed(2) }}
             </div>
-            <div class="col-span-2 p-1 text-center border border-black">
+            <div class="flex items-center justify-center w-full col-span-2 p-1 border border-black">
               {{ parseFloat(item.item_price).toFixed(2) }}
             </div>
           </template>
