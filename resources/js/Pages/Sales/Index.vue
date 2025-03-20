@@ -17,8 +17,8 @@
     const printRef = ref(null);
 
     // Function to trigger printing from the Print component
-    function handlePrint() {
-    printRef.value.printTest();
+    function handlePrint(formId) {
+        printRef.value.printTest(formId);
     }
 
     const search = ref(props.filters.search || '');
@@ -45,12 +45,6 @@
     const itemToDelete = ref(null);
     const dialogAction = ref('');
 
-    // const toast = ref({
-    //     show: false,
-    //     message: '',
-    //     type: 'success',
-    // });
-
     const form = useForm({
         id: null,
         customer_id: '',
@@ -61,6 +55,7 @@
         address: '',
         email: '',
         items: [],
+        total_price: 0,
     });
 
     const getSubtotal = () => {
@@ -143,7 +138,7 @@
             const dateObj = new Date(sales_form.date_sold + 'Z');
             form.date_sold = dateObj.toISOString().split('T')[0];
         } else {
-            form.date_sold= '';
+            form.date_sold = '';
         }
 
         form.items = sales_form.items ?
@@ -171,6 +166,10 @@
             form.address = '';
         }
     });
+
+    watch([() => form.items, () => selectedDiscount.value], () => {
+        form.total_price = total_price.value;
+    }, { deep: true });
 
     const confirmDelete = (id) => {
         itemToDelete.value = id;
@@ -316,15 +315,18 @@
 <template>
     <AppLayout title="Transaction Sales Form">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Sales Forms</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Transaction Sales Forms
+            </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                <div
+                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
                     <div>
                         <h1 class="text-2xl font-extrabold">Sales Form</h1>
                     </div>
-                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                    <button @click="toggleFormVisibility"
+                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
                     </button>
                 </div>
@@ -333,28 +335,27 @@
                         <div>
                             <div class="mb-2 spanlabel">
                                 <label class="block mb-1 text-sm font-medium">Customer</label>
-                                <SearchableDropdown
-                                    class="border rounded-lg border-slate-600"
-                                    v-model="selectedCustomer"
-                                    :items="customers"
-                                    placeholder="Search Customer..."
-                                    @change="form.customer_id = $event.id"
-                                />
+                                <SearchableDropdown class="border rounded-lg border-slate-600"
+                                    v-model="selectedCustomer" :items="customers" placeholder="Search Customer..."
+                                    @change="form.customer_id = $event.id" />
                             </div>
                             <div>
-                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
+                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold"
+                                    :message="form.errors.date_sold" />
                             </div>
                             <div>
-                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no" disabled/>
+                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no"
+                                    disabled />
                             </div>
                             <div>
-                                <CustomInput name="Customer Email" type="text" v-model="form.email" disabled/>
+                                <CustomInput name="Customer Email" type="text" v-model="form.email" disabled />
                             </div>
                             <div>
-                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
+                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no"
+                                    disabled />
                             </div>
                             <div>
-                                <CustomInput name="Customer Address" type="text" v-model="form.address" disabled/>
+                                <CustomInput name="Customer Address" type="text" v-model="form.address" disabled />
                             </div>
                         </div>
 
@@ -377,22 +378,25 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50">
+                                            <tr v-for="(item, index) in form.items" :key="index"
+                                                class="hover:bg-gray-50">
                                                 <td class="px-2 py-1 border whitespace-nowrap">
                                                     <!-- Fixed: Use index-specific v-model binding -->
-                                                    <SearchableDropdown
-                                                        class="border rounded-lg border-slate-600"
-                                                        v-model="selectedItems[index]"
-                                                        :items="inventories"
+                                                    <SearchableDropdown class="border rounded-lg border-slate-600"
+                                                        v-model="selectedItems[index]" :items="inventories"
                                                         placeholder="Search Item..."
-                                                        @change="handleInventoryChange($event, index)"
-                                                    />
+                                                        @change="handleInventoryChange($event, index)" />
                                                 </td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
-                                                <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_price" min="1" /></td>
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <CustomInput v-model="item.item_qty" min="1" />
+                                                </td>
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <CustomInput v-model="item.item_price" min="1" />
+                                                </td>
                                                 <td class="px-2 py-1 border whitespace-nowrap">
                                                     <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                                        <button type="button" @click="removeItem(index)" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                                                        <button type="button" @click="removeItem(index)"
+                                                            class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                                                             Remove
                                                         </button>
                                                     </div>
@@ -403,19 +407,17 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="flex flex-col items-center justify-between w-full gap-5 py-2 lg:gap-0 lg:flex-row h-max">
+                                <div
+                                    class="flex flex-col items-center justify-between w-full gap-5 py-2 lg:gap-0 lg:flex-row h-max">
                                     <div class="flex justify-end order-2 w-full lg:justify-start lg:order-1">
                                         <span class="flex items-center px-2 text-lg font-bold">Discount:</span>
-                                        <SearchableDropdown
-                                            class="border rounded-lg border-slate-600"
-                                            v-model="selectedDiscount"
-                                            :items="discounts"
-                                            placeholder="Search Discount..."
-                                            @change="form.discount_id = $event.id"
-                                        />
+                                        <SearchableDropdown class="border rounded-lg border-slate-600"
+                                            v-model="selectedDiscount" :items="discounts"
+                                            placeholder="Search Discount..." @change="form.discount_id = $event.id" />
                                     </div>
                                     <div class="flex justify-end order-1 w-full lg:order-2">
-                                        <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
+                                        <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900"
+                                            @click="addItem" text="Add Item" />
                                     </div>
                                 </div>
                                 <!-- Display Total Price -->
@@ -429,7 +431,8 @@
                                         <span class="font-medium text-md">
                                             {{ getDiscountInfo().name }} ({{ getDiscountInfo().description }}):
                                         </span>
-                                        <span class="text-red-600 text-md">-{{ getDiscountInfo().amount.toFixed(2) }}</span>
+                                        <span class="text-red-600 text-md">-{{ getDiscountInfo().amount.toFixed(2)
+                                        }}</span>
                                     </div>
 
                                     <div class="flex justify-between w-full py-1 pt-2 mt-1 border-t border-gray-200">
@@ -441,8 +444,10 @@
                         </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 mt-6">
-                        <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
-                        <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel" @click="cancelForm" />
+                        <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus"
+                            color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
+                        <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel"
+                            @click="cancelForm" />
                     </div>
                 </form>
             </div>
@@ -451,20 +456,13 @@
             <div class="p-6 mt-2 bg-white rounded shadow">
                 <!-- Search Bar -->
                 <div class="flex items-center justify-end gap-5 mb-4">
-                    <ButtonCode
-                        @click="toggleFormVisibility"
-                        text="Add Sales"
-                        :icon="PhFilePlus"
-                        color="bg-emerald-700 hover:bg-emerald-900"
-                    />
+                    <ButtonCode @click="toggleFormVisibility" text="Add Sales" :icon="PhFilePlus"
+                        color="bg-emerald-700 hover:bg-emerald-900" />
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
-                        <input
-                        type="text"
-                        v-model="search"
-                        placeholder="Search..."
-                        class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
-                        />
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2"
+                            :size="20" />
+                        <input type="text" v-model="search" placeholder="Search..."
+                            class="py-1 pl-8 pr-2 text-sm border rounded-2xl" />
                     </div>
                 </div>
                 <!-- items Table -->
@@ -475,50 +473,65 @@
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
                                     <button @click="sort('id')" class="flex items-center justify-center w-full">
                                         ID
-                                        <PhCaretUp v-if="sortField === 'id' && sortDirection === 'asc'" class="ml-1" :size="16" />
-                                        <PhCaretDown v-if="sortField === 'id' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                        <PhCaretUp v-if="sortField === 'id' && sortDirection === 'asc'" class="ml-1"
+                                            :size="16" />
+                                        <PhCaretDown v-if="sortField === 'id' && sortDirection === 'desc'" class="ml-1"
+                                            :size="16" />
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
-                                    <button @click="sort('customer_id')" class="flex items-center justify-center w-full">
+                                    <button @click="sort('customer_id')"
+                                        class="flex items-center justify-center w-full">
                                         CUSTOMER
-                                        <PhCaretUp v-if="sortField === 'customer_id' && sortDirection === 'asc'" class="ml-1" :size="16" />
-                                        <PhCaretDown v-if="sortField === 'customer_id' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                        <PhCaretUp v-if="sortField === 'customer_id' && sortDirection === 'asc'"
+                                            class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'customer_id' && sortDirection === 'desc'"
+                                            class="ml-1" :size="16" />
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
                                     <button @click="sort('date_sold')" class="flex items-center justify-center w-full">
                                         DATE SOLD
-                                        <PhCaretUp v-if="sortField === 'date_sold' && sortDirection === 'asc'" class="ml-1" :size="16" />
-                                        <PhCaretDown v-if="sortField === 'date_sold' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                        <PhCaretUp v-if="sortField === 'date_sold' && sortDirection === 'asc'"
+                                            class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'date_sold' && sortDirection === 'desc'"
+                                            class="ml-1" :size="16" />
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
-                                    <button @click="sort('total_price')" class="flex items-center justify-center w-full">
+                                    <button @click="sort('total_price')"
+                                        class="flex items-center justify-center w-full">
                                         TOTAL PRICE
-                                        <PhCaretUp v-if="sortField === 'total_price' && sortDirection === 'asc'" class="ml-1" :size="16" />
-                                        <PhCaretDown v-if="sortField === 'total_price' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                        <PhCaretUp v-if="sortField === 'total_price' && sortDirection === 'asc'"
+                                            class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'total_price' && sortDirection === 'desc'"
+                                            class="ml-1" :size="16" />
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
                                     <button @click="sort('created_by')" class="flex items-center justify-center w-full">
                                         CREATED BY
-                                        <PhCaretUp v-if="sortField === 'created_by' && sortDirection === 'asc'" class="ml-1" :size="16" />
-                                        <PhCaretDown v-if="sortField === 'created_by' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                        <PhCaretUp v-if="sortField === 'created_by' && sortDirection === 'asc'"
+                                            class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'created_by' && sortDirection === 'desc'"
+                                            class="ml-1" :size="16" />
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
                                     <button @click="sort('created_at')" class="flex items-center justify-center w-full">
                                         DATE CREATED
-                                        <PhCaretUp v-if="sortField === 'created_at' && sortDirection === 'asc'" class="ml-1" :size="16" />
-                                        <PhCaretDown v-if="sortField === 'created_at' && sortDirection === 'desc'" class="ml-1" :size="16" />
+                                        <PhCaretUp v-if="sortField === 'created_at' && sortDirection === 'asc'"
+                                            class="ml-1" :size="16" />
+                                        <PhCaretDown v-if="sortField === 'created_at' && sortDirection === 'desc'"
+                                            class="ml-1" :size="16" />
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="form in forms.data" :key="form.id">
+                            <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50"
+                                v-for="form in forms.data" :key="form.id">
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.customer?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_sold) }}</td>
@@ -527,9 +540,18 @@
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">
                                     <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                        <button @click="handlePrint" class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900"><PhPrinter :size="16" /></button>
-                                        <button @click="edit(form)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900"><PhPencil :size="16" /></button>
-                                        <button @click="confirmDelete(form.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900"><PhTrash :size="16" /></button>
+                                        <button @click="handlePrint(form.id)"
+                                            class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900">
+                                            <PhPrinter :size="16" />
+                                        </button>
+                                        <button @click="edit(form)"
+                                            class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                            <PhPencil :size="16" />
+                                        </button>
+                                        <button @click="confirmDelete(form.id)"
+                                            class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                            <PhTrash :size="16" />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -539,29 +561,20 @@
                 <PaginationButton :data="forms" />
             </div>
         </div>
-        <SimpleDialog
-            v-model="showDeleteConfirmation"
-            theme="red"
-            :icon="PhWarning"
-            title="Confirm Delete"
-            description="Are you sure you want to delete this? This action cannot be undone."
-            confirmText="Yes, Delete"
-            @confirm="deleteItem"
-            @cancel="cancelDelete"
-        />
-        <SimpleDialog
-            v-model="showConfirmDialog"
+        <SimpleDialog v-model="showDeleteConfirmation" theme="red" :icon="PhWarning" title="Confirm Delete"
+            description="Are you sure you want to delete this? This action cannot be undone." confirmText="Yes, Delete"
+            @confirm="deleteItem" @cancel="cancelDelete" />
+        <SimpleDialog v-model="showConfirmDialog"
             :theme="dialogAction === 'add' || dialogAction === 'update' ? 'blue' : 'yellow'"
             :icon="dialogAction === 'add' || dialogAction === 'update' ? PhDownloadSimple : PhWarning"
             :title="dialogAction === 'add' ? 'Confirm Add' : dialogAction === 'update' ? 'Confirm Update' : 'Confirm Cancel'"
             :description="dialogAction === 'add' ? 'Are you sure you want to add this?' :
-                        dialogAction === 'update' ? 'Are you sure you want to update this?' :
-                        'Are you sure you want to cancel? Any unsaved changes will be lost.'"
+                dialogAction === 'update' ? 'Are you sure you want to update this?' :
+                    'Are you sure you want to cancel? Any unsaved changes will be lost.'"
             :confirmText="dialogAction === 'add' ? 'Yes, Add' : dialogAction === 'update' ? 'Yes, Update' : 'Yes, Cancel'"
             cancelText="No"
             @confirm="dialogAction === 'add' || dialogAction === 'update' ? confirmSubmit() : confirmCancel()"
-            @cancel="cancelConfirmDialog"
-        />
+            @cancel="cancelConfirmDialog" />
 
         <!-- Toast Notification -->
         <TopToast ref="topToast" />

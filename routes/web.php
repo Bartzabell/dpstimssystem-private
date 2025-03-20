@@ -58,6 +58,7 @@ Route::middleware([
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
     Route::post('/sales/{form}', [SalesController::class, 'update'])->name('sales.update');
     Route::delete('/sales/{form}', [SalesController::class, 'destroy'])->name('sales.destroy');
+    Route::get('/sales/{form}', [SalesController::class, 'show'])->name('sales.show');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/category', [SettingsController::class, 'categoryStore'])->name('category.store');

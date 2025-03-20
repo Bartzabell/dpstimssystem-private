@@ -68,6 +68,7 @@ class SalesController extends Controller
             'customer_id' => $request->customer_id,
             'date_sold' => $request->date_sold,
             'discount_id' => $request->discount_id,
+            'total_price' => $request->total_price, // Use total_price from the request
             'created_by' => Auth::id(),
         ]);
 
@@ -90,11 +91,6 @@ class SalesController extends Controller
                 $inventory->update([
                     'status' => $status,
                 ]);
-
-                $bill = TransactionSalesBill::find($form->id);
-                $bill->update([
-                    'total_price' => $bill->total_price + $item['item_price'],
-                ]);
             }
         }
 
@@ -104,11 +100,11 @@ class SalesController extends Controller
     //this UPDATE IS FOR EDIT
     public function update(Request $request, TransactionSalesBill $form)
     {
-
         $form->update([
             'customer_id' => $request->customer_id,
             'date_sold' => $request->date_sold,
             'discount_id' => $request->discount_id,
+            'total_price' => $request->total_price, // Use total_price from the request
             'updated_by' => Auth::id(),
         ]);
 
@@ -152,11 +148,6 @@ class SalesController extends Controller
                     $inventory->update([
                         'status' => $status,
                     ]);
-
-                    $bill = TransactionSalesBill::find($form->id);
-                    $bill->update([
-                        'total_price' => $bill->total_price - $item['item_price'],
-                    ]);
                 }
             }
         } else {
@@ -184,5 +175,19 @@ class SalesController extends Controller
         $form->items()->delete();
         $form->delete();
         return redirect()->route('sales.index');
+    }
+
+    public function show(TransactionSalesBill $form)
+    {
+        // Load relationships needed for the print view
+        $form->load([
+            'customer',
+            'discount',
+            'items.stock',
+            'creator',
+            'updater'
+        ]);
+
+        return response()->json($form);
     }
 }
