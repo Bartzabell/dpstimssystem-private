@@ -2,7 +2,7 @@
     import { ref, watch, computed } from 'vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhRowsPlusBottom, PhEyeSlash, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
+    import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
 
     const props = defineProps({
         forms: Object,
@@ -301,47 +301,49 @@
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="absolute top-0 flex justify-end w-full">
-                    <ButtonCode
-                        @click="toggleFormVisibility"
-                        text="Close"
-                        color="bg-red-500 hover:bg-red-700"
-                    />
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                    <div>
+                        <h1 class="text-2xl font-extrabold">Sales Form</h1>
+                    </div>
+                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                        <PhX :size="16" />
+                    </button>
                 </div>
-                <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
-                    <h1 class="px-6 py-2 text-2xl font-extrabold">Sales Form</h1>
+                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow">
                     <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div class="spanlabel">
-                            <label class="block mb-1 text-sm font-medium">Customer</label>
-                            <SearchableDropdown
-                                class="border rounded-lg border-slate-600"
-                                v-model="selectedCustomer"
-                                :items="customers"
-                                placeholder="Search Customer..."
-                                @change="form.customer_id = $event.id"
-                            />
-                        </div>
                         <div>
-                            <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
-                        </div>
-                        <div>
-                            <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no" disabled/>
-                        </div>
-                        <div>
-                            <CustomInput name="Customer Email" type="text" v-model="form.email" disabled/>
-                        </div>
-                        <div>
-                            <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
-                        </div>
-                        <div>
-                            <CustomInput name="Customer Address" type="text" v-model="form.address" disabled/>
+                            <div class="mb-2 spanlabel">
+                                <label class="block mb-1 text-sm font-medium">Customer</label>
+                                <SearchableDropdown
+                                    class="border rounded-lg border-slate-600"
+                                    v-model="selectedCustomer"
+                                    :items="customers"
+                                    placeholder="Search Customer..."
+                                    @change="form.customer_id = $event.id"
+                                />
+                            </div>
+                            <div>
+                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
+                            </div>
+                            <div>
+                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no" disabled/>
+                            </div>
+                            <div>
+                                <CustomInput name="Customer Email" type="text" v-model="form.email" disabled/>
+                            </div>
+                            <div>
+                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled/>
+                            </div>
+                            <div>
+                                <CustomInput name="Customer Address" type="text" v-model="form.address" disabled/>
+                            </div>
                         </div>
 
-                        <div class="col-span-1 mt-6 md:col-span-2">
-                            <div class="p-5 mt-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="text-lg font-bold">Items</h3>
-                                </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="text-lg font-bold">Items</h3>
+                            </div>
+                            <div class="overflow-y-auto max-h-[90vh] md:max-h-[30vh]">
                                 <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
                                     <p>No items added yet. Click 'Add Item' to start.</p>
                                 </div>
@@ -380,20 +382,24 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="flex justify-end w-full py-2">
-                                    <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
+                            </div>
+                            <div>
+                                <div class="flex flex-col items-center justify-between w-full gap-5 py-2 lg:gap-0 lg:flex-row h-max">
+                                    <div class="flex justify-end order-2 w-full lg:justify-start lg:order-1">
+                                        <span class="flex items-center px-2 text-lg font-bold">Discount:</span>
+                                        <SearchableDropdown
+                                            class="border rounded-lg border-slate-600"
+                                            v-model="selectedDiscount"
+                                            :items="discounts"
+                                            placeholder="Search Discount..."
+                                            @change="form.discount_id = $event.id"
+                                        />
+                                    </div>
+                                    <div class="flex justify-end order-1 w-full lg:order-2">
+                                        <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900" @click="addItem" text="Add Item" />
+                                    </div>
                                 </div>
                                 <!-- Display Total Price -->
-                                <div class="flex justify-end w-full py-2">
-                                    <span class="flex items-center px-2 text-lg font-bold">Discount:</span>
-                                    <SearchableDropdown
-                                        class="border rounded-lg border-slate-600"
-                                        v-model="selectedDiscount"
-                                        :items="discounts"
-                                        placeholder="Search Discount..."
-                                        @change="form.discount_id = $event.id"
-                                    />
-                                </div>
                                 <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg bg-gray-50">
                                     <div class="flex justify-between w-full py-1">
                                         <span class="font-medium text-md">Subtotal:</span>
