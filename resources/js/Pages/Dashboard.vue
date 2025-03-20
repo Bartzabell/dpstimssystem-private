@@ -2,7 +2,8 @@
     import { ref, watch, computed } from 'vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import MonthlyIncomeChart from '@/Components/MonthlyIncomeChart.vue';
+    import MonthlyIncomeChart from '@/Components/Charts/MonthlyIncomeChart.vue';
+    import MonthlySalesQuantityChart from '@/Components/Charts/MonthlySalesQuantityChart.vue';
     const props = defineProps({
         sales: Object,
         todayTotalSales: { type: Number, default: 0, },
@@ -48,6 +49,9 @@
                 </div>
                 <div class="col-span-1 px-4 py-1 bg-white md:col-span-5">
                     <MonthlyIncomeChart />
+                </div>
+                <div class="col-span-1 px-4 py-1 bg-white md:col-span-5">
+                    <MonthlySalesQuantityChart />
                 </div>
             </div>
         </div>

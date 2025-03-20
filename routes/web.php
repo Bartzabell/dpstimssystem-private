@@ -22,6 +22,7 @@ Route::get('/', function () {
 Route::prefix('api/sales')->group(function () {
     Route::get('/monthly-income/{year}', [ChartController::class, 'getMonthlyIncome']);
     Route::get('/available-years', [ChartController::class, 'getAvailableYears']);
+    Route::get('/monthly-sales-quantity/{year}', [ChartController::class, 'getMonthlySalesQuantity']);
 });
 
 // Authentication middleware group
