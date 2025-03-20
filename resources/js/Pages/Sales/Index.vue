@@ -1,5 +1,6 @@
 <script setup>
     import { ref, watch, computed } from 'vue';
+    import Print from './Print.vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
     import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
@@ -11,6 +12,14 @@
         discounts: Array,
         filters: Object
     });
+
+    // Create a reference to the Print component
+    const printRef = ref(null);
+
+    // Function to trigger printing from the Print component
+    function handlePrint() {
+    printRef.value.printTest();
+    }
 
     const search = ref(props.filters.search || '');
     const sortField = ref(props.filters.sort_field || 'id');
@@ -24,19 +33,23 @@
     const selectedDiscount = ref(null);
 
     function toggleFormVisibility() {
+        if (isFormVisible.value) {
+            // Form is currently visible, so we're closing it
+            resetForm();
+        }
         isFormVisible.value = !isFormVisible.value;
-    };
+    }
 
     const showDeleteConfirmation = ref(false);
     const showConfirmDialog = ref(false);
     const itemToDelete = ref(null);
     const dialogAction = ref('');
 
-    const toast = ref({
-        show: false,
-        message: '',
-        type: 'success',
-    });
+    // const toast = ref({
+    //     show: false,
+    //     message: '',
+    //     type: 'success',
+    // });
 
     const form = useForm({
         id: null,
@@ -508,7 +521,7 @@
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.created_at) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">
                                     <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                        <button @click="printTest()" class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900"><PhPrinter :size="16" /></button>
+                                        <button @click="handlePrint" class="p-3 text-white bg-green-700 rounded-full hover:bg-green-900"><PhPrinter :size="16" /></button>
                                         <button @click="edit(form)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900"><PhPencil :size="16" /></button>
                                         <button @click="confirmDelete(form.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900"><PhTrash :size="16" /></button>
                                     </div>
@@ -546,5 +559,6 @@
 
         <!-- Toast Notification -->
         <TopToast ref="topToast" />
+        <Print ref="printRef" />
     </AppLayout>
 </template>

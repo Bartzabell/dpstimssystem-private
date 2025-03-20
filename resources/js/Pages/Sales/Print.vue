@@ -1,0 +1,197 @@
+<!-- resources/js/Pages/Sales/Print.vue -->
+<script setup>
+// Define the print function and expose it for use in other components
+function printTest() {
+// Get content from your template
+const printContent = document.getElementById('printSection').innerHTML;
+
+// Create an invisible iframe
+const iframe = document.createElement('iframe');
+iframe.style.display = 'none';
+document.body.appendChild(iframe);
+
+// Write the content to the iframe
+iframe.contentDocument.write(`
+    <html>
+    <head>
+        <title>Print Test</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        
+        @media print {
+            body {
+            width: 210mm;
+            height: 297mm;
+            }
+        }
+        </style>
+    </head>
+    
+    <body>
+        ${printContent}
+    </body>
+    
+    </html>
+`);
+
+// Close the document
+iframe.contentDocument.close();
+
+// Wait for resources to load before printing
+iframe.onload = function() {
+    // Trigger print
+    iframe.contentWindow.print();
+
+    // Remove the iframe after printing
+    setTimeout(() => {
+    document.body.removeChild(iframe);
+    }, 1000);
+};
+}
+
+// Export the function so it can be imported elsewhere
+defineExpose({ printTest });
+</script>
+
+<template>
+    <div id="printSection" class="hidden">
+      <!-- Your existing print section template -->
+      <div class="max-w-[210mm] h-full mx-auto">
+        <h1 class="w-full mb-1 text-4xl font-bold text-center">
+            DELLOSA'S SOAP AND DETERGENTS MANUFACTURING
+        </h1>
+            <p class="w-full text-lg text-center"><b>DEALERS IN: </b>Products</p>
+            <p class="w-full text-lg text-center">Zenaida subdivision, Limaco street, 3930 Brgy, Biñan, 4024 Laguna</p>
+            <p class="w-full text-lg text-center">EMAIL: dellosaspm@gmail.com</p>
+            <div class="grid grid-cols-4 mt-5 border border-black">
+                <div class="col-span-2 p-1 font-bold border border-black">
+                    NAME OF CONSIGNEE/BUYER
+                </div>
+                <div class="p-1 font-bold border border-black">
+                    Invoice No.:
+                </div>
+                <div class="p-1 border border-black">
+                    451280-90
+                </div>
+                <div class="col-span-2 p-1 border border-black">
+                    Stephanie Hawking
+                </div>
+                <div class="p-1 font-bold border border-black">
+                    Date:
+                </div>
+                <div class="p-1 border border-black">
+                    March 29, 2025
+                </div>
+                <div class="flex items-center justify-center w-full col-span-2 row-span-3 p-1 border border-black">
+                    Signature(Maybe)
+                </div>
+                <div class="p-1 font-bold border border-black">
+                    Terms:
+                </div>
+                <div class="p-1 border border-black">
+                    Cash on Delivery
+                </div>
+                <div class="p-1 font-bold border border-black">
+                    VEH No.:
+                </div>
+                <div class="p-1 border border-black">
+                    GHE-785
+                </div>
+                <div class="p-1 font-bold border border-black">
+                    Destination:
+                </div>
+                <div class="p-1 border border-black">
+                    Tanza, Cavite
+                </div>
+                <div class="col-span-2 p-1 border border-black">
+                    <b>TIN: </b>123-456-789-00
+                </div>
+                <div class="p-1 font-bold border border-black">
+                    Business Type:
+                </div>
+                <div class="p-1 border border-black">
+                    Convenience Store
+                </div>
+            </div>
+            <div class="grid grid-cols-10 mt-0.5 border border-black">
+                <div class="p-1 font-bold text-center border border-black">
+
+                </div>
+                <div class="col-span-3 p-1 font-bold text-center border border-black">
+                    ITEM/S
+                </div>
+                <div class="col-span-2 p-1 font-bold text-center border border-black">
+                    QTY
+                </div>
+                <div class="col-span-2 p-1 font-bold text-center border border-black">
+                    Unit Price
+                </div>
+                <div class="col-span-2 p-1 font-bold text-center border border-black">
+                    Amount
+                </div>
+                <!-- Body -->
+                <div class="p-1 text-center border border-black">
+                    1
+                </div>
+                <div class="col-span-3 p-1 text-center border border-black">
+                    16oz_PB0091
+                </div>
+                <div class="col-span-2 p-1 text-center border border-black">
+                    50
+                </div>
+                <div class="col-span-2 p-1 text-center border border-black">
+                    200
+                </div>
+                <div class="col-span-2 p-1 text-center border border-black">
+                    10,000
+                </div>
+            </div>
+            <div class="grid grid-cols-10 mt-0.5 border border-black">
+                <div class="col-span-4 p-1 font-bold border border-black">
+                    Total Sales(VAT Inclusive)
+                </div>
+                <div class="col-span-6 p-1 border border-black">
+                    10,000
+                </div>
+                <div class="col-span-4 p-1 font-bold border border-black">
+                    Less VAT
+                </div>
+                <div class="col-span-6 p-1 border border-black">
+
+                </div>
+                <div class="col-span-4 p-1 font-bold border border-black">
+                    Amount: Net of VAT
+                </div>
+                <div class="col-span-6 p-1 border border-black">
+                    500
+                </div>
+                <div class="col-span-4 p-1 font-bold border border-black">
+                    Less: SC/PWD-Discount
+                </div>
+                <div class="col-span-6 p-1 border border-black">
+
+                </div>
+                <div class="col-span-4 p-1 font-bold border border-black">
+                    Amount Due
+                </div>
+                <div class="col-span-6 p-1 border border-black">
+
+                </div>
+                <div class="col-span-4 p-1 font-bold border border-black">
+                    Total Due:
+                </div>
+                <div class="col-span-6 p-1 border border-black">
+                    10,500
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end w-full mx-auto mt-auto">
+            <!-- name of buyer/consignee -->
+            <h1 class="px-5 pt-1 border-t border-black">Stephanie Hawking</h1>
+        </div>
+    </div>
+</template>
