@@ -1,10 +1,9 @@
 <template>
     <div>
       <div>
-        <h4 class="p-5 text-4xl font-extrabold">Monthly Sales Quantity by Item</h4>
         <div>
-          <label for="year-select">Select Year:</label>
-          <select id="year-select" v-model="selectedYear" @change="fetchMonthlySalesQuantityData">
+          <label for="year-select" class="mx-2">Select Year:</label>
+          <select id="year-select" class="rounded-full" v-model="selectedYear" @change="fetchMonthlySalesQuantityData">
             <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
           </select>
         </div>
@@ -30,7 +29,7 @@
             chartOptions: {
             chart: {
                 type: 'line',
-                height: 350,
+                height: 300,
                 zoom: {
                 enabled: false
                 },

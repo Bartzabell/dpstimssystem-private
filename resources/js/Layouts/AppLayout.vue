@@ -174,7 +174,7 @@ const logout = () => {
             </header>
 
             <!-- Page Content -->
-            <main class="pt-24 md:pt-32">
+            <main class="pt-24 md:pt-24">
                 <slot />
             </main>
         </div>

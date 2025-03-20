@@ -14,6 +14,13 @@
         filters: Object,
         currentMonth: String,
     });
+
+    const tabs = [
+        { label: 'Total Sales', value: 'monthly-sales' },
+        { label: 'Sales per Item', value: 'item-sales'},
+    ];
+
+    const activeTab = ref('monthly-sales');
 </script>
 <template>
     <AppLayout title="Dashboard">
@@ -25,32 +32,50 @@
         <div class="px-5">
             <div class="grid grid-cols-1 gap-2 md:grid-cols-5">
                 <div class="px-4 py-1 text-white bg-lime-600">
-                    <p class="py-3">Today's Total Sales</p>
+                    <p class="py-2">Today's Total Sales</p>
                     <h1 class="w-full py-5 text-4xl text-center">Php {{ todayTotalSales.toLocaleString() }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-lime-800">
-                    <p class="py-3">{{ currentMonth }} Total Sales</p>
+                    <p class="py-2">{{ currentMonth }} Total Sales</p>
                     <h1 class="w-full py-5 text-4xl text-center">Php {{ monthlySales.toLocaleString() }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-green-900">
-                    <p class="py-3">Available Products</p>
+                    <p class="py-2">Available Products</p>
                     <h1 class="w-full py-5 text-4xl text-center">{{ availableProducts }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-teal-900">
-                    <p class="py-3">Product on Low Status</p>
+                    <p class="py-2">Product on Low Status</p>
                     <h1 class="w-full py-5 text-4xl text-center">{{ lowStatusProducts }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-amber-700">
-                    <p class="py-3">Products on High Status</p>
+                    <p class="py-2">Products on High Status</p>
                     <h1 class="w-full py-5 text-4xl text-center">{{ exceedingProducts }}</h1>
                 </div>
                 <div class="col-span-1 md:col-span-5">
-                    <p class="p-5 text-4xl font-extrabold">DEMAND FORECAST</p>
+                    <p class="p-1 text-4xl font-extrabold">DEMAND FORECAST</p>
                 </div>
-                <div class="col-span-1 px-4 py-1 bg-white md:col-span-5">
+                <div class="mb-4 border-b">
+                    <div class="flex flex-wrap -mb-px">
+                        <button
+                            v-for="tab in tabs"
+                            :key="tab.value"
+                            @click="activeTab = tab.value"
+                            class="flex items-center px-4 py-1 font-medium"
+                            :class="[
+                                activeTab === tab.value
+                                ? 'border-b-2 border-blue-500 text-blue-600'
+                                : 'text-gray-500 hover:text-gray-700'
+                            ]"
+                        >
+                            <component :is="tab.icon" size="20" v-if="tab.icon" class="mr-1" />
+                            {{ tab.label }}
+                        </button>
+                    </div>
+                </div>
+                <div v-if="activeTab === 'monthly-sales'" class="col-span-1 px-4 py-1 bg-white md:col-span-5">
                     <MonthlyIncomeChart />
                 </div>
-                <div class="col-span-1 px-4 py-1 bg-white md:col-span-5">
+                <div v-if="activeTab === 'item-sales'" class="col-span-1 px-4 py-1 bg-white md:col-span-5">
                     <MonthlySalesQuantityChart />
                 </div>
             </div>
