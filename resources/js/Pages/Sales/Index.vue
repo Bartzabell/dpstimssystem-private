@@ -356,7 +356,7 @@
                             <div class="flex items-center justify-between mb-1">
                                 <h3 class="text-lg font-bold">Items</h3>
                             </div>
-                            <div class="overflow-y-auto max-h-[90vh] md:max-h-[30vh]">
+                            <div class="overflow-y-auto h-[90vh] md:h-[30vh]">
                                 <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
                                     <p>No items added yet. Click 'Add Item' to start.</p>
                                 </div>
