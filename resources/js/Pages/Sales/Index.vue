@@ -76,9 +76,15 @@
                     result.amount = subtotal * (discount.amount / 100);
                 } else if (discount.type === "Fixed Amount") {
                     result.description = 'Fixed Amount';
-                    result.amount = discount.amount;
+                    // Ensure discount.amount is a number
+                    result.amount = parseFloat(discount.amount);
                 }
             }
+        }
+
+        // Ensure result.amount is a number
+        if (typeof result.amount !== 'number' || isNaN(result.amount)) {
+            result.amount = 0;
         }
 
         return result;

@@ -40,7 +40,7 @@
                     <h1 class="w-full py-5 text-4xl text-center">{{ lowStatusProducts }}</h1>
                 </div>
                 <div class="px-4 py-1 text-white bg-amber-700">
-                    <p class="py-3">Products with Exceeding Quantity</p>
+                    <p class="py-3">Products on High Status</p>
                     <h1 class="w-full py-5 text-4xl text-center">{{ exceedingProducts }}</h1>
                 </div>
                 <div class="col-span-1 md:col-span-5">
