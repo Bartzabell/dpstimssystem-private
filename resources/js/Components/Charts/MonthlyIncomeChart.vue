@@ -11,7 +11,7 @@
                 chartOptions: {
                 chart: {
                     type: 'line',
-                    height: 350,
+                    height: 300,
                     zoom: {
                     enabled: false
                     },
@@ -35,7 +35,7 @@
                 },
                 yaxis: {
                     title: {
-                    text: 'Total Income'
+                    text: 'Total Sales Income'
                     },
                     labels: {
                     formatter: function(value) {
@@ -125,9 +125,9 @@
 <template>
     <div>
         <div>
-            <h4 class="p-5 text-4xl font-extrabold">Monthly Sales Income</h4>
             <div>
-                <select v-model="selectedYear" @change="fetchMonthlyIncomeData">
+                <label for="year-select" class="mx-2">Select Year:</label>
+                <select id="year-select" class="rounded-full" v-model="selectedYear" @change="fetchMonthlyIncomeData">
                     <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
                 </select>
             </div>
