@@ -216,9 +216,9 @@
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold">Inventory Form</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Inventory Form</h1>
                     </div>
                     <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
@@ -229,7 +229,7 @@
                         <CustomInput name="Name" v-model="form.name"/>
                         <CustomInput name="Item Code" v-model="form.item_code" disabled/>
                         <div>
-                            <label class="text-sm font-medium">Color</label>
+                            <label class="text-sm font-medium dark:text-gray-200">Color</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
                                 v-model="selectedColor"
@@ -240,7 +240,7 @@
                         </div>
                         <CustomInput name="Type" v-model="form.type"/>
                         <div>
-                            <label class="text-sm font-medium">Material</label>
+                            <label class="text-sm font-medium dark:text-gray-200">Material</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
                                 v-model="selectedMaterial"
@@ -250,7 +250,7 @@
                             />
                         </div>
                         <div>
-                            <label class="text-sm font-medium">Category</label>
+                            <label class="text-sm font-medium dark:text-gray-200">Category</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
                                 v-model="selectedCategory"
@@ -261,7 +261,7 @@
                         </div>
                         <CustomInput name="Size" v-model="form.size"/>
                         <div>
-                            <label class="text-sm font-medium">UOM</label>
+                            <label class="text-sm font-medium dark:text-gray-200">UOM</label>
                             <SearchableDropdown
                                 class="border rounded-lg border-slate-600"
                                 v-model="selectedUom"
@@ -289,7 +289,7 @@
             </div>
         </Modal>
         <div class="p-5">
-            <div class="p-6 mt-2 bg-white rounded shadow">
+            <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-700">
                 <!-- Search Bar -->
                 <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode
@@ -299,19 +299,19 @@
                         color="bg-emerald-700 hover:bg-emerald-900"
                     />
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2" :size="20" />
                         <input
                         type="text"
                         v-model="search"
                         placeholder="Search..."
-                        class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+                        class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl"
                         />
                     </div>
                 </div>
 
                 <div v-if="inventories && inventories.data && inventories.data.length > 0">
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
+                    <div class="overflow-x-auto border rounded-lg dark:border-gray-600">
+                        <table class="min-w-full divide-y divide-gray-200 rounded-lg dark:border-gray-600 dark:divide-gray-600">
                             <thead>
                                 <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
@@ -330,7 +330,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="inventory in inventories.data" :key="inventory.id">
+                                <tr class="text-xs text-gray-600 dark:text-gray-50 dark:bg-gray-500 dark:even:bg-gray-600 dark:hover:bg-gray-800 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="inventory in inventories.data" :key="inventory.id">
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.id }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ inventory.item_code }}</td>

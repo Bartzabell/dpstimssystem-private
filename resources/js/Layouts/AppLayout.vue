@@ -47,7 +47,7 @@ const logout = () => {
                                 </button>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between sm:ms-6">
+                        <div class="flex items-center justify-between dark:text-white sm:ms-6">
                             <h1>{{ $page.props.auth.user.name }}</h1>
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
@@ -57,7 +57,7 @@ const logout = () => {
                                         </button>
 
                                         <span v-else class="inline-flex rounded-full">
-                                            <button type="button" class="inline-flex items-center gap-2 p-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out border-2 rounded-full bg-lime-50 border-lime-800 hover:bg-lime-800 hover:text-white dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700">
+                                            <button type="button" class="inline-flex items-center gap-2 p-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out border-2 rounded-full bg-lime-50 border-lime-800 hover:bg-lime-800 hover:text-white dark:text-white dark:bg-gray-800 dark:hover:text-gray-200 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700">
                                                 <PhUserCircle :size="32" />
                                             </button>
                                         </span>
@@ -79,7 +79,7 @@ const logout = () => {
                                 </Dropdown>
                             </div>
                         </div>
-                        <nav class="border-t-2">
+                        <nav class="border-t-2 dark:text-white">
                             <ul>
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('dashboard') }">
                                     <Link :href="route('dashboard')">
@@ -167,7 +167,7 @@ const logout = () => {
                     <!-- Sidebar Toggle Button -->
                      <div class="inline-flex items-center gap-2 md:gap-20">
                         <button @click="toggleSidebar"
-                                class="p-2 text-gray-500 rounded-md hover:bg-lime-200 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none">
+                                class="p-2 text-gray-500 rounded-md dark:hover:bg-lime-700 hover:bg-lime-200 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none">
                             <PhList :size="32" />
                         </button>
                         <slot name="header" />

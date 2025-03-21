@@ -128,30 +128,30 @@
 
 <template>
     <div class="relative" ref="dropdownRef">
-        <div class="relative w-full rounded-lg cursor-pointer select-none" @mousedown.prevent="handleClick" >
+        <div class="relative w-full rounded-lg cursor-pointer select-none dark:bg-gray-500" @mousedown.prevent="handleClick" >
             <div class="w-full p-1.5">
                 <template v-if="isOpen">
-                    <input ref="inputRef" v-model="searchQuery" type="text" class="w-full py-0.5 outline-none cursor-text" :placeholder="placeholder" >
+                    <input ref="inputRef" v-model="searchQuery" type="text" class="w-full py-0.5 dark:bg-gray-400 dark:text-gray-200 outline-none cursor-text" :placeholder="placeholder" >
                 </template>
                 <template v-else>
-                    <div class="flex items-center">
+                    <div class="flex items-center dark:bg-gray-500">
                         <span v-if="selectedItem && hasHexColors && selectedItem.hex"
                               class="inline-block w-4 h-4 mr-2 rounded-full"
                               :style="{ backgroundColor: selectedItem.hex }">
                         </span>
-                        <span class="block w-full truncate">{{ selectedLabel || placeholder }}</span>
+                        <span class="block w-full truncate dark:text-gray-300">{{ selectedLabel || placeholder }}</span>
                     </div>
                 </template>
             </div>
         </div>
 
-        <div v-if="isOpen" class="absolute z-50 w-full mt-2 overflow-auto bg-white border rounded-lg shadow-lg max-h-60">
+        <div v-if="isOpen" class="absolute z-50 w-full mt-2 overflow-auto bg-white border rounded-lg shadow-lg dark:bg-gray-300 max-h-60">
             <div v-if="filteredItems.length === 0" class="p-1 text-gray-500">No item found</div>
             <div
                 v-for="item in filteredItems"
                 :key="item.id"
                 @mousedown.prevent="selectItem(item)"
-                class="flex items-center px-4 py-1 cursor-pointer hover:bg-gray-100"
+                class="flex items-center px-4 py-1 cursor-pointer dark:hover:gray-500 hover:bg-gray-100"
                 :class="{ 'bg-blue-100': item.id == modelValue }"
             >
                 <span v-if="hasHexColors && item.hex"

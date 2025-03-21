@@ -167,15 +167,15 @@
         </template>
         <Modal :show="isFormVisible" @close="isFormVisible = false" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold">Customer Form</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Customer Form</h1>
                     </div>
                     <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
                     </button>
                 </div>
-                <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow">
+                <form @submit.prevent="submit" class="pb-4 m-3 bg-white rounded shadow dark:bg-gray-800">
                     <div class="grid grid-cols-1 gap-5 p-5 mt-10 md:grid-cols-2">
                         <CustomInput name="Customer Name:" v-model="form.name" />
                         <CustomInput name="Phone Number:" v-model="form.phone_no"/>
@@ -195,7 +195,7 @@
             </div>
         </Modal>
         <div class="p-5">
-            <div class="p-6 mt-2 bg-white rounded shadow">
+            <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-700">
                 <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode
                         @click="toggleFormVisibility"
@@ -204,18 +204,18 @@
                         color="bg-emerald-700 hover:bg-emerald-900"
                     />
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2" :size="20" />
                         <input
                         type="text"
                         v-model="search"
                         placeholder="Search..."
-                        class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+                        class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl"
                         />
                     </div>
                 </div>
                 <div v-if="customers && customers.data && customers.data.length > 0">
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
+                    <div class="overflow-x-auto border rounded-lg dark:border-gray-600">
+                        <table class="min-w-full divide-y divide-gray-200 dark:border-gray-600 dark:divide-gray-600">
                             <thead>
                                 <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Customer Name</td>
@@ -227,7 +227,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="customer in customers.data" :key="customer.id">
+                                <tr class="text-xs text-gray-600 dark:text-gray-50 md:text-base dark:hover:bg-gray-800 hover:bg-blue-100 dark:bg-gray-500 dark:even:bg-gray-600 even:bg-gray-50" v-for="customer in customers.data" :key="customer.id">
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ customer.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ customer.phone_no}}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ customer.email }}</td>
@@ -245,8 +245,8 @@
                     </div>
                     <PaginationButton :data="customers" />
                 </div>
-                <div v-else class="p-4 text-center">
-                    <p>No customers found. Create your first customer above.</p>
+                <div v-else class="p-4 text-center dark:text-gray-100">
+                    <p>No customers found. Create your customer data above.</p>
                 </div>
             </div>
         </div>

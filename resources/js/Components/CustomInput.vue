@@ -23,15 +23,15 @@ defineProps({
 
 <template>
     <div class="mb-2">
-        <label class="text-sm font-medium">{{ name }}</label>
-        <div :class="{'!border-red-500 !border-2' : message}" class="flex transition bg-white rounded-lg focus-within:ring-1 focus-within:ring-teal-900 ring-teal-100">
+        <label class="text-sm font-medium dark:text-gray-200">{{ name }}</label>
+        <div :class="{'!border-red-500 !border-2' : message}" class="flex transition bg-white rounded-lg dark:bg-gray-400 focus-within:ring-1 dark:focus-within:ring-teal-300 focus-within:ring-teal-900 ring-teal-100">
             <input
                 v-model="model"
                 :readonly="readonly"
                 :disabled="disabled"
                 :class="[
-                    'w-full rounded-lg py-1.5 focus-within:ring-1 focus-within:ring-teal-900 ring-teal-100 focus:outline-none pl-2',
-                    { 'bg-gray-100': readonly || disabled }
+                    'w-full rounded-lg py-1.5 focus-within:ring-1 dark:bg-gray-500 dark:text-gray-200 dark:focus-within:ring-teal-300 focus-within:ring-teal-900 ring-teal-100 focus:outline-none pl-2',
+                    { 'bg-gray-100 dark:bg-gray-800': readonly || disabled }
                 ]"
                 :type="type">
         </div>

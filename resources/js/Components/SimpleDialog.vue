@@ -144,12 +144,12 @@ const themeClasses = {
         leave-from-class="scale-100 opacity-100"
         leave-to-class="scale-90 opacity-0"
       >
-        <div :class="['p-6 rounded-lg !z-[1100] shadow-lg w-96', themeBg[theme]]">
+        <div :class="['p-6 rounded-lg !z-[1100] dark:bg-gray-700 shadow-lg w-96', themeBg[theme]]">
             <div class="flex items-center justify-center w-full">
                 <component v-if="icon" :is="icon" :class="['w-20 h-20', themeText[theme]]" />
             </div>
-          <h3 class="mb-2 text-lg font-medium text-center">{{ title }}</h3>
-          <p v-if="description" class="px-4 mb-6 text-center text-gray-600">{{ description }}</p>
+          <h3 class="mb-2 text-lg font-medium text-center dark:text-gray-200">{{ title }}</h3>
+          <p v-if="description" class="px-4 mb-6 text-center text-gray-600 dark:text-gray-400">{{ description }}</p>
           <div class="flex justify-end gap-2">
             <button
               @click="closeDialog"

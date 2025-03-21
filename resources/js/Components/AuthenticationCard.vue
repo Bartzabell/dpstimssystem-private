@@ -9,7 +9,7 @@
             <div class="w-full py-1 bg-gray-300">
             </div>
             <div class="px-6 pt-1 pb-4 overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-t-none sm:rounded-lg">
-                <h1 class="flex justify-center w-full text-sm font-thin text-gray-700">To proceed, please log in</h1>
+                <h1 class="flex justify-center w-full text-sm font-thin text-gray-700 dark:text-white">To proceed, please log in</h1>
                 <slot />
             </div>
         </div>

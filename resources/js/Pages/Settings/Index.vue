@@ -307,16 +307,16 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Settings</h2>
         </template>
         <div class="flex items-center justify-center w-full px-4 md:mt-10">
-            <div class="w-full md:w-[90vw] p-6 bg-white rounded-lg shadow">
+            <div class="w-full md:w-[90vw] p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <!-- Search Bar -->
                 <div class="md:flex md:items-center md:w-full md:justify-end">
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2" :size="20" />
                         <input
                             type="text"
                             v-model="search"
                             placeholder="Search..."
-                            class="w-full py-2 pl-8 pr-2 text-sm border md:w-72 rounded-2xl"
+                            class="w-full py-2 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 md:w-72 rounded-2xl"
                             @input="debouncedSearch"
                         />
                     </div>
@@ -332,8 +332,8 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                             class="flex items-center px-4 py-2 font-medium"
                             :class="[
                                 activeTab === tab.value
-                                ? 'border-b-2 border-blue-500 text-blue-600'
-                                : 'text-gray-500 hover:text-gray-700'
+                                ? 'border-b-2 bg-blue-200 dark:bg-blue-900 dark:text-blue-200 rounded-t-md border-blue-500 text-blue-800'
+                                : 'text-gray-500 dark:text-gray-200 dark:hover:text-gray-400 hover:text-gray-700'
                             ]"
                         >
                             <component :is="tab.icon" size="20" v-if="tab.icon" class="mr-1" />
@@ -350,14 +350,14 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                     <div>
                         <form @submit.prevent="submitCategoryForm">
                             <div class="space-y-4">
-                                <h2 class="text-lg font-semibold">{{ editing.category ? 'Edit' : 'Add' }} Category</h2>
+                                <h2 class="text-lg font-semibold dark:text-gray-200">{{ editing.category ? 'Edit' : 'Add' }} Category</h2>
                                 <div>
-                                    <label for="categoryName" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <label for="categoryName" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
                                     <input
                                         id="categoryName"
                                         v-model="forms.category.name"
                                         placeholder="Enter category name"
-                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                         required
                                     />
                                 </div>
@@ -371,20 +371,20 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="categories && categories.data && categories.data.length > 0">
-                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
-                            <table class="min-w-full divide-y divide-gray-300">
-                                <thead class="bg-gray-50">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border dark:border-gray-600 rounded-md">
+                            <table class="min-w-full divide-y divide-gray-300 dark:border-gray-600 dark:divide-gray-600">
+                                <thead class="bg-gray-50 dark:bg-gray-600">
                                     <tr>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">ID</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Name</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-200">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-500 dark:border-gray-600 dark:divide-gray-300">
                                     <tr v-for="category in categories.data" :key="category.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
-                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ category.id }}</td>
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ category.name }}</td>
+                                        <td class="px-6 py-4 text-right dark:text-gray-200 whitespace-nowrap">
                                             <div class="flex justify-end gap-2">
                                                 <button @click="editCategory(category)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
                                                     <PhPencil :size="16" />
@@ -408,24 +408,24 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                     <div>
                         <form @submit.prevent="submitColorForm">
                             <div class="space-y-4">
-                                <h2 class="text-lg font-semibold">{{ editing.color ? 'Edit' : 'Add' }} Color</h2>
+                                <h2 class="text-lg font-semibold dark:text-gray-200">{{ editing.color ? 'Edit' : 'Add' }} Color</h2>
                                 <div>
-                                    <label for="colorName" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <label for="colorName" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
                                     <input
                                         id="colorName"
                                         v-model="forms.color.name"
                                         placeholder="Enter color name"
-                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label for="colorHex" class="block text-sm font-medium text-gray-700">Hex Code</label>
+                                    <label for="colorHex" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hex Code</label>
                                     <input
                                         id="colorHex"
                                         v-model="forms.color.hex"
                                         placeholder="Enter color hex"
-                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                         required
                                     />
                                 </div>
@@ -439,22 +439,22 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="colors && colors.data && colors.data.length > 0">
-                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border dark:border-gray-600 rounded-md">
+                        <table class="min-w-full divide-y divide-gray-300 dark:border-gray-600 dark:divide-gray-600">
+                            <thead class="bg-gray-50 dark:bg-gray-600">
                                 <tr>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Hex</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">ID</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Name</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Hex</th>
+                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-200">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-500 dark:border-gray-600 dark:divide-gray-300">
                                 <tr v-for="color in colors.data" :key="color.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ color.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ color.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ color.hex }}</td>
-                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ color.id }}</td>
+                                    <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ color.name }}</td>
+                                    <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ color.hex }}</td>
+                                    <td class="px-6 py-4 text-right dark:text-gray-200 whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
                                             <button @click="editColor(color)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
                                                 <PhPencil :size="16" />
@@ -478,14 +478,14 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                     <div>
                         <form @submit.prevent="submitMaterialForm">
                         <div class="space-y-4">
-                            <h2 class="text-lg font-semibold">{{ editing.material ? 'Edit' : 'Add' }} Material</h2>
+                            <h2 class="text-lg font-semibold dark:text-gray-200">{{ editing.material ? 'Edit' : 'Add' }} Material</h2>
                             <div>
-                                <label for="materialName" class="block text-sm font-medium text-gray-700">Name</label>
+                                <label for="materialName" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
                                 <input
                                     id="materialName"
                                     v-model="forms.material.name"
                                     placeholder="Enter material name"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                     required
                                 />
                             </div>
@@ -499,20 +499,20 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="materials && materials.data && materials.data.length > 0">
-                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border dark:border-gray-600 rounded-md">
+                        <table class="min-w-full divide-y divide-gray-300 dark:border-gray-600 dark:divide-gray-600">
+                            <thead class="bg-gray-50 dark:bg-gray-600">
                             <tr>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">ID</th>
+                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Name</th>
+                                <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-200">Actions</th>
                             </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-500 dark:border-gray-600 dark:divide-gray-300">
                                 <tr v-for="material in materials.data" :key="material.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ material.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ material.name }}</td>
-                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ material.id }}</td>
+                                    <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ material.name }}</td>
+                                    <td class="px-6 py-4 text-right dark:text-gray-200 whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
                                             <button @click="editMaterial(material)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
                                                 <PhPencil :size="16" />
@@ -536,14 +536,14 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                     <div>
                         <form @submit.prevent="submitUomForm">
                         <div class="space-y-4">
-                            <h2 class="text-lg font-semibold">{{ editing.uom ? 'Edit' : 'Add' }} UOM</h2>
+                            <h2 class="text-lg font-semibold dark:text-gray-200">{{ editing.uom ? 'Edit' : 'Add' }} UOM</h2>
                             <div>
-                                <label for="uomName" class="block text-sm font-medium text-gray-700">Name</label>
+                                <label for="uomName" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
                                 <input
                                     id="uomName"
                                     v-model="forms.uom.name"
                                     placeholder="Enter UOM name"
-                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                    class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                     required
                                 />
                             </div>
@@ -557,20 +557,20 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="uoms && uoms.data && uoms.data.length > 0">
-                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
-                            <table class="min-w-full divide-y divide-gray-300">
-                                <thead class="bg-gray-50">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border dark:border-gray-600 rounded-md">
+                            <table class="min-w-full divide-y divide-gray-300 dark:border-gray-600 dark:divide-gray-600">
+                                <thead class="bg-gray-50 dark:bg-gray-600">
                                     <tr>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">ID</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Name</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-200">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-500 dark:border-gray-600 dark:divide-gray-300">
                                     <tr v-for="uom in uoms.data" :key="uom.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ uom.id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ uom.name }}</td>
-                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ uom.id }}</td>
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ uom.name }}</td>
+                                        <td class="px-6 py-4 text-right dark:text-gray-200 whitespace-nowrap">
                                             <div class="flex justify-end gap-2">
                                                 <button @click="editUom(uom)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
                                                     <PhPencil :size="16" />
@@ -594,23 +594,23 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                     <div>
                         <form @submit.prevent="submitDiscountForm">
                             <div class="space-y-4 w-[78vw] md:w-full">
-                                <h2 class="text-lg font-semibold">{{ editing.discount ? 'Edit' : 'Add' }} Discount</h2>
+                                <h2 class="text-lg font-semibold dark:text-gray-200">{{ editing.discount ? 'Edit' : 'Add' }} Discount</h2>
                                 <div>
-                                    <label for="discountName" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <label for="discountName" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
                                     <input
                                         id="discountName"
                                         v-model="forms.discount.name"
                                         placeholder="Enter discount name"
-                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                         required
                                     />
                                 </div>
                                 <div class="mt-4">
-                                    <label for="discountType" class="block text-sm font-medium text-gray-700">Type</label>
+                                    <label for="discountType" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Type</label>
                                     <select
                                         id="discountType"
                                         v-model="forms.discount.type"
-                                        class="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                         required
                                     >
                                         <option class="text-sm" value="percentage">Percentage</option>
@@ -618,14 +618,14 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                                     </select>
                                 </div>
                                 <div class="mt-4">
-                                    <label for="discountAmount" class="block text-sm font-medium text-gray-700">Amount</label>
+                                    <label for="discountAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Amount</label>
                                     <input
                                         id="discountAmount"
                                         v-model="forms.discount.amount"
                                         type="number"
                                         step="0.01"
                                         placeholder="Enter amount"
-                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 dark:border-blue-500 dark:bg-gray-500 dark:text-gray-200"
                                         required
                                     />
                                 </div>
@@ -639,24 +639,24 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="discounts && discounts.data && discounts.data.length > 0">
-                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
-                            <table class="min-w-full divide-y divide-gray-300">
-                                <thead class="bg-gray-50">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border dark:border-gray-600 rounded-md">
+                            <table class="min-w-full divide-y divide-gray-300 dark:border-gray-600 dark:divide-gray-600">
+                                <thead class="bg-gray-50 dark:bg-gray-600">
                                     <tr>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
-                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">ID</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Name</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Type</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-200">Amount</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-200">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-500 dark:border-gray-600 dark:divide-gray-300">
                                     <tr v-for="discount in discounts.data" :key="discount.id">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.type }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.amount }}</td>
-                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ discount.id }}</td>
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ discount.name }}</td>
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ discount.type }}</td>
+                                        <td class="px-6 py-4 dark:text-gray-200 whitespace-nowrap">{{ discount.amount }}</td>
+                                        <td class="px-6 py-4 text-right dark:text-gray-200 whitespace-nowrap">
                                             <div class="flex justify-end gap-2">
                                                 <button @click="editDiscount(discount)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
                                                     <PhPencil :size="16" />

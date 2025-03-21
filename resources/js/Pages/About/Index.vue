@@ -9,7 +9,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
             </h2>
         </template>
 
-        <div class="flex flex-col items-center justify-center w-full gap-5 mt-5 text-center">
+        <div class="flex flex-col items-center justify-center w-full gap-5 mt-5 text-center dark:text-gray-200">
             <h1 class="text-5xl">DPST-<b class="font-extrabold">IMS</b></h1>
             <h1>An Inventory Management System exclusive<br>for Dellosa Packaging Supplies Trading</h1>
             <h1 class="text-xl font-extrabold">ABOUT</h1>

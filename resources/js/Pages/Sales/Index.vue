@@ -3,7 +3,7 @@
     import Print from './Print.vue';
     import { useForm, router, usePage } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
+    import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhCaretUp, PhCaretDown, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
 
     const props = defineProps({
         forms: Object,
@@ -322,20 +322,20 @@
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
                 <div
-                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold">Sales Form</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Sales Form</h1>
                     </div>
                     <button @click="toggleFormVisibility"
                         class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
                     </button>
                 </div>
-                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow">
+                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow dark:bg-gray-800">
                     <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
                         <div>
                             <div class="mb-2 spanlabel">
-                                <label class="block mb-1 text-sm font-medium">Customer</label>
+                                <label class="block mb-1 text-sm font-medium dark:text-gray-200">Customer</label>
                                 <SearchableDropdown class="border rounded-lg border-slate-600"
                                     v-model="selectedCustomer" :items="customers" placeholder="Search Customer..."
                                     @change="form.customer_id = $event.id" />
@@ -362,25 +362,25 @@
 
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <h3 class="text-lg font-bold">Items</h3>
+                                <h3 class="text-lg font-bold dark:text-gray-200">Items</h3>
                             </div>
                             <div class="overflow-y-auto h-[90vh] md:h-[30vh]">
-                                <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
+                                <div v-if="form.items.length === 0" class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
                                     <p>No items added yet. Click 'Add Item' to start.</p>
                                 </div>
                                 <div v-else class="overflow-visible border rounded-lg">
                                     <table class="w-full">
                                         <thead>
-                                            <tr class="text-left bg-gray-100">
-                                                <th class="w-3/5 px-2 py-1 border whitespace-nowrap">Item Code</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Quantity</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price</th>
-                                                <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Actions</th>
+                                            <tr class="text-left bg-gray-100 dark:bg-gray-600">
+                                                <th class="w-3/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Item Code</th>
+                                                <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Quantity</th>
+                                                <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Price</th>
+                                                <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="(item, index) in form.items" :key="index"
-                                                class="hover:bg-gray-50">
+                                                class="hover:bg-gray-50 dark:hover:bg-gray-400">
                                                 <td class="px-2 py-1 border whitespace-nowrap">
                                                     <!-- Fixed: Use index-specific v-model binding -->
                                                     <SearchableDropdown class="border rounded-lg border-slate-600"
@@ -388,10 +388,10 @@
                                                         placeholder="Search Item..."
                                                         @change="handleInventoryChange($event, index)" />
                                                 </td>
-                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                <td class="px-2 pt-3 pb-1 border whitespace-nowrap">
                                                     <CustomInput v-model="item.item_qty" min="1" />
                                                 </td>
-                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                <td class="px-2 pt-3 pb-1 border whitespace-nowrap">
                                                     <CustomInput v-model="item.item_price" min="1" />
                                                 </td>
                                                 <td class="px-2 py-1 border whitespace-nowrap">
@@ -411,7 +411,7 @@
                                 <div
                                     class="flex flex-col items-center justify-between w-full gap-5 py-2 lg:gap-0 lg:flex-row h-max">
                                     <div class="flex justify-end order-2 w-full lg:justify-start lg:order-1">
-                                        <span class="flex items-center px-2 text-lg font-bold">Discount:</span>
+                                        <span class="flex items-center px-2 text-lg font-bold dark:text-gray-200">Discount:</span>
                                         <SearchableDropdown class="border rounded-lg border-slate-600"
                                             v-model="selectedDiscount" :items="discounts"
                                             placeholder="Search Discount..." @change="form.discount_id = $event.id" />
@@ -422,7 +422,7 @@
                                     </div>
                                 </div>
                                 <!-- Display Total Price -->
-                                <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg bg-gray-50">
+                                <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg dark:text-gray-200 dark:bg-gray-600 bg-gray-50">
                                     <div class="flex justify-between w-full py-1">
                                         <span class="font-medium text-md">Subtotal:</span>
                                         <span class="text-md">{{ getSubtotal().toFixed(2) }}</span>
@@ -432,7 +432,7 @@
                                         <span class="font-medium text-md">
                                             {{ getDiscountInfo().name }} ({{ getDiscountInfo().description }}):
                                         </span>
-                                        <span class="text-red-600 text-md">-{{ getDiscountInfo().amount.toFixed(2)
+                                        <span class="text-red-400 text-md">-{{ getDiscountInfo().amount.toFixed(2)
                                         }}</span>
                                     </div>
 
@@ -454,21 +454,21 @@
             </div>
         </Modal>
         <div class="p-5">
-            <div class="p-6 mt-2 bg-white rounded shadow">
+            <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-800">
                 <!-- Search Bar -->
                 <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode @click="toggleFormVisibility" text="Add Sales" :icon="PhFilePlus"
                         color="bg-emerald-700 hover:bg-emerald-900" />
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2"
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
                             :size="20" />
                         <input type="text" v-model="search" placeholder="Search..."
-                            class="py-1 pl-8 pr-2 text-sm border rounded-2xl" />
+                            class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl" />
                     </div>
                 </div>
                 <!-- items Table -->
-                <div class="overflow-x-auto border rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
+                <div class="overflow-x-auto border rounded-lg dark:border-gray-600">
+                    <table class="min-w-full divide-y divide-gray-200 dark:border-gray-600 dark:divide-gray-600">
                         <thead>
                             <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
@@ -531,7 +531,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50"
+                            <tr class="text-xs text-gray-600 md:text-base dark:text-gray-50 dark:bg-gray-500 dark:even:bg-gray-600 dark:hover:bg-gray-800 hover:bg-blue-100 even:bg-gray-50"
                                 v-for="form in forms.data" :key="form.id">
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.customer?.name }}</td>

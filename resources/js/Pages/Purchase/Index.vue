@@ -257,19 +257,19 @@
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
             <div v-if="isFormVisible">
-                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black">
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold">Purchase Form</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Purchase Form</h1>
                     </div>
                     <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
                     </button>
                 </div>
-                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow">
+                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow dark:bg-gray-800">
                     <div class="grid grid-cols-1 gap-5 px-3 py-1 md:grid-cols-2">
                         <div>
                             <div class="mb-5 spanlabel">
-                                <label class="block mb-1 text-sm font-medium">Supplier</label>
+                                <label class="block mb-1 text-sm font-medium dark:text-gray-200">Supplier</label>
                                 <SearchableDropdown
                                     class="border rounded-lg border-slate-600"
                                     v-model="selectedSupplier"
@@ -291,24 +291,24 @@
 
                         <div class="overflow-y-auto max-h-[90vh] md:max-h-[50vh]">
                             <div class="flex items-center justify-between mb-2">
-                                <h3 class="text-lg font-bold">Items</h3>
+                                <h3 class="text-lg font-bold dark:text-gray-200">Items</h3>
                             </div>
-                            <div v-if="form.items.length === 0" class="py-4 text-center rounded bg-gray-50">
+                            <div v-if="form.items.length === 0" class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
                                 <p>No items added yet. Click 'Add Item' to start.</p>
                             </div>
                             <div v-else class="overflow-visible border rounded-lg">
                                 <table class="w-full">
                                     <thead>
-                                        <tr class="text-left bg-gray-100">
-                                            <th class="w-3/5 px-2 py-1 border whitespace-nowrap">Item Code</th>
-                                            <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Quantity</th>
-                                            <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Price</th>
-                                            <th class="w-1/5 px-2 py-1 border whitespace-nowrap">Actions</th>
+                                        <tr class="text-left bg-gray-100 dark:bg-gray-600">
+                                            <th class="w-3/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Item Code</th>
+                                            <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Quantity</th>
+                                            <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Price</th>
+                                            <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50">
-                                            <td class="px-2 py-1 border whitespace-nowrap">
+                                        <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50 dark:hover:bg-gray-400">
+                                            <td class="px-2 pt-1 pb-1 border whitespace-nowrap">
                                                 <SearchableDropdown
                                                     class="border rounded-lg border-slate-600"
                                                     v-model="selectedItems[index]"
@@ -317,8 +317,8 @@
                                                     @change="handleInventoryChange($event, index)"
                                                 />
                                             </td>
-                                            <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
-                                            <td class="px-2 py-1 border whitespace-nowrap"><CustomInput v-model="item.item_price" min="1" /></td>
+                                            <td class="px-2 pt-3 pb-1 border whitespace-nowrap"><CustomInput v-model="item.item_qty" min="1" /></td>
+                                            <td class="px-2 pt-3 pb-1 border whitespace-nowrap"><CustomInput v-model="item.item_price" min="1" /></td>
                                             <td class="px-2 py-1 border whitespace-nowrap">
                                                 <div class="inline-flex justify-center w-full h-full gap-2 ">
                                                     <ButtonCode @click="removeItem(index)" color="bg-red-700 hover:bg-red-900" text="Remove" />
@@ -333,9 +333,9 @@
                             </div>
                             <!-- Display Total Price -->
                             <div class="flex justify-end w-full">
-                                <div class="flex items-center gap-4 px-1 py-2 bg-gray-300 rounded-bl-lg">
-                                    <span class="text-lg font-bold">Total Price:</span>
-                                    <span class="text-lg">{{ total_price.toFixed(2) }}</span>
+                                <div class="flex items-center gap-4 px-1 py-2 bg-gray-300 rounded-bl-lg dark:bg-gray-500">
+                                    <span class="text-lg font-bold dark:text-gray-200">Total Price:</span>
+                                    <span class="text-lg dark:text-gray-200">{{ total_price.toFixed(2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -351,7 +351,7 @@
             </div>
         </Modal>
         <div class="p-5">
-            <div class="p-6 mt-2 bg-white rounded shadow">
+            <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-700">
                 <!-- Search Bar -->
                 <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode
@@ -361,18 +361,18 @@
                         color="bg-emerald-700 hover:bg-emerald-900"
                     />
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2" :size="20" />
                         <input
                             type="text"
                             v-model="search"
                             placeholder="Search..."
-                            class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
+                            class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl"
                         />
                     </div>
                 </div>
                 <!-- items Table -->
-                <div class="overflow-x-auto border rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
+                <div class="overflow-x-auto border rounded-lg dark:border-gray-600">
+                    <table class="min-w-full divide-y divide-gray-200 dark:border-gray-600 dark:divide-gray-600">
                         <thead>
                             <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
@@ -421,7 +421,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-xs text-gray-600 md:text-base hover:bg-blue-100 even:bg-gray-50" v-for="form in forms.data" :key="form.id">
+                            <tr class="text-xs text-gray-600 md:text-base dark:text-gray-50 dark:bg-gray-500 dark:even:bg-gray-600 dark:hover:bg-gray-800 hover:bg-blue-100 even:bg-gray-50" v-for="form in forms.data" :key="form.id">
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.supplier?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_purchased) }}</td>
