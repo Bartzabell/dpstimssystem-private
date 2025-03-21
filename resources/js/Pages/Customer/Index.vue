@@ -88,8 +88,13 @@
     };
 
     function toggleFormVisibility() {
-    isFormVisible.value = !isFormVisible.value;
-    };
+        if (isFormVisible.value) {
+            // Form is currently visible, so we're closing it
+            resetForm();
+            editing.value = false;
+        }
+        isFormVisible.value = !isFormVisible.value;
+    }
 
     const editing = ref(false);
 
@@ -191,7 +196,7 @@
         </Modal>
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow">
-                <div class="flex items-center justify-end gap-2 mb-4">
+                <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode
                         @click="toggleFormVisibility"
                         text="Add Customer"

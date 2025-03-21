@@ -41,9 +41,11 @@ const logout = () => {
                             <div class="text-3xl ms-2">
                                 DPST-<b class="font-extrabold">IMS</b>
                             </div>
-                            <button class="p-3 rounded-full hover:text-white hover:bg-red-500" @click="toggleSidebar">
-                                <PhX :size="16" />
-                            </button>
+                            <div class="flex justify-end w-full md:w-auto md:justify-normal md:block">
+                                <button class="p-3 rounded-full hover:text-white hover:bg-red-500" @click="toggleSidebar">
+                                    <PhX :size="16" />
+                                </button>
+                            </div>
                         </div>
                         <div class="flex items-center justify-between sm:ms-6">
                             <h1>{{ $page.props.auth.user.name }}</h1>

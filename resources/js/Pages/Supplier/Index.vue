@@ -86,8 +86,13 @@ const resetForm = () => {
 };
 
 function toggleFormVisibility() {
-  isFormVisible.value = !isFormVisible.value;
-};
+    if (isFormVisible.value) {
+        // Form is currently visible, so we're closing it
+        resetForm();
+        editing.value = false;
+    }
+    isFormVisible.value = !isFormVisible.value;
+}
 
 const editing = ref(false);
 
@@ -176,7 +181,7 @@ const cancelConfirmDialog = () => {
                         <CustomInput name="TIN:" v-model="form.tin_no" />
                         <CustomInput name="Street:" v-model="form.street" />
                         <CustomInput name="Municipality:" v-model="form.municipality" />
-                        <CustomInput name="City:" v-model="form.city" />
+                        <CustomInput name="City/Province:" v-model="form.city" />
                         <div class="flex items-center justify-end w-full">
                             <div class="flex items-center justify-center gap-2 mt-2">
                                 <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus" color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
@@ -189,7 +194,7 @@ const cancelConfirmDialog = () => {
         </Modal>
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow">
-                <div class="flex items-center justify-end gap-2 mb-4">
+                <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode
                         @click="toggleFormVisibility"
                         text="Add Supplier"

@@ -371,7 +371,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="categories && categories.data && categories.data.length > 0">
-                        <div class="border rounded-md">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
                             <table class="min-w-full divide-y divide-gray-300">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -439,7 +439,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="colors && colors.data && colors.data.length > 0">
-                        <div class="border rounded-md">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -499,7 +499,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="materials && materials.data && materials.data.length > 0">
-                        <div class="border rounded-md">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
                             <tr>
@@ -557,7 +557,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="uoms && uoms.data && uoms.data.length > 0">
-                        <div class="border rounded-md">
+                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
                             <table class="min-w-full divide-y divide-gray-300">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -593,7 +593,7 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                     <!-- Form -->
                     <div>
                         <form @submit.prevent="submitDiscountForm">
-                            <div class="space-y-4">
+                            <div class="space-y-4 w-[78vw] md:w-full">
                                 <h2 class="text-lg font-semibold">{{ editing.discount ? 'Edit' : 'Add' }} Discount</h2>
                                 <div>
                                     <label for="discountName" class="block text-sm font-medium text-gray-700">Name</label>
@@ -610,11 +610,11 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
                                     <select
                                         id="discountType"
                                         v-model="forms.discount.type"
-                                        class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
+                                        class="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm"
                                         required
                                     >
-                                        <option value="percentage">Percentage</option>
-                                        <option value="fixed">Fixed Amount</option>
+                                        <option class="text-sm" value="percentage">Percentage</option>
+                                        <option class="text-sm" value="fixed">Fixed Amount</option>
                                     </select>
                                 </div>
                                 <div class="mt-4">
@@ -639,36 +639,36 @@ import { PhListMagnifyingGlass, PhPencil, PhTrash, PhFloppyDisk, PhFilePlus, PhW
 
                     <!-- Table -->
                     <div v-if="discounts && discounts.data && discounts.data.length > 0">
-                        <div class="border rounded-md">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
-                                    <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="discount in discounts.data" :key="discount.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.id }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.type }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ discount.amount }}</td>
-                                    <td class="px-6 py-4 text-right whitespace-nowrap">
-                                        <div class="flex justify-end gap-2">
-                                            <button @click="editDiscount(discount)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
-                                                <PhPencil :size="16" />
-                                            </button>
-                                            <button @click="confirmDiscountDelete(discount.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                                <PhTrash :size="16" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="w-[78vw] md:w-full overflow-x-auto border rounded-md">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">ID</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Name</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Amount</th>
+                                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="discount in discounts.data" :key="discount.id">
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.type }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ discount.amount }}</td>
+                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                                            <div class="flex justify-end gap-2">
+                                                <button @click="editDiscount(discount)" class="p-3 text-white bg-blue-700 rounded-full hover:bg-blue-900">
+                                                    <PhPencil :size="16" />
+                                                </button>
+                                                <button @click="confirmDiscountDelete(discount.id)" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                                                    <PhTrash :size="16" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <PaginationButton :data="discounts" />
                     </div>

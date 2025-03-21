@@ -36,6 +36,7 @@
         if (isFormVisible.value) {
             // Form is currently visible, so we're closing it
             resetForm();
+            editing.value = false;
         }
         isFormVisible.value = !isFormVisible.value;
     }
@@ -455,7 +456,7 @@
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow">
                 <!-- Search Bar -->
-                <div class="flex items-center justify-end gap-5 mb-4">
+                <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
                     <ButtonCode @click="toggleFormVisibility" text="Add Sales" :icon="PhFilePlus"
                         color="bg-emerald-700 hover:bg-emerald-900" />
                     <div class="relative">

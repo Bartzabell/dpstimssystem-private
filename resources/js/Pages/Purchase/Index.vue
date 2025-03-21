@@ -22,8 +22,13 @@
     const selectedSupplier = ref(null);
 
     function toggleFormVisibility() {
+        if (isFormVisible.value) {
+            // Form is currently visible, so we're closing it
+            resetForm();
+            editing.value = false;
+        }
         isFormVisible.value = !isFormVisible.value;
-    };
+    }
 
     const showDeleteConfirmation = ref(false);
     const showConfirmDialog = ref(false);
@@ -348,26 +353,21 @@
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow">
                 <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h1 class="text-3xl font-extrabold leading-tight text-gray-800 dark:text-gray-200">PURCHASES</h1>
-                    </div>
-                    <div class="flex items-center gap-x-2">
-                        <ButtonCode
-                            @click="toggleFormVisibility"
-                            text="Add Purchase"
-                            :icon="PhFilePlus"
-                            color="bg-emerald-700 hover:bg-emerald-900"
+                <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
+                    <ButtonCode
+                        @click="toggleFormVisibility"
+                        text="Add Purchase"
+                        :icon="PhFilePlus"
+                        color="bg-emerald-700 hover:bg-emerald-900"
+                    />
+                    <div class="relative">
+                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
+                        <input
+                            type="text"
+                            v-model="search"
+                            placeholder="Search..."
+                            class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
                         />
-                        <div class="relative">
-                            <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 left-2 top-1/2" :size="20" />
-                            <input
-                                type="text"
-                                v-model="search"
-                                placeholder="Search..."
-                                class="py-1 pl-8 pr-2 text-sm border rounded-2xl"
-                            />
-                        </div>
                     </div>
                 </div>
                 <!-- items Table -->
