@@ -18,6 +18,8 @@ class InventoryController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->input('search');
+        $sortField = $request->input('sort_field', 'id'); // Default sort field
+        $sortDirection = $request->input('sort_direction', 'asc'); // Default sort direction
 
         //FOR TABLE PAGINATION AND SEARCH
         $inventories = InventoryStock::query()
@@ -35,6 +37,9 @@ class InventoryController extends Controller
                     ->orWhere('uom', 'like', "%{$search}%")
                     ->orWhere('price', 'like', "%{$search}%")
                     ->orWhere('status', 'like', "%{$search}%");
+            })
+            ->when($sortField, function ($query, $sortField) use ($sortDirection) {
+                return $query->orderBy($sortField, $sortDirection);
             })
             ->paginate(5)
             ->appends($request->query());
@@ -54,7 +59,7 @@ class InventoryController extends Controller
             'materials' => $materials,
             'colors' => $colors,
             'uoms' => $uoms,
-            'filters' => $request->only('search')
+            'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }
 

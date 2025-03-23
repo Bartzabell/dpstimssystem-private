@@ -2,7 +2,7 @@
     import { ref, watch, computed } from 'vue';
     import { useForm, router } from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhX, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhDownloadSimple, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
+    import { PhX, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhCaretUp, PhCaretDown, PhDownloadSimple, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
 
     const props = defineProps({
         inventories: Object,
@@ -14,9 +14,21 @@
     });
 
     const search = ref(props.filters?.search || '');
+    const sortField = ref(props.filters.sort_field || 'id');
+    const sortDirection = ref(props.filters.sort_direction || 'asc');
     watch(search, (value) => {
-        router.get(route('inventory.index'), { search: value }, { preserveState: true, replace: true });
+        router.get(route('inventory.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
     }, { deep: true });
+
+    const sort = (field) => {
+        if (sortField.value === field) {
+            sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortField.value = field;
+            sortDirection.value = 'asc';
+        }
+        router.get(route('inventory.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+    };
 
     const isFormVisible = ref(false);
     const selectedCategory = ref(null);
@@ -314,18 +326,114 @@
                         <table class="min-w-full divide-y divide-gray-200 rounded-lg dark:border-gray-600 dark:divide-gray-600">
                             <thead>
                                 <tr class="text-xs text-center text-white bg-gray-100 md:text-base">
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ID</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">NAME</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ITEM CODE</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">ITEM QUANTITY</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">CATEGORY</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MATERIAL</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">COLOR</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">SIZE</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">PRICE</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MIN STOCK</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">MAX STOCK</th>
-                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">STATUS</th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('id')" class="flex items-center justify-center w-full">
+                                            ID
+                                            <PhCaretUp v-if="sortField === 'id' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'id' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('name')" class="flex items-center justify-center w-full">
+                                            NAME
+                                            <PhCaretUp v-if="sortField === 'name' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'name' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('item_code')" class="flex items-center justify-center w-full">
+                                            ITEM CODE
+                                            <PhCaretUp v-if="sortField === 'item_code' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'item_code' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('item_qty')" class="flex items-center justify-center w-full">
+                                            ITEM QUANTITY
+                                            <PhCaretUp v-if="sortField === 'item_qty' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'item_qty' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('category')" class="flex items-center justify-center w-full">
+                                            CATEGORY
+                                            <PhCaretUp v-if="sortField === 'category' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'category' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('material')" class="flex items-center justify-center w-full">
+                                            MATERIAL
+                                            <PhCaretUp v-if="sortField === 'material' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'material' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('color')" class="flex items-center justify-center w-full">
+                                            COLOR
+                                            <PhCaretUp v-if="sortField === 'color' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'color' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('size')" class="flex items-center justify-center w-full">
+                                           SIZE
+                                            <PhCaretUp v-if="sortField === 'size' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'size' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('price')" class="flex items-center justify-center w-full">
+                                            PRICE
+                                            <PhCaretUp v-if="sortField === 'price' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'price' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('min_stock')" class="flex items-center justify-center w-full">
+                                            MIN STOCK
+                                            <PhCaretUp v-if="sortField === 'min_stock' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'min_stock' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('max_stock')" class="flex items-center justify-center w-full">
+                                            MAX STOCK
+                                            <PhCaretUp v-if="sortField === 'max_stock' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'max_stock' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('status')" class="flex items-center justify-center w-full">
+                                            STATUS
+                                            <PhCaretUp v-if="sortField === 'status' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'status' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Actions</th>
                                 </tr>
                             </thead>
