@@ -7,7 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { PhGear, PhUserCircle, PhX, PhList, PhChartLineUp, PhPackage, PhBasket, PhMoney, PhMonitor, PhArrowsClockwise, PhWarningOctagon, PhIdentificationCard } from "@phosphor-icons/vue";
+import { PhGear, PhUserCircle, PhX, PhList, PhChartLineUp, PhPackage, PhUsersThree, PhSignOut, PhBasket, PhMoney, PhMonitor, PhIdentificationBadge, PhArrowsClockwise, PhWarningOctagon, PhIdentificationCard } from "@phosphor-icons/vue";
 
 defineProps({
     title: String,
@@ -67,16 +67,16 @@ const logout = () => {
                                             Manage Account
                                         </div>
                                         <DropdownLink :href="route('profile.show')">
-                                            Profile
+                                            <span class="inline-flex items-center w-full gap-2"><PhIdentificationBadge :size="24" /> Profile</span>
                                         </DropdownLink>
                                         <div class="border-t border-gray-200 dark:border-gray-600" />
                                         <DropdownLink :href="route('user.index')">
-                                            Users
+                                            <span class="inline-flex items-center w-full gap-2"><PhUsersThree :size="24" /> User Management</span>
                                         </DropdownLink>
                                         <div class="border-t border-gray-200 dark:border-gray-600" />
                                         <form @submit.prevent="logout">
                                             <DropdownLink as="button">
-                                                Log Out
+                                                <span class="inline-flex items-center w-full gap-2"><PhSignOut :size="24" /> Log Out</span>
                                             </DropdownLink>
                                         </form>
                                     </template>
