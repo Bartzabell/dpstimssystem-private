@@ -10,13 +10,11 @@
         customers: Array,
         inventories: Array,
         discounts: Array,
-        filters: Object
+        filters: Object,
+        categories: Array
     });
 
-    // Create a reference to the Print component
     const printRef = ref(null);
-
-    // Function to trigger printing from the Print component
     function handlePrint(formId) {
         printRef.value.printTest(formId);
     }
@@ -32,6 +30,13 @@
     const selectedCustomer = ref(null);
     const selectedDiscount = ref(null);
 
+    // State for categories and filtered items
+    const selectedCategory = ref(null);
+    const filteredInventories = computed(() => {
+        if (!selectedCategory.value) return props.inventories;
+        return props.inventories.filter(item => item.category === selectedCategory.value);
+    });
+
     function toggleFormVisibility() {
         if (isFormVisible.value) {
             // Form is currently visible, so we're closing it
@@ -45,6 +50,17 @@
     const showConfirmDialog = ref(false);
     const itemToDelete = ref(null);
     const dialogAction = ref('');
+
+    const lastItemQty = computed({
+        get() {
+            return form.items.length > 0 ? form.items[form.items.length - 1].item_qty : '';
+        },
+        set(value) {
+            if (form.items.length > 0) {
+                form.items[form.items.length - 1].item_qty = value;
+            }
+        }
+    });
 
     const form = useForm({
         id: null,
@@ -202,6 +218,7 @@
         selectedItems.value = [];
         selectedCustomer.value = null;
         selectedDiscount.value = null;
+        selectedCategory.value = null;
     };
 
     const addItem = () => {
@@ -229,9 +246,9 @@
         });
     };
 
-    const handleInventoryChange = (event, index) => {
-        form.items[index].stock_id = event.id;
-        selectedItems.value[index] = event.id;
+    const handleInventorySelection = (inventoryItem, index) => {
+        form.items[index].stock_id = inventoryItem.id;
+        selectedItems.value[index] = inventoryItem.id;
         updatePrice(index);
     };
 
@@ -250,6 +267,10 @@
             });
         });
     }, { deep: true });
+
+    const selectCategory = (category) => {
+        selectedCategory.value = category;
+    };
 
     const submit = () => {
         dialogAction.value = editing.value ? 'update' : 'add';
@@ -320,138 +341,299 @@
             </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
-            <div v-if="isFormVisible">
-                <div
-                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
+            <div v-if="isFormVisible" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
                         <h1 class="text-2xl font-extrabold dark:text-gray-200">Sales Form</h1>
                     </div>
-                    <button @click="toggleFormVisibility"
-                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
                     </button>
                 </div>
-                <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div>
-                            <div class="mb-2 spanlabel">
+
+                <!-- Two-grid layout -->
+                <div class="p-5 pt-16">
+                    <!-- Left side - Item settings -->
+                    <div class="h-full p-5 bg-white rounded shadow dark:bg-gray-800">
+                        <h2 class="mb-4 text-xl font-bold dark:text-gray-200">Item Settings</h2>
+
+                        <!-- Category buttons -->
+                        <div class="mb-4">
+                            <label class="block mb-2 text-sm font-medium dark:text-gray-200">Categories</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button
+                                    v-for="category in props.categories"
+                                    :key="category.id"
+                                    @click="selectCategory(category.name)"
+                                    :class="[
+                                        'px-3 py-2 rounded-lg text-sm font-medium',
+                                        selectedCategory === category.name
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
+                                    ]"
+                                >
+                                    {{ category.name }}
+                                </button>
+                                <button
+                                    @click="selectedCategory = null"
+                                    :class="[
+                                        'px-3 py-2 rounded-lg text-sm font-medium',
+                                        !selectedCategory
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
+                                    ]"
+                                >
+                                    All Items
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Item buttons (filtered by category) -->
+                        <div class="mb-4">
+                            <label class="block mb-2 text-sm font-medium dark:text-gray-200">Items</label>
+                            <div class="grid grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3 max-h-64">
+                                <button
+                                    v-for="item in filteredInventories"
+                                    :key="item.id"
+                                    @click="handleInventorySelection(item, form.items.length - 1)"
+                                    class="px-3 py-2 text-sm font-medium text-left text-gray-800 truncate bg-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500"
+                                    :title="item.name || item.item_code"
+                                >
+                                    {{ item.name || item.item_code }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quantity input -->
+                        <input
+                            type="number"
+                            v-model="lastItemQty"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            min="1"
+                        />
+                    </div>
+                </div>
+
+                <div class="p-5 pt-16">
+                    <!-- Right side - Form details and items list -->
+                    <div class="h-full p-5 bg-white rounded shadow dark:bg-gray-800">
+                        <!-- Customer info -->
+                        <div class="grid grid-cols-1 mb-4 gap-x-5 md:grid-cols-2">
+                            <div class="mb-2">
                                 <label class="block mb-1 text-sm font-medium dark:text-gray-200">Customer</label>
-                                <SearchableDropdown class="border rounded-lg border-slate-600"
-                                    v-model="selectedCustomer" :items="customers" placeholder="Search Customer..."
-                                    @change="form.customer_id = $event.id" />
+                                <SearchableDropdown
+                                    class="border rounded-lg border-slate-600"
+                                    v-model="selectedCustomer"
+                                    :items="customers"
+                                    placeholder="Search Customer..."
+                                    @change="form.customer_id = $event.id"
+                                />
                             </div>
                             <div>
-                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold"
-                                    :message="form.errors.date_sold" />
+                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
                             </div>
                             <div>
-                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no"
-                                    disabled />
+                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no" disabled />
                             </div>
                             <div>
                                 <CustomInput name="Customer Email" type="text" v-model="form.email" disabled />
                             </div>
                             <div>
-                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no"
-                                    disabled />
+                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled />
                             </div>
                             <div>
                                 <CustomInput name="Customer Address" type="text" v-model="form.address" disabled />
                             </div>
                         </div>
 
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <h3 class="text-lg font-bold dark:text-gray-200">Items</h3>
-                            </div>
-                            <div class="overflow-y-auto h-[90vh] md:h-[30vh]">
-                                <div v-if="form.items.length === 0" class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
-                                    <p>No items added yet. Click 'Add Item' to start.</p>
-                                </div>
-                                <div v-else class="overflow-visible border rounded-lg">
-                                    <table class="w-full">
-                                        <thead>
-                                            <tr class="text-left bg-gray-100 dark:bg-gray-600">
-                                                <th class="w-3/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Item Code</th>
-                                                <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Quantity</th>
-                                                <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Price</th>
-                                                <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(item, index) in form.items" :key="index"
-                                                class="hover:bg-gray-50 dark:hover:bg-gray-400">
-                                                <td class="px-2 py-1 border whitespace-nowrap">
-                                                    <!-- Fixed: Use index-specific v-model binding -->
-                                                    <SearchableDropdown class="border rounded-lg border-slate-600"
-                                                        v-model="selectedItems[index]" :items="inventories"
-                                                        placeholder="Search Item..."
-                                                        @change="handleInventoryChange($event, index)" />
-                                                </td>
-                                                <td class="px-2 pt-3 pb-1 border whitespace-nowrap">
-                                                    <CustomInput v-model="item.item_qty" min="1" />
-                                                </td>
-                                                <td class="px-2 pt-3 pb-1 border whitespace-nowrap">
-                                                    <CustomInput v-model="item.item_price" min="1" />
-                                                </td>
-                                                <td class="px-2 py-1 border whitespace-nowrap">
-                                                    <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                                        <button type="button" @click="removeItem(index)"
-                                                            class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-                                                            Remove
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <!-- Items list -->
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-lg font-bold dark:text-gray-200">Added Items</h3>
                             </div>
                             <div>
-                                <div
-                                    class="flex flex-col items-center justify-between w-full gap-5 py-2 lg:gap-0 lg:flex-row h-max">
-                                    <div class="flex justify-end order-2 w-full lg:justify-start lg:order-1">
-                                        <span class="flex items-center px-2 text-lg font-bold dark:text-gray-200">Discount:</span>
-                                        <SearchableDropdown class="border rounded-lg border-slate-600"
-                                            v-model="selectedDiscount" :items="discounts"
-                                            placeholder="Search Discount..." @change="form.discount_id = $event.id" />
-                                    </div>
-                                    <div class="flex justify-end order-1 w-full lg:order-2">
-                                        <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900"
-                                            @click="addItem" text="Add Item" />
-                                    </div>
+                                <div v-if="form.items.length === 0" class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
+                                    <p>No items added yet. Add items from the left panel.</p>
+                                    <div class="mt-6">
+                                        <button
+                                            @click="addItem"
+                                            class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900"
+                                        >
+                                            <PhRowsPlusBottom :size="20" class="mr-2" />
+                                            Add Item
+                                        </button>
+                                     </div>
                                 </div>
-                                <!-- Display Total Price -->
-                                <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg dark:text-gray-200 dark:bg-gray-600 bg-gray-50">
-                                    <div class="flex justify-between w-full py-1">
-                                        <span class="font-medium text-md">Subtotal:</span>
-                                        <span class="text-md">{{ getSubtotal().toFixed(2) }}</span>
+                                <div v-else class="flex flex-col border rounded-lg">
+                                    <div class="overflow-y-auto max-h-52">
+                                        <table class="w-full">
+                                            <thead class="sticky top-0 z-10">
+                                                <tr class="text-left bg-gray-100 dark:bg-gray-600">
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Item Code</th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Quantity</th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Price</th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="overflow-y-auto max-h-64">
+                                                <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50 dark:hover:bg-gray-400">
+                                                    <td class="px-2 py-1 border">
+                                                        {{ props.inventories.find(inv => inv.id === item.stock_id)?.item_code || 'No item selected' }}
+                                                    </td>
+                                                    <td class="px-2 py-1 border">
+                                                        {{ item.item_qty }}
+                                                    </td>
+                                                    <td class="px-2 py-1 border">
+                                                        {{ parseFloat(item.item_price).toFixed(2) }}
+                                                    </td>
+                                                    <td class="px-2 py-1 border whitespace-nowrap">
+                                                        <div class="inline-flex gap-2">
+                                                            <button
+                                                                type="button"
+                                                                @click="removeItem(index)"
+                                                                class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
+                                                            >
+                                                                <PhTrash :size="16" />
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                @click="form.items[form.items.length - 1] = item; removeItem(index)"
+                                                                class="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
+                                                            >
+                                                                <PhPencil :size="16" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-
-                                    <div v-if="getDiscountInfo().applied" class="flex justify-between w-full py-1">
-                                        <span class="font-medium text-md">
-                                            {{ getDiscountInfo().name }} ({{ getDiscountInfo().description }}):
-                                        </span>
-                                        <span class="text-red-400 text-md">-{{ getDiscountInfo().amount.toFixed(2)
-                                        }}</span>
-                                    </div>
-
-                                    <div class="flex justify-between w-full py-1 pt-2 mt-1 border-t border-gray-200">
-                                        <span class="text-lg font-bold">Total Price:</span>
-                                        <span class="text-lg font-bold">{{ total_price.toFixed(2) }}</span>
+                                    <div class="mt-6">
+                                        <button
+                                            @click="addItem"
+                                            class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900"
+                                        >
+                                            <PhRowsPlusBottom :size="20" class="mr-2" />
+                                            Add Item
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Discount and totals -->
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <span class="mr-2 text-sm font-medium dark:text-gray-200">Discount:</span>
+                                <SearchableDropdown
+                                    class="border rounded-lg border-slate-600"
+                                    v-model="selectedDiscount"
+                                    :items="discounts"
+                                    placeholder="Search Discount..."
+                                    @change="form.discount_id = $event.id"
+                                />
+                            </div>
+
+                            <!-- Display Total Price -->
+                            <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg dark:text-gray-200 dark:bg-gray-600 bg-gray-50">
+                                <div class="flex justify-between w-full py-1">
+                                    <span class="font-medium text-md">Subtotal:</span>
+                                    <span class="text-md">{{ getSubtotal().toFixed(2) }}</span>
+                                </div>
+
+                                <div v-if="getDiscountInfo().applied" class="flex justify-between w-full py-1">
+                                    <span class="font-medium text-md">
+                                        {{ getDiscountInfo().name }} ({{ getDiscountInfo().description }}):
+                                    </span>
+                                    <span class="text-red-400 text-md">-{{ getDiscountInfo().amount.toFixed(2) }}</span>
+                                </div>
+
+                                <div class="flex justify-between w-full py-1 pt-2 mt-1 border-t border-gray-200">
+                                    <span class="text-lg font-bold">Total Price:</span>
+                                    <span class="text-lg font-bold">{{ total_price.toFixed(2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form actions -->
+                        <div class="flex items-center justify-center gap-2 mt-6">
+                            <ButtonCode
+                                type="button"
+                                @click="submit"
+                                :icon="editing ? PhFloppyDisk : PhFilePlus"
+                                color="bg-emerald-700 hover:bg-emerald-900"
+                                :text="editing ? 'Update' : 'Add'"
+                            />
+                            <ButtonCode
+                                v-if="editing"
+                                type="button"
+                                color="bg-gray-500 hover:bg-gray-700"
+                                text="Cancel"
+                                @click="cancelForm"
+                            />
+                        </div>
                     </div>
-                    <div class="flex items-center justify-center gap-2 mt-6">
-                        <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus"
-                            color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
-                        <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel"
-                            @click="cancelForm" />
-                    </div>
-                </form>
+                </div>
             </div>
+
+            <!-- Confirmation dialogs -->
+            <ConfirmationModal :show="showConfirmDialog" @close="cancelConfirmDialog">
+                <template #title>
+                    <div>
+                        <h2 v-if="dialogAction === 'add'" class="text-xl font-bold">Confirm Add Form</h2>
+                        <h2 v-else-if="dialogAction === 'update'" class="text-xl font-bold">Confirm Update Form</h2>
+                        <h2 v-else-if="dialogAction === 'cancel'" class="text-xl font-bold">Confirm Cancel</h2>
+                    </div>
+                </template>
+                <template #content>
+                    <div>
+                        <p v-if="dialogAction === 'add'">Are you sure you want to add this sales form?</p>
+                        <p v-else-if="dialogAction === 'update'">Are you sure you want to update this sales form?</p>
+                        <p v-else-if="dialogAction === 'cancel'">Are you sure you want to cancel? All changes will be lost.</p>
+                    </div>
+                </template>
+                <template #footer>
+                    <div>
+                        <button v-if="dialogAction === 'add' || dialogAction === 'update'" @click="confirmSubmit"
+                            class="px-4 py-2 text-white rounded bg-emerald-700 hover:bg-emerald-900">
+                            Confirm
+                        </button>
+                        <button v-else-if="dialogAction === 'cancel'" @click="confirmCancel"
+                            class="px-4 py-2 text-white rounded bg-emerald-700 hover:bg-emerald-900">
+                            Confirm
+                        </button>
+                        <button @click="cancelConfirmDialog"
+                            class="px-4 py-2 ml-2 text-gray-800 bg-gray-200 rounded hover:bg-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500">
+                            Cancel
+                        </button>
+                    </div>
+                </template>
+            </ConfirmationModal>
+
+            <ConfirmationModal :show="showDeleteConfirmation" @close="cancelDelete">
+                <template #title>
+                    <div>
+                        <h2 class="text-xl font-bold">Confirm Delete</h2>
+                    </div>
+                </template>
+                <template #content>
+                    <div>
+                        <p>Are you sure you want to delete this sales form? This action cannot be undone.</p>
+                    </div>
+                </template>
+                <template #footer>
+                    <div>
+                        <button @click="deleteItem"
+                            class="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
+                            Delete
+                        </button>
+                        <button @click="cancelDelete"
+                            class="px-4 py-2 ml-2 text-gray-800 bg-gray-200 rounded hover:bg-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500">
+                            Cancel
+                        </button>
+                    </div>
+                </template>
+            </ConfirmationModal>
         </Modal>
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-800">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\InventoryStock;
 use App\Models\Customer;
 use App\Models\Discount;
@@ -46,9 +47,11 @@ class SalesController extends Controller
 
         $customers = Customer::select('*')
             ->get();
-        $inventories = InventoryStock::select('id', 'item_code', 'price')
+        $inventories = InventoryStock::select('*')
             ->get();
         $discounts = Discount::select('*')
+            ->get();
+        $categories = Category::select('*')
             ->get();
 
         return Inertia::render('Sales/Index', [
@@ -56,6 +59,7 @@ class SalesController extends Controller
             'customers' => $customers,
             'inventories' => $inventories,
             'discounts' => $discounts,
+            'categories' => $categories,
             'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }
