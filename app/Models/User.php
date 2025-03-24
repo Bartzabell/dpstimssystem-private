@@ -78,4 +78,9 @@ class User extends Authenticatable
             ->dontSubmitEmptyLogs()
             ->useLogName('User Module');
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
 }

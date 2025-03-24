@@ -26,7 +26,26 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
          // Ensure the admin role exists
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $roles = [
+            ['name' => 'admin'],
+            ['name' => 'stocker'],
+            ['name' => 'cashier'],
+            ['name' => 'manager'],
+        ];
+        
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role['name']], $role);
+        }
+        
+        // Then fetch the admin role to get its ID
+        $adminRole = Role::where('name', 'admin')->first();
+        
+        // $adminRole = Role::firstOrCreate(
+        //     ['name' => 'admin'],
+        //     ['name' => 'stocker'],
+        //     ['name' => 'cashier'],
+        //     ['name' => 'manager']
+        // );
 
         // Create the administrator user
         User::firstOrCreate(

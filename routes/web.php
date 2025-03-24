@@ -10,6 +10,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -78,6 +79,11 @@ Route::middleware([
     Route::delete('/discount/{discount}', [SettingsController::class, 'discountDestroy'])->name('discount.destroy');
 
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
     // About route
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');

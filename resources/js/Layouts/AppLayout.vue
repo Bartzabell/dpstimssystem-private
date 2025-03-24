@@ -70,6 +70,10 @@ const logout = () => {
                                             Profile
                                         </DropdownLink>
                                         <div class="border-t border-gray-200 dark:border-gray-600" />
+                                        <DropdownLink :href="route('user.index')">
+                                            Users
+                                        </DropdownLink>
+                                        <div class="border-t border-gray-200 dark:border-gray-600" />
                                         <form @submit.prevent="logout">
                                             <DropdownLink as="button">
                                                 Log Out
