@@ -1,337 +1,337 @@
 <script setup>
-    import { ref, watch, computed } from 'vue';
-    import Print from './Print.vue';
-    import { useForm, router, usePage } from '@inertiajs/vue3';
-    import AppLayout from '@/Layouts/AppLayout.vue';
-    import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhCaretUp, PhCaretDown, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
+import { ref, watch, computed } from 'vue';
+import Print from './Print.vue';
+import { useForm, router, usePage } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhCaretUp, PhCaretDown, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
 
-    const props = defineProps({
-        forms: Object,
-        customers: Array,
-        inventories: Array,
-        discounts: Array,
-        filters: Object,
-        categories: Array
-    });
+const props = defineProps({
+    forms: Object,
+    customers: Array,
+    inventories: Array,
+    discounts: Array,
+    filters: Object,
+    categories: Array
+});
 
-    const printRef = ref(null);
-    function handlePrint(formId) {
-        printRef.value.printTest(formId);
+const printRef = ref(null);
+function handlePrint(formId) {
+    printRef.value.printTest(formId);
+}
+
+const search = ref(props.filters.search || '');
+const sortField = ref(props.filters.sort_field || 'id');
+const sortDirection = ref(props.filters.sort_direction || 'asc');
+const isFormVisible = ref(false);
+const editing = ref(false);
+const topToast = ref(null);
+
+const selectedItems = ref([]);
+const selectedCustomer = ref(null);
+const selectedDiscount = ref(null);
+
+// State for categories and filtered items
+const selectedCategory = ref(null);
+const filteredInventories = computed(() => {
+    if (!selectedCategory.value) return props.inventories;
+    return props.inventories.filter(item => item.category === selectedCategory.value);
+});
+
+function toggleFormVisibility() {
+    if (isFormVisible.value) {
+        // Form is currently visible, so we're closing it
+        resetForm();
+        editing.value = false;
     }
+    isFormVisible.value = !isFormVisible.value;
+}
 
-    const search = ref(props.filters.search || '');
-    const sortField = ref(props.filters.sort_field || 'id');
-    const sortDirection = ref(props.filters.sort_direction || 'asc');
-    const isFormVisible = ref(false);
-    const editing = ref(false);
-    const topToast = ref(null);
+const showDeleteConfirmation = ref(false);
+const showConfirmDialog = ref(false);
+const itemToDelete = ref(null);
+const dialogAction = ref('');
 
-    const selectedItems = ref([]);
-    const selectedCustomer = ref(null);
-    const selectedDiscount = ref(null);
-
-    // State for categories and filtered items
-    const selectedCategory = ref(null);
-    const filteredInventories = computed(() => {
-        if (!selectedCategory.value) return props.inventories;
-        return props.inventories.filter(item => item.category === selectedCategory.value);
-    });
-
-    function toggleFormVisibility() {
-        if (isFormVisible.value) {
-            // Form is currently visible, so we're closing it
-            resetForm();
-            editing.value = false;
+const lastItemQty = computed({
+    get() {
+        return form.items.length > 0 ? form.items[form.items.length - 1].item_qty : '';
+    },
+    set(value) {
+        if (form.items.length > 0) {
+            form.items[form.items.length - 1].item_qty = value;
         }
-        isFormVisible.value = !isFormVisible.value;
+    }
+});
+
+const form = useForm({
+    id: null,
+    customer_id: '',
+    discount_id: '',
+    date_sold: '',
+    phone_no: '',
+    tin_no: '',
+    address: '',
+    email: '',
+    items: [],
+    total_price: 0,
+});
+
+const getSubtotal = () => {
+    return form.items.reduce((total, item) => {
+        return total + (Number(item.item_price) || 0);
+    }, 0);
+};
+
+const getDiscountInfo = () => {
+    const result = {
+        applied: false,
+        name: '',
+        description: '',
+        amount: 0
+    };
+
+    if (selectedDiscount.value) {
+        const discount = props.discounts.find(d => d.id === selectedDiscount.value);
+        if (discount) {
+            const subtotal = getSubtotal();
+            result.applied = true;
+            result.name = discount.name;
+
+            if (discount.type === "Percentage") {
+                result.description = `${discount.amount}%`;
+                result.amount = subtotal * (discount.amount / 100);
+            } else if (discount.type === "Fixed Amount") {
+                result.description = 'Fixed Amount';
+                // Ensure discount.amount is a number
+                result.amount = parseFloat(discount.amount);
+            }
+        }
     }
 
-    const showDeleteConfirmation = ref(false);
-    const showConfirmDialog = ref(false);
-    const itemToDelete = ref(null);
-    const dialogAction = ref('');
+    // Ensure result.amount is a number
+    if (typeof result.amount !== 'number' || isNaN(result.amount)) {
+        result.amount = 0;
+    }
 
-    const lastItemQty = computed({
-        get() {
-            return form.items.length > 0 ? form.items[form.items.length - 1].item_qty : '';
+    return result;
+};
+
+const total_price = computed(() => {
+    const subtotal = getSubtotal();
+    const discountInfo = getDiscountInfo();
+
+    if (discountInfo.applied) {
+        return subtotal - discountInfo.amount;
+    }
+
+    return subtotal;
+});
+
+watch(search, (value) => {
+    router.get(route('sales.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+}, { deep: true });
+
+const sort = (field) => {
+    if (sortField.value === field) {
+        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+    } else {
+        sortField.value = field;
+        sortDirection.value = 'asc';
+    }
+    router.get(route('sales.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+};
+
+const edit = (sales_form) => {
+    if (!isFormVisible.value) {
+        isFormVisible.value = true;
+    }
+    form.id = sales_form.id;
+    form.customer_id = sales_form.customer_id;
+    form.discount_id = sales_form.discount_id;
+    form.date_sold = sales_form.date_sold;
+    form.phone_no = sales_form.supplier?.phone_no || '';
+    form.tin_no = sales_form.supplier?.tin_no || '';
+
+    if (sales_form.date_sold) {
+        const dateObj = new Date(sales_form.date_sold + 'Z');
+        form.date_sold = dateObj.toISOString().split('T')[0];
+    } else {
+        form.date_sold = '';
+    }
+
+    form.items = sales_form.items ?
+        [...sales_form.items] : [];
+
+    selectedItems.value = form.items.map(item => item.stock_id || null);
+    selectedCustomer.value = sales_form.customer_id;
+    selectedDiscount.value = sales_form.discount_id;
+    editing.value = true;
+};
+
+watch(selectedCustomer, (newCustomerId) => {
+    if (newCustomerId) {
+        const selectedCustomer = props.customers.find(customer => customer.id === newCustomerId);
+        if (selectedCustomer) {
+            form.phone_no = selectedCustomer.phone_no;
+            form.tin_no = selectedCustomer.tin_no;
+            form.email = selectedCustomer.email;
+            form.address = `${selectedCustomer.street}, ${selectedCustomer.municipality}, ${selectedCustomer.city}`;
+        }
+    } else {
+        form.phone_no = '';
+        form.tin_no = '';
+        form.email = '';
+        form.address = '';
+    }
+});
+
+watch([() => form.items, () => selectedDiscount.value], () => {
+    form.total_price = total_price.value;
+}, { deep: true });
+
+const confirmDelete = (id) => {
+    itemToDelete.value = id;
+    showDeleteConfirmation.value = true;
+};
+
+const deleteItem = () => {
+    form.delete(route('sales.destroy', itemToDelete.value), {
+        onSuccess: () => {
+            if (isFormVisible.value) {
+                isFormVisible.value = false;
+            }
+            topToast.value.showToast('Form deleted successfully', 'success');
+            showDeleteConfirmation.value = false;
         },
-        set(value) {
-            if (form.items.length > 0) {
-                form.items[form.items.length - 1].item_qty = value;
-            }
+        onError: () => {
+            topToast.value.showToast('Failed to delete form', 'error');
+            showDeleteConfirmation.value = false;
         }
     });
+};
 
-    const form = useForm({
+const resetForm = () => {
+    form.id = '';
+    form.customer_id = '';
+    form.discount_id = '';
+    form.date_sold = '';
+    form.items = [];
+    selectedItems.value = [];
+    selectedCustomer.value = null;
+    selectedDiscount.value = null;
+    selectedCategory.value = null;
+};
+
+const addItem = () => {
+    form.items.push({
         id: null,
-        customer_id: '',
-        discount_id: '',
-        date_sold: '',
-        phone_no: '',
-        tin_no: '',
-        address: '',
-        email: '',
-        items: [],
-        total_price: 0,
+        tsb_id: '',
+        stock_id: '',
+        item_qty: '',
+        item_price: '',
     });
+    selectedItems.value.push(null);
+};
 
-    const getSubtotal = () => {
-        return form.items.reduce((total, item) => {
-            return total + (Number(item.item_price) || 0);
-        }, 0);
-    };
+const removeItem = (index) => {
+    form.items.splice(index, 1);
+    selectedItems.value.splice(index, 1);
+};
 
-    const getDiscountInfo = () => {
-        const result = {
-            applied: false,
-            name: '',
-            description: '',
-            amount: 0
-        };
-
-        if (selectedDiscount.value) {
-            const discount = props.discounts.find(d => d.id === selectedDiscount.value);
-            if (discount) {
-                const subtotal = getSubtotal();
-                result.applied = true;
-                result.name = discount.name;
-
-                if (discount.type === "Percentage") {
-                    result.description = `${discount.amount}%`;
-                    result.amount = subtotal * (discount.amount / 100);
-                } else if (discount.type === "Fixed Amount") {
-                    result.description = 'Fixed Amount';
-                    // Ensure discount.amount is a number
-                    result.amount = parseFloat(discount.amount);
-                }
-            }
-        }
-
-        // Ensure result.amount is a number
-        if (typeof result.amount !== 'number' || isNaN(result.amount)) {
-            result.amount = 0;
-        }
-
-        return result;
-    };
-
-    const total_price = computed(() => {
-        const subtotal = getSubtotal();
-        const discountInfo = getDiscountInfo();
-
-        if (discountInfo.applied) {
-            return subtotal - discountInfo.amount;
-        }
-
-        return subtotal;
+const formatDate = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
     });
+};
 
-    watch(search, (value) => {
-        router.get(route('sales.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
-    }, { deep: true });
+const handleInventorySelection = (inventoryItem, index) => {
+    form.items[index].stock_id = inventoryItem.id;
+    selectedItems.value[index] = inventoryItem.id;
+    updatePrice(index);
+};
 
-    const sort = (field) => {
-        if (sortField.value === field) {
-            sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
-        } else {
-            sortField.value = field;
-            sortDirection.value = 'asc';
-        }
-        router.get(route('sales.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
-    };
+const updatePrice = (index) => {
+    const item = form.items[index];
+    const inventory = props.inventories.find(inv => inv.id === item.stock_id);
+    if (inventory && item.item_qty) {
+        item.item_price = inventory.price * item.item_qty;
+    }
+};
 
-    const edit = (sales_form) => {
-        if (!isFormVisible.value) {
-            isFormVisible.value = true;
-        }
-        form.id = sales_form.id;
-        form.customer_id = sales_form.customer_id;
-        form.discount_id = sales_form.discount_id;
-        form.date_sold = sales_form.date_sold;
-        form.phone_no = sales_form.supplier?.phone_no || '';
-        form.tin_no = sales_form.supplier?.tin_no || '';
-
-        if (sales_form.date_sold) {
-            const dateObj = new Date(sales_form.date_sold + 'Z');
-            form.date_sold = dateObj.toISOString().split('T')[0];
-        } else {
-            form.date_sold = '';
-        }
-
-        form.items = sales_form.items ?
-            [...sales_form.items] : [];
-
-        selectedItems.value = form.items.map(item => item.stock_id || null);
-        selectedCustomer.value = sales_form.customer_id;
-        selectedDiscount.value = sales_form.discount_id;
-        editing.value = true;
-    };
-
-    watch(selectedCustomer, (newCustomerId) => {
-        if (newCustomerId) {
-            const selectedCustomer = props.customers.find(customer => customer.id === newCustomerId);
-            if (selectedCustomer) {
-                form.phone_no = selectedCustomer.phone_no;
-                form.tin_no = selectedCustomer.tin_no;
-                form.email = selectedCustomer.email;
-                form.address = `${selectedCustomer.street}, ${selectedCustomer.municipality}, ${selectedCustomer.city}`;
-            }
-        } else {
-            form.phone_no = '';
-            form.tin_no = '';
-            form.email = '';
-            form.address = '';
-        }
+watch(() => form.items, (newItems) => {
+    newItems.forEach((item, index) => {
+        watch(() => item.item_qty, () => {
+            updatePrice(index);
+        });
     });
+}, { deep: true });
 
-    watch([() => form.items, () => selectedDiscount.value], () => {
-        form.total_price = total_price.value;
-    }, { deep: true });
+const selectCategory = (category) => {
+    selectedCategory.value = category;
+};
 
-    const confirmDelete = (id) => {
-        itemToDelete.value = id;
-        showDeleteConfirmation.value = true;
-    };
+const submit = () => {
+    dialogAction.value = editing.value ? 'update' : 'add';
+    showConfirmDialog.value = true;
+};
 
-    const deleteItem = () => {
-        form.delete(route('sales.destroy', itemToDelete.value), {
+const confirmSubmit = () => {
+    if (editing.value) {
+        form.post(route('sales.update', form.id), {
             onSuccess: () => {
                 if (isFormVisible.value) {
                     isFormVisible.value = false;
                 }
-                topToast.value.showToast('Form deleted successfully', 'success');
-                showDeleteConfirmation.value = false;
+                resetForm();
+                editing.value = false;
+                showConfirmDialog.value = false;
+                topToast.value.showToast('Form updated successfully', 'success');
             },
             onError: () => {
-                topToast.value.showToast('Failed to delete form', 'error');
-                showDeleteConfirmation.value = false;
+                showConfirmDialog.value = false;
+                topToast.value.showToast('Failed to update form', 'error');
             }
         });
-    };
-
-    const resetForm = () => {
-        form.id = '';
-        form.customer_id = '';
-        form.discount_id = '';
-        form.date_sold = '';
-        form.items = [];
-        selectedItems.value = [];
-        selectedCustomer.value = null;
-        selectedDiscount.value = null;
-        selectedCategory.value = null;
-    };
-
-    const addItem = () => {
-        form.items.push({
-            id: null,
-            tsb_id: '',
-            stock_id: '',
-            item_qty: '',
-            item_price: '',
+    } else {
+        form.post(route('sales.store'), {
+            onSuccess: () => {
+                resetForm();
+                showConfirmDialog.value = false;
+                topToast.value.showToast('Form added successfully', 'success');
+            },
+            onError: () => {
+                showConfirmDialog.value = false;
+                topToast.value.showToast('Failed to add form', 'error');
+            }
         });
-        selectedItems.value.push(null);
-    };
+    }
+};
 
-    const removeItem = (index) => {
-        form.items.splice(index, 1);
-        selectedItems.value.splice(index, 1);
-    };
+const cancelForm = () => {
+    dialogAction.value = 'cancel';
+    showConfirmDialog.value = true;
+};
 
-    const formatDate = (date) => {
-        if (!date) return "";
-        return new Date(date).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-    };
+const confirmCancel = () => {
+    if (isFormVisible.value) {
+        isFormVisible.value = false;
+    }
+    resetForm();
+    editing.value = false;
+    showConfirmDialog.value = false;
+    topToast.value.showToast('Operation cancelled', 'info');
+};
 
-    const handleInventorySelection = (inventoryItem, index) => {
-        form.items[index].stock_id = inventoryItem.id;
-        selectedItems.value[index] = inventoryItem.id;
-        updatePrice(index);
-    };
+const cancelDelete = () => {
+    showDeleteConfirmation.value = false;
+    topToast.value.showToast('Delete operation cancelled', 'info');
+};
 
-    const updatePrice = (index) => {
-        const item = form.items[index];
-        const inventory = props.inventories.find(inv => inv.id === item.stock_id);
-        if (inventory && item.item_qty) {
-            item.item_price = inventory.price * item.item_qty;
-        }
-    };
-
-    watch(() => form.items, (newItems) => {
-        newItems.forEach((item, index) => {
-            watch(() => item.item_qty, () => {
-                updatePrice(index);
-            });
-        });
-    }, { deep: true });
-
-    const selectCategory = (category) => {
-        selectedCategory.value = category;
-    };
-
-    const submit = () => {
-        dialogAction.value = editing.value ? 'update' : 'add';
-        showConfirmDialog.value = true;
-    };
-
-    const confirmSubmit = () => {
-        if (editing.value) {
-            form.post(route('sales.update', form.id), {
-                onSuccess: () => {
-                    if (isFormVisible.value) {
-                        isFormVisible.value = false;
-                    }
-                    resetForm();
-                    editing.value = false;
-                    showConfirmDialog.value = false;
-                    topToast.value.showToast('Form updated successfully', 'success');
-                },
-                onError: () => {
-                    showConfirmDialog.value = false;
-                    topToast.value.showToast('Failed to update form', 'error');
-                }
-            });
-        } else {
-            form.post(route('sales.store'), {
-                onSuccess: () => {
-                    resetForm();
-                    showConfirmDialog.value = false;
-                    topToast.value.showToast('Form added successfully', 'success');
-                },
-                onError: () => {
-                    showConfirmDialog.value = false;
-                    topToast.value.showToast('Failed to add form', 'error');
-                }
-            });
-        }
-    };
-
-    const cancelForm = () => {
-        dialogAction.value = 'cancel';
-        showConfirmDialog.value = true;
-    };
-
-    const confirmCancel = () => {
-        if (isFormVisible.value) {
-            isFormVisible.value = false;
-        }
-        resetForm();
-        editing.value = false;
-        showConfirmDialog.value = false;
-        topToast.value.showToast('Operation cancelled', 'info');
-    };
-
-    const cancelDelete = () => {
-        showDeleteConfirmation.value = false;
-        topToast.value.showToast('Delete operation cancelled', 'info');
-    };
-
-    const cancelConfirmDialog = () => {
-        showConfirmDialog.value = false;
-    };
+const cancelConfirmDialog = () => {
+    showConfirmDialog.value = false;
+};
 </script>
 
 <template>
@@ -341,12 +341,14 @@
             </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
-            <div v-if="isFormVisible" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
+            <div v-if="isFormVisible" class="grid grid-cols-1 gap-1 xl:grid-cols-2">
+                <div
+                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
                         <h1 class="text-2xl font-extrabold dark:text-gray-200">Sales Form</h1>
                     </div>
-                    <button @click="toggleFormVisibility" class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                    <button @click="toggleFormVisibility"
+                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
                         <PhX :size="16" />
                     </button>
                 </div>
@@ -354,97 +356,109 @@
                 <!-- Two-grid layout -->
                 <div class="p-5 pt-16">
                     <!-- Left side - Item settings -->
-                    <div class="h-full p-5 bg-white rounded shadow dark:bg-gray-800">
-                        <h2 class="mb-4 text-xl font-bold dark:text-gray-200">Item Settings</h2>
+                    <div class="h-full bg-white dark:bg-gray-800">
+                        <!-- <h2 class="p-1 font-bold dark:text-gray-200">Customer Information</h2> -->
+                        <!-- Customer info -->
+                        <div
+                            class="grid grid-cols-1 px-5 py-1 !text-[10px] 2xl:!text-sm mb-4 bg-gray-300 border-8 border-gray-600 border-double rounded-lg gap-x-2 md:grid-cols-2">
+                            <div class="mb-0.5">
+                                <label
+                                    class="!text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Customer</label>
+                                <SearchableDropdown class="bg-white border rounded-lg border-slate-600"
+                                    v-model="selectedCustomer" :items="customers" placeholder="Search Customer..."
+                                    @change="form.customer_id = $event.id" />
+                            </div>
+                            <div>
+                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold"
+                                    :message="form.errors.date_sold" />
+                            </div>
+                            <div>
+                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no"
+                                    disabled />
+                            </div>
+                            <div>
+                                <CustomInput name="Customer Email" type="text" v-model="form.email" disabled />
+                            </div>
+                            <div>
+                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no"
+                                    disabled />
+                            </div>
+                            <div>
+                                <CustomInput name="Customer Address" type="text" v-model="form.address" disabled />
+                            </div>
+                        </div>
 
                         <!-- Category buttons -->
-                        <div class="mb-4">
-                            <label class="block mb-2 text-sm font-medium dark:text-gray-200">Categories</label>
-                            <div class="flex flex-wrap gap-2">
-                                <button
-                                    v-for="category in props.categories"
-                                    :key="category.id"
-                                    @click="selectCategory(category.name)"
-                                    :class="[
-                                        'px-3 py-2 rounded-lg text-sm font-medium',
-                                        selectedCategory === category.name
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
-                                    ]"
-                                >
-                                    {{ category.name }}
+                        <div class="grid grid-cols-2 gap-2">
+                            <div
+                                class="flex flex-col px-1 py-3 bg-indigo-300 border-4 border-gray-600 border-double rounded-lg">
+                                <label
+                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Press
+                                    to add
+                                    item<b class="text-red-500">*</b></label>
+                                <button @click="addItem"
+                                    class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900">
+                                    <PhRowsPlusBottom :size="20" class="mr-2" />
+                                    Add Item
                                 </button>
-                                <button
-                                    @click="selectedCategory = null"
-                                    :class="[
-                                        'px-3 py-2 rounded-lg text-sm font-medium',
-                                        !selectedCategory
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
-                                    ]"
-                                >
+                            </div>
+                            <div
+                                class="grid grid-cols-2 gap-2 px-1 py-3 bg-pink-200 border-4 border-gray-600 border-double rounded-lg 2xl:grid-cols-4 2xl:gap-0 2xl:gap-x-2">
+                                <label
+                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200 col-span-2 2xl:col-span-4">Select
+                                    a
+                                    category<i class="text-xs font-thin text-gray-500">(optional)</i></label>
+                                <button @click="selectedCategory = null" :class="[
+                                    'px-3 py-2 rounded-lg border border-black text-sm font-medium',
+                                    !selectedCategory
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-emerald-100 text-gray-800 dark:bg-gray-600 hover:text-white dark:text-gray-200 hover:bg-emerald-600'
+                                ]">
                                     All Items
                                 </button>
-                            </div>
-                        </div>
-
-                        <!-- Item buttons (filtered by category) -->
-                        <div class="mb-4">
-                            <label class="block mb-2 text-sm font-medium dark:text-gray-200">Items</label>
-                            <div class="grid grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3 max-h-64">
-                                <button
-                                    v-for="item in filteredInventories"
-                                    :key="item.id"
-                                    @click="handleInventorySelection(item, form.items.length - 1)"
-                                    class="px-3 py-2 text-sm font-medium text-left text-gray-800 truncate bg-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500"
-                                    :title="item.name || item.item_code"
-                                >
-                                    {{ item.name || item.item_code }}
+                                <button v-for="category in props.categories" :key="category.id"
+                                    @click="selectCategory(category.name)" :class="[
+                                        'px-3 py-2 rounded-lg border border-black text-sm font-medium',
+                                        selectedCategory === category.name
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-emerald-100 text-gray-800 dark:bg-gray-600 hover:text-white dark:text-gray-200 hover:bg-emerald-500'
+                                    ]">
+                                    {{ category.name }}
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Quantity input -->
-                        <input
-                            type="number"
-                            v-model="lastItemQty"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            min="1"
-                        />
+                            <!-- Item buttons (filtered by category) -->
+                            <div class="px-1 py-3 border-4 border-gray-600 border-double rounded-lg bg-amber-200">
+                                <label
+                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Select
+                                    an
+                                    item<b class="text-red-500">*</b></label>
+                                <div class=" grid grid-cols-2 gap-2 overflow-y-auto 2xl:grid-cols-3 max-h-[30vh]">
+                                    <button v-for="item in filteredInventories" :key="item.id"
+                                        @click="handleInventorySelection(item, form.items.length - 1)"
+                                        class="px-3 py-2 text-sm font-medium text-left text-gray-800 truncate border border-black rounded-lg bg-emerald-100 dark:bg-gray-600 dark:text-gray-200 hover:text-white hover:bg-emerald-500"
+                                        :title="item.name || item.item_code">
+                                        {{ item.name || item.item_code }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col items-start px-1 py-3 border-4 border-gray-600 border-double rounded-lg bg-lime-100">
+                                <!-- Quantity input -->
+                                <label
+                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Input
+                                    quantity here<b class="text-red-500">*</b></label>
+                                <input type="number" v-model="lastItemQty"
+                                    class="w-full px-3 py-2 border-2 rounded-lg border-emerald-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    min="1" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="p-5 pt-16">
                     <!-- Right side - Form details and items list -->
                     <div class="h-full p-5 bg-white rounded shadow dark:bg-gray-800">
-                        <!-- Customer info -->
-                        <div class="grid grid-cols-1 mb-4 gap-x-5 md:grid-cols-2">
-                            <div class="mb-2">
-                                <label class="block mb-1 text-sm font-medium dark:text-gray-200">Customer</label>
-                                <SearchableDropdown
-                                    class="border rounded-lg border-slate-600"
-                                    v-model="selectedCustomer"
-                                    :items="customers"
-                                    placeholder="Search Customer..."
-                                    @change="form.customer_id = $event.id"
-                                />
-                            </div>
-                            <div>
-                                <CustomInput name="Date Sold" type="date" v-model="form.date_sold" :message="form.errors.date_sold" />
-                            </div>
-                            <div>
-                                <CustomInput name="Customer Phone Number" type="text" v-model="form.phone_no" disabled />
-                            </div>
-                            <div>
-                                <CustomInput name="Customer Email" type="text" v-model="form.email" disabled />
-                            </div>
-                            <div>
-                                <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no" disabled />
-                            </div>
-                            <div>
-                                <CustomInput name="Customer Address" type="text" v-model="form.address" disabled />
-                            </div>
-                        </div>
 
                         <!-- Items list -->
                         <div class="mb-4">
@@ -452,33 +466,35 @@
                                 <h3 class="text-lg font-bold dark:text-gray-200">Added Items</h3>
                             </div>
                             <div>
-                                <div v-if="form.items.length === 0" class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
+                                <div v-if="form.items.length === 0"
+                                    class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
                                     <p>No items added yet. Add items from the left panel.</p>
-                                    <div class="mt-6">
-                                        <button
-                                            @click="addItem"
-                                            class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900"
-                                        >
-                                            <PhRowsPlusBottom :size="20" class="mr-2" />
-                                            Add Item
-                                        </button>
-                                     </div>
                                 </div>
                                 <div v-else class="flex flex-col border rounded-lg">
-                                    <div class="overflow-y-auto max-h-52">
+                                    <div class="overflow-y-auto max-h-[20vh]">
                                         <table class="w-full">
-                                            <thead class="sticky top-0 z-10">
+                                            <thead class="sticky z-10 -top-1">
                                                 <tr class="text-left bg-gray-100 dark:bg-gray-600">
-                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Item Code</th>
-                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Quantity</th>
-                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Price</th>
-                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Actions</th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
+                                                        Item Code
+                                                    </th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
+                                                        Quantity
+                                                    </th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
+                                                        Price</th>
+                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
+                                                        Actions
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody class="overflow-y-auto max-h-64">
-                                                <tr v-for="(item, index) in form.items" :key="index" class="hover:bg-gray-50 dark:hover:bg-gray-400">
+                                                <tr v-for="(item, index) in form.items" :key="index"
+                                                    class="hover:bg-gray-50 dark:hover:bg-gray-400">
                                                     <td class="px-2 py-1 border">
-                                                        {{ props.inventories.find(inv => inv.id === item.stock_id)?.item_code || 'No item selected' }}
+                                                        {{props.inventories.find(inv => inv.id ===
+                                                            item.stock_id)?.item_code ||
+                                                            'No item selected'}}
                                                     </td>
                                                     <td class="px-2 py-1 border">
                                                         {{ item.item_qty }}
@@ -488,18 +504,13 @@
                                                     </td>
                                                     <td class="px-2 py-1 border whitespace-nowrap">
                                                         <div class="inline-flex gap-2">
-                                                            <button
-                                                                type="button"
-                                                                @click="removeItem(index)"
-                                                                class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
-                                                            >
+                                                            <button type="button" @click="removeItem(index)"
+                                                                class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                                                                 <PhTrash :size="16" />
                                                             </button>
-                                                            <button
-                                                                type="button"
+                                                            <button type="button"
                                                                 @click="form.items[form.items.length - 1] = item; removeItem(index)"
-                                                                class="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
-                                                            >
+                                                                class="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
                                                                 <PhPencil :size="16" />
                                                             </button>
                                                         </div>
@@ -508,15 +519,13 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="mt-6">
-                                        <button
-                                            @click="addItem"
-                                            class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900"
-                                        >
+                                    <!-- <div class="mt-6">
+                                        <button @click="addItem"
+                                            class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900">
                                             <PhRowsPlusBottom :size="20" class="mr-2" />
                                             Add Item
                                         </button>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -525,17 +534,14 @@
                         <div>
                             <div class="flex items-center mb-2">
                                 <span class="mr-2 text-sm font-medium dark:text-gray-200">Discount:</span>
-                                <SearchableDropdown
-                                    class="border rounded-lg border-slate-600"
-                                    v-model="selectedDiscount"
-                                    :items="discounts"
-                                    placeholder="Search Discount..."
-                                    @change="form.discount_id = $event.id"
-                                />
+                                <SearchableDropdown class="border rounded-lg border-slate-600"
+                                    v-model="selectedDiscount" :items="discounts" placeholder="Search Discount..."
+                                    @change="form.discount_id = $event.id" />
                             </div>
 
                             <!-- Display Total Price -->
-                            <div class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg dark:text-gray-200 dark:bg-gray-600 bg-gray-50">
+                            <div
+                                class="flex flex-col w-full p-4 py-2 mt-2 rounded-lg dark:text-gray-200 dark:bg-gray-600 bg-gray-50">
                                 <div class="flex justify-between w-full py-1">
                                     <span class="font-medium text-md">Subtotal:</span>
                                     <span class="text-md">{{ getSubtotal().toFixed(2) }}</span>
@@ -548,7 +554,8 @@
                                     <span class="text-red-400 text-md">-{{ getDiscountInfo().amount.toFixed(2) }}</span>
                                 </div>
 
-                                <div class="flex justify-between w-full py-1 pt-2 mt-1 border-t border-gray-200">
+                                <div
+                                    class="flex justify-between w-full py-1 pt-2 mt-1 border-t-4 border-black border-dashed">
                                     <span class="text-lg font-bold">Total Price:</span>
                                     <span class="text-lg font-bold">{{ total_price.toFixed(2) }}</span>
                                 </div>
@@ -557,20 +564,10 @@
 
                         <!-- Form actions -->
                         <div class="flex items-center justify-center gap-2 mt-6">
-                            <ButtonCode
-                                type="button"
-                                @click="submit"
-                                :icon="editing ? PhFloppyDisk : PhFilePlus"
-                                color="bg-emerald-700 hover:bg-emerald-900"
-                                :text="editing ? 'Update' : 'Add'"
-                            />
-                            <ButtonCode
-                                v-if="editing"
-                                type="button"
-                                color="bg-gray-500 hover:bg-gray-700"
-                                text="Cancel"
-                                @click="cancelForm"
-                            />
+                            <ButtonCode type="button" @click="submit" :icon="editing ? PhFloppyDisk : PhFilePlus"
+                                color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
+                            <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel"
+                                @click="cancelForm" />
                         </div>
                     </div>
                 </div>
@@ -589,7 +586,8 @@
                     <div>
                         <p v-if="dialogAction === 'add'">Are you sure you want to add this sales form?</p>
                         <p v-else-if="dialogAction === 'update'">Are you sure you want to update this sales form?</p>
-                        <p v-else-if="dialogAction === 'cancel'">Are you sure you want to cancel? All changes will be lost.</p>
+                        <p v-else-if="dialogAction === 'cancel'">Are you sure you want to cancel? All changes will be
+                            lost.</p>
                     </div>
                 </template>
                 <template #footer>
@@ -623,8 +621,7 @@
                 </template>
                 <template #footer>
                     <div>
-                        <button @click="deleteItem"
-                            class="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
+                        <button @click="deleteItem" class="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
                             Delete
                         </button>
                         <button @click="cancelDelete"
@@ -642,7 +639,8 @@
                     <ButtonCode @click="toggleFormVisibility" text="Add Sales" :icon="PhFilePlus"
                         color="bg-emerald-700 hover:bg-emerald-900" />
                     <div class="relative">
-                        <PhListMagnifyingGlass class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
+                        <PhListMagnifyingGlass
+                            class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
                             :size="20" />
                         <input type="text" v-model="search" placeholder="Search..."
                             class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl" />

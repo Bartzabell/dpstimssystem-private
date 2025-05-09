@@ -69,7 +69,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40">Insert Data here</p>
+                    <p class="p-40">Insert Data here for Today's Total Sales</p>
                 </div>
             </div>
         </Modal>
@@ -86,7 +86,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40">Insert Data here</p>
+                    <p class="p-40">Insert Data here for Weekly Total Sales</p>
                 </div>
             </div>
         </Modal>
@@ -131,7 +131,7 @@ const activeTab = ref('monthly-sales');
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Product on Low Status</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Fast Moving Products</h1>
                     </div>
                     <button @click="toggleForm4Visibility"
                         class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
@@ -139,7 +139,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40">Insert Data here</p>
+                    <p class="p-40">Insert Data here for Fast Moving Products</p>
                 </div>
             </div>
         </Modal>
@@ -148,7 +148,7 @@ const activeTab = ref('monthly-sales');
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Product on High Status</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Critically Low Status Products</h1>
                     </div>
                     <button @click="toggleForm5Visibility"
                         class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
@@ -156,7 +156,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40">Insert Data here</p>
+                    <p class="p-40">Insert Data here for Critically Low Status Products</p>
                 </div>
             </div>
         </Modal>
@@ -182,24 +182,24 @@ const activeTab = ref('monthly-sales');
                         </h1>
                     </div>
                 </button>
-                <button @click="toggleForm3Visibility">
-                    <div class="px-4 py-1 text-sm text-white bg-green-900 md:text-base">
-                        <p class="py-2">Available Products</p>
-                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ availableProducts }}</h1>
+                <Link href="/inventory">
+                <div class="px-4 py-1 text-sm text-white bg-green-900 md:text-base">
+                    <p class="py-2">Available Products</p>
+                    <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ availableProducts }}</h1>
+                </div>
+                </Link>
+                <button @click="toggleForm4Visibility">
+                    <div class="px-4 py-1 text-sm text-white bg-teal-900 md:text-base">
+                        <p class="py-2">Fast Moving Products</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ lowStatusProducts }}</h1>
                     </div>
                 </button>
-                <Link href="/inventory?search=low">
-                <div class="px-4 py-1 text-sm text-white bg-teal-900 md:text-base">
-                    <p class="py-2">Fast Moving Products</p>
-                    <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ lowStatusProducts }}</h1>
-                </div>
-                </Link>
-                <Link href="/inventory?search=high">
-                <div class="px-4 py-1 text-sm text-white md:text-base bg-amber-700">
-                    <p class="py-2">Critically Low Status Products</p>
-                    <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ exceedingProducts }}</h1>
-                </div>
-                </Link>
+                <button @click="toggleForm5Visibility">
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-amber-700">
+                        <p class="py-2">Critically Low Status Products</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ exceedingProducts }}</h1>
+                    </div>
+                </button>
                 <div class="col-span-1 lg:col-span-3 2xl:col-span-6">
                     <p class="p-1 text-lg font-extrabold md:text-2xl dark:text-white">SALES STATISTICS</p>
                 </div>
