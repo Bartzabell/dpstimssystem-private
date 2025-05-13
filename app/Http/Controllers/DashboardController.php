@@ -11,12 +11,17 @@ class DashboardController extends Controller
     public function index(Request $request): Response
     {
         $today = Carbon::today()->toDateString();
+
         $firstDayOfMonth = Carbon::now()->startOfMonth()->toDateString();
         $lastDayOfMonth = Carbon::now()->endOfMonth()->toDateString();
         $currentMonth = Carbon::now()->format('F');
+        $startOfWeek = Carbon::now()->startOfWeek(Carbon::SUNDAY)->startOfDay();
+        $endOfWeek = Carbon::now()->endOfWeek(Carbon::SATURDAY)->endOfDay();
 
         // Sales data
         $todayTotalSales = TransactionSalesBill::whereDate('date_sold', $today)
+            ->sum('total_price');
+        $weeklyTotalSales = TransactionSalesBill::whereBetween('date_sold', [$startOfWeek, $endOfWeek])
             ->sum('total_price');
         $monthlySales = TransactionSalesBill::whereBetween('date_sold', [$firstDayOfMonth, $lastDayOfMonth])
             ->sum('total_price');
@@ -33,6 +38,7 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'sales' => $sales,
             'todayTotalSales' => $todayTotalSales ?? 0,
+            'weeklyTotalSales' => $weeklyTotalSales ?? 0,
             'monthlySales' => $monthlySales ?? 0,
             'availableProducts' => $availableProducts,
             'lowStatusProducts' => $lowStatusProducts,

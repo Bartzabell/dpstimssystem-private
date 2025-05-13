@@ -25,6 +25,7 @@ Route::prefix('api/sales')->group(function () {
     Route::get('/available-years', [ChartController::class, 'getAvailableYears']);
     Route::get('/monthly-sales-quantity/{year}', [ChartController::class, 'getMonthlySalesQuantity']);
     Route::get('/todays-sales-by-item', [ChartController::class, 'getTodaysSalesByItem']);
+    Route::get('/weekly-sales-by-item', [ChartController::class, 'getWeeklySalesByItem']);
 });
 
 // Authentication middleware group

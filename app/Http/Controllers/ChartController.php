@@ -142,4 +142,28 @@ class ChartController extends Controller
             'sales' => $results->pluck('total_sales')
         ]);
     }
+
+    public function getWeeklySalesByItem()
+    {
+        $startOfWeek = now()->startOfWeek()->format('Y-m-d');
+        $endOfWeek = now()->endOfWeek()->format('Y-m-d');
+
+        $results = TransactionSalesItem::select(
+                'inventory_stocks.item_code',
+                DB::raw('SUM(transaction_sales_items.item_qty) as total_quantity'),
+                DB::raw('SUM(transaction_sales_items.item_qty * transaction_sales_items.item_price) as total_sales')
+            )
+            ->join('transaction_sales_bills', 'transaction_sales_items.tsb_id', '=', 'transaction_sales_bills.id')
+            ->join('inventory_stocks', 'transaction_sales_items.stock_id', '=', 'inventory_stocks.id')
+            ->whereBetween('transaction_sales_bills.date_sold', [$startOfWeek, $endOfWeek])
+            ->groupBy('inventory_stocks.item_code')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        return response()->json([
+            'items' => $results->pluck('item_code'),
+            'quantities' => $results->pluck('total_quantity'),
+            'sales' => $results->pluck('total_sales')
+        ]);
+    }
 }

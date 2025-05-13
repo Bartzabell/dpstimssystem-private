@@ -4,11 +4,13 @@ import { useForm, router, usePage, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MonthlyIncomeChart from '@/Components/Charts/MonthlyIncomeChart.vue';
 import TodaysSalesChart  from '@/Components/Charts/TodaysSalesChart.vue';
+import WeeklySalesChart  from '@/Components/Charts/WeeklySalesChart.vue';
 import MonthlySalesQuantityChart from '@/Components/Charts/MonthlySalesQuantityChart.vue';
 import { PhX } from '@phosphor-icons/vue';
 const props = defineProps({
     sales: Object,
     todayTotalSales: { type: Number, default: 0, },
+    weeklyTotalSales: { type: Number, default: 0, },
     monthlySales: { type: Number, default: 0, },
     availableProducts: { type: Number, default: 0, },
     lowStatusProducts: { type: Number, default: 0, },
@@ -70,7 +72,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40"><TodaysSalesChart /></p>
+                    <TodaysSalesChart />
                 </div>
             </div>
         </Modal>
@@ -87,121 +89,51 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40">Insert Data here for Weekly Total Sales</p>
-                </div>
-            </div>
-        </Modal>
-        <Modal :show="isMonthVisible" class="fixed inset-0 z-50">
-            <div class="h-[80vh]" v-if="isMonthVisible">
-                <div
-                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
-                    <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">{{ currentMonth }} Total Sales</h1>
-                    </div>
-                    <button @click="toggleForm2Visibility"
-                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                        <PhX :size="16" />
-                    </button>
-                </div>
-                <div class="flex items-center h-full">
-                    <div class="w-full">
-                        <MonthlyIncomeChart />
-                    </div>
-                </div>
-            </div>
-        </Modal>
-        <Modal :show="isAvailableVisible" class="fixed inset-0 z-50">
-            <div v-if="isAvailableVisible">
-                <div
-                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
-                    <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Available Products</h1>
-                    </div>
-                    <button @click="toggleForm3Visibility"
-                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                        <PhX :size="16" />
-                    </button>
-                </div>
-                <div>
-                    <p class="p-40">Insert Data here</p>
-                </div>
-            </div>
-        </Modal>
-        <Modal :show="isLowVisible" class="fixed inset-0 z-50">
-            <div v-if="isLowVisible">
-                <div
-                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
-                    <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Fast Moving Products</h1>
-                    </div>
-                    <button @click="toggleForm4Visibility"
-                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                        <PhX :size="16" />
-                    </button>
-                </div>
-                <div>
-                    <p class="p-40">Insert Data here for Fast Moving Products</p>
-                </div>
-            </div>
-        </Modal>
-        <Modal :show="isHighVisible" class="fixed inset-0 z-50">
-            <div v-if="isHighVisible">
-                <div
-                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
-                    <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Critically Low Status Products</h1>
-                    </div>
-                    <button @click="toggleForm5Visibility"
-                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                        <PhX :size="16" />
-                    </button>
-                </div>
-                <div>
-                    <p class="p-40">Insert Data here for Critically Low Status Products</p>
+                    <WeeklySalesChart />
                 </div>
             </div>
         </Modal>
         <div class="px-5">
-            <div class="grid grid-cols-1 gap-2 lg:grid-cols-3 2xl:grid-cols-6">
-                <button @click="toggleFormVisibility">
-                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-500">
-                        <p class="py-2">Today's Total Sales</p>
-                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ todayTotalSales.toLocaleString()
-                            }}</h1>
-                    </div>
-                </button>
-                <button @click="toggleFormWeeklyVisibility">
-                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-700">
-                        <p class="py-2">Weekly Total Sales</p>
-                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php Sample</h1>
-                    </div>
-                </button>
-                <button @click="toggleForm2Visibility">
-                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-900">
+            <div class="grid grid-cols-1 gap-2 lg:grid-cols-3 2xl:grid-cols-4">
+                <button class="col-span-2 px-24"> <!--@click="toggleForm2Visibility"-->
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-900 hover:bg-lime-800">
                         <p class="py-2">{{ currentMonth }} Total Sales</p>
                         <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ monthlySales.toLocaleString() }}
                         </h1>
                     </div>
                 </button>
-                <Link href="/inventory">
-                <div class="px-4 py-1 text-sm text-white bg-green-900 md:text-base">
-                    <p class="py-2">Available Products</p>
-                    <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ availableProducts }}</h1>
-                </div>
+                <Link href="/inventory" class="col-span-2 px-24">
+                    <div class="px-4 py-1 text-sm text-white bg-green-900 md:text-base hover:bg-green-800">
+                        <p class="py-2 text-center">Available Products</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ availableProducts }}</h1>
+                    </div>
                 </Link>
-                <button @click="toggleForm4Visibility">
-                    <div class="px-4 py-1 text-sm text-white bg-teal-900 md:text-base">
+                <Link href="/inventory" >
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-500 hover:bg-lime-400">
+                        <p class="py-2">Today's Total Sales</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ todayTotalSales.toLocaleString()
+                            }}</h1>
+                    </div>
+                </Link>
+                <Link href="/inventory" >
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-700 hover:bg-lime-600">
+                        <p class="py-2">Weekly Total Sales</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ weeklyTotalSales.toLocaleString()}}</h1>
+                    </div>
+                </Link>
+                <Link  href="/inventory?search=low&sort_direction=asc&sort_field=id">
+                    <div class="px-4 py-1 text-sm text-white bg-teal-900 md:text-base hover:bg-teal-800">
                         <p class="py-2">Fast Moving Products</p>
                         <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ lowStatusProducts }}</h1>
                     </div>
-                </button>
-                <button @click="toggleForm5Visibility">
-                    <div class="px-4 py-1 text-sm text-white md:text-base bg-amber-700">
-                        <p class="py-2">Critically Low Status Products</p>
+                </Link>
+                <Link href="/inventory?search=high&sort_direction=asc&sort_field=id" >
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-amber-700 hover:bg-amber-600">
+                        <p class="py-2">Slow Moving Products</p>
                         <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ exceedingProducts }}</h1>
                     </div>
-                </button>
-                <div class="col-span-1 lg:col-span-3 2xl:col-span-6">
+                </Link >
+                <div class="col-span-1 lg:col-span-3 2xl:col-span-4">
                     <p class="p-1 text-lg font-extrabold md:text-2xl dark:text-white">SALES STATISTICS</p>
                 </div>
                 <div class="mb-4 border-b">
@@ -218,11 +150,11 @@ const activeTab = ref('monthly-sales');
                     </div>
                 </div>
                 <div v-if="activeTab === 'monthly-sales'"
-                    class="col-span-1 px-4 py-1 bg-white rounded-lg dark:bg-gray-700 lg:col-span-3 2xl:col-span-6">
+                    class="col-span-1 px-4 py-1 bg-white rounded-lg dark:bg-gray-700 lg:col-span-3 2xl:col-span-4">
                     <MonthlyIncomeChart />
                 </div>
                 <div v-if="activeTab === 'item-sales'"
-                    class="col-span-1 px-4 py-1 bg-white rounded-lg dark:bg-gray-700 lg:col-span-3 2xl:col-span-6">
+                    class="col-span-1 px-4 py-1 bg-white rounded-lg dark:bg-gray-700 lg:col-span-3 2xl:col-span-4">
                     <MonthlySalesQuantityChart />
                 </div>
             </div>

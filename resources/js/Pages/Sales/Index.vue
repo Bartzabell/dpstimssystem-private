@@ -226,7 +226,7 @@ const addItem = () => {
         id: null,
         tsb_id: '',
         stock_id: '',
-        item_qty: '',
+        item_qty: 1,
         item_price: '',
     });
     selectedItems.value.push(null);
