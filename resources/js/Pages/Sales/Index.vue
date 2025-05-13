@@ -500,7 +500,9 @@ const cancelConfirmDialog = () => {
                                                         {{ item.item_qty }}
                                                     </td>
                                                     <td class="px-2 py-1 border">
-                                                        {{ parseFloat(item.item_price).toFixed(2) }}
+                                                        <!-- {{ parseFloat(item.item_price).toFixed(2) }} -->
+                                                        <CustomInput type="number" v-model="form.item_price"
+                                                        :message="form.errors.item_price" />
                                                     </td>
                                                     <td class="px-2 py-1 border whitespace-nowrap">
                                                         <div class="inline-flex gap-2">

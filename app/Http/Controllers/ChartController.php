@@ -119,4 +119,27 @@ class ChartController extends Controller
             'items' => array_values($items) // Convert associative array to indexed array
         ]);
     }
+
+    public function getTodaysSalesByItem()
+    {
+        $today = now()->format('Y-m-d');
+
+        $results = TransactionSalesItem::select(
+                'inventory_stocks.item_code',
+                DB::raw('SUM(transaction_sales_items.item_qty) as total_quantity'),
+                DB::raw('SUM(transaction_sales_items.item_qty * transaction_sales_items.item_price) as total_sales')
+            )
+            ->join('transaction_sales_bills', 'transaction_sales_items.tsb_id', '=', 'transaction_sales_bills.id')
+            ->join('inventory_stocks', 'transaction_sales_items.stock_id', '=', 'inventory_stocks.id')
+            ->whereDate('transaction_sales_bills.date_sold', $today)
+            ->groupBy('inventory_stocks.item_code')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        return response()->json([
+            'items' => $results->pluck('item_code'),
+            'quantities' => $results->pluck('total_quantity'),
+            'sales' => $results->pluck('total_sales')
+        ]);
+    }
 }

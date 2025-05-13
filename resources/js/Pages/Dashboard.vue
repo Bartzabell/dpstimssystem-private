@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue';
 import { useForm, router, usePage, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MonthlyIncomeChart from '@/Components/Charts/MonthlyIncomeChart.vue';
+import TodaysSalesChart  from '@/Components/Charts/TodaysSalesChart.vue';
 import MonthlySalesQuantityChart from '@/Components/Charts/MonthlySalesQuantityChart.vue';
 import { PhX } from '@phosphor-icons/vue';
 const props = defineProps({
@@ -69,7 +70,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div>
-                    <p class="p-40">Insert Data here for Today's Total Sales</p>
+                    <p class="p-40"><TodaysSalesChart /></p>
                 </div>
             </div>
         </Modal>

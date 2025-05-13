@@ -20,7 +20,7 @@ class SalesController extends Controller
     {
         $search = $request->input('search');
         $sortField = $request->input('sort_field', 'id'); // Default sort field
-        $sortDirection = $request->input('sort_direction', 'asc'); // Default sort direction
+        $sortDirection = $request->input('sort_direction', 'desc'); // Default sort direction
 
         //FOR TABLE PAGINATION AND SEARCH
         $forms = TransactionSalesBill::query()
