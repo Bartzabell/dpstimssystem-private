@@ -403,7 +403,7 @@ const cancelConfirmDialog = () => {
                             </div>
                         </div>
                         <div class="bg-gray-200 border-2 border-gray-600">
-                            <div class=" grid grid-cols-2 overflow-y-auto 2xl:grid-cols-3 max-h-[30vh]">
+                            <div class=" grid grid-cols-1 overflow-y-auto 2xl:grid-cols-2 max-h-[30vh]">
                                 <button v-for="item in filteredInventories" :key="item.id"
                                     @click="() => { addItem(); handleInventorySelection(item, form.items.length - 1); }"
                                     class="px-2 py-1 !text-[10px] lg:!text-[12px] font-medium 2xl:!text-sm text-left text-gray-800 truncate border border-black bg-emerald-100 dark:bg-gray-600 dark:text-gray-200 hover:text-white hover:bg-emerald-500"

@@ -23,10 +23,8 @@ defineProps({
 </script>
 
 <template>
-    <button
-        :type="type"
-        :class="[color, 'px-4 py-2 text-white rounded-3xl flex items-center gap-2']"
-    >
+    <button :type="type"
+        :class="[color, '2xl:px-4 px-2 py-1 2xl:py-2 text-white text-xs 2xl:text-base rounded-3xl flex items-center gap-2']">
         <!-- Render icon if provided -->
         <component v-if="icon" :is="icon" class="w-5 h-5" />
         {{ text }}

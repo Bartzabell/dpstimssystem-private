@@ -257,7 +257,7 @@ const cancelConfirmDialog = () => {
             </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
-            <div v-if="isFormVisible">
+            <div class="w-[70vw]" v-if="isFormVisible">
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
@@ -269,19 +269,20 @@ const cancelConfirmDialog = () => {
                     </button>
                 </div>
                 <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow dark:bg-gray-800">
-                    <div class="grid grid-cols-1 gap-5 px-3 py-1 md:grid-cols-2">
-                        <div>
-                            <div class="mb-5 spanlabel">
-                                <label class="block mb-1 text-sm font-medium dark:text-gray-200">Supplier</label>
+                    <div class="grid grid-cols-1 gap-5 px-3 py-1">
+                        <div class="grid grid-cols-1 gap-2 lg:grid-cols-5">
+                            <div class="!text-[10px] col-span-1 lg:col-span-2 2xl:!text-sm spanlabel">
+                                <label
+                                    class="block mt-2.5 2xl:mt-0.5 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Supplier</label>
                                 <SearchableDropdown class="border rounded-lg border-slate-600"
                                     v-model="selectedSupplier" :items="suppliers" placeholder="Search Supplier..."
                                     @change="form.supplier_id = $event.id" />
                             </div>
-                            <div class="mb-5">
+                            <div>
                                 <CustomInput name="Date Purchased" type="date" v-model="form.date_purchased"
                                     :message="form.errors.date_purchased" />
                             </div>
-                            <div class="mb-5">
+                            <div>
                                 <CustomInput name="Phone Number" type="text" v-model="form.phone_no" disabled />
                             </div>
                             <div>
@@ -289,77 +290,90 @@ const cancelConfirmDialog = () => {
                                     disabled />
                             </div>
                         </div>
-
-                        <div class="overflow-y-auto max-h-[90vh] md:max-h-[50vh]">
+                        <div>
                             <div class="flex items-center justify-between mb-2">
-                                <h3 class="text-lg font-bold dark:text-gray-200">Items</h3>
+                                <h3 class="text-xs font-bold 2xl:text-lg dark:text-gray-200">Purchased Product</h3>
                             </div>
-                            <div v-if="form.items.length === 0"
-                                class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
-                                <p>No items added yet. Click 'Add Item' to start.</p>
-                            </div>
-                            <div v-else class="overflow-visible border rounded-lg">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="text-left bg-gray-100 dark:bg-gray-600">
-                                            <th class="w-3/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">Item
-                                                Code
-                                            </th>
-                                            <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
-                                                Quantity
-                                            </th>
-                                            <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
-                                                Price</th>
-                                            <th class="w-1/5 px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(item, index) in form.items" :key="index"
-                                            class="hover:bg-gray-50 dark:hover:bg-gray-400">
-                                            <td class="px-2 pt-1 pb-1 border whitespace-nowrap">
-                                                <SearchableDropdown class="border rounded-lg border-slate-600"
-                                                    v-model="selectedItems[index]" :items="inventories"
-                                                    placeholder="Search Item..."
-                                                    @change="handleInventoryChange($event, index)" />
-                                            </td>
-                                            <td class="px-2 pt-3 pb-1 border whitespace-nowrap">
-                                                <CustomInput type="number" v-model="item.item_qty" />
-                                            </td>
-                                            <td class="px-2 pt-3 pb-1 border whitespace-nowrap">
-                                                <CustomInput type="number" v-model="item.item_price" />
-                                            </td>
-                                            <td class="px-2 py-1 border whitespace-nowrap">
-                                                <div class="inline-flex justify-center w-full h-full gap-2 ">
-                                                    <ButtonCode @click="removeItem(index)"
-                                                        color="bg-red-700 hover:bg-red-900" text="Remove" />
+                            <div class="overflow-y-auto max-h-[90vh] lg:max-h-[25vh] 2xl:max-h-[45vh]">
+                                <div v-if="form.items.length === 0"
+                                    class="py-4 text-xs text-center rounded 2xl:text-base dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
+                                    <p>No products added yet. Click 'Add Row' to start.</p>
+                                </div>
+                                <div v-else class="overflow-visible border rounded-lg">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left bg-gray-100 dark:bg-gray-600">
+                                                <th
+                                                    class="w-3/5 px-2 py-1 text-xs border 2xl:text-lg dark:text-gray-200 whitespace-nowrap">
+                                                    Product
+                                                    Code
+                                                </th>
+                                                <th
+                                                    class="w-1/5 px-2 py-1 text-xs border 2xl:text-lg dark:text-gray-200 whitespace-nowrap">
+                                                    Quantity
+                                                </th>
+                                                <th
+                                                    class="w-1/5 px-2 py-1 text-xs border 2xl:text-lg dark:text-gray-200 whitespace-nowrap">
+                                                    Price</th>
+                                                <th
+                                                    class="w-1/5 px-2 py-1 text-xs border 2xl:text-lg dark:text-gray-200 whitespace-nowrap">
+                                                    Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item, index) in form.items" :key="index"
+                                                class="hover:bg-gray-50 dark:hover:bg-gray-400">
+                                                <td
+                                                    class="px-2 pt-1 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm pb-1 border whitespace-nowrap">
+                                                    <SearchableDropdown class="border rounded-lg border-slate-600"
+                                                        v-model="selectedItems[index]" :items="inventories"
+                                                        placeholder="Search Item..."
+                                                        @change="handleInventoryChange($event, index)" />
+                                                </td>
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <CustomInput type="number" v-model="item.item_qty" />
+                                                </td>
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <CustomInput type="number" v-model="item.item_price" />
+                                                </td>
+                                                <td class="px-2 py-1 border whitespace-nowrap">
+                                                    <div class="inline-flex justify-center w-full h-full gap-2 ">
+                                                        <button type="button" @click="removeItem(index)"
+                                                            class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                                                            <PhTrash :size="20" />
+                                                        </button>
+                                                        <!-- <ButtonCode @click="removeItem(index)"
+                                                            color="bg-red-700 hover:bg-red-900" :icon="PhTrash" /> -->
 
-                                                    <!-- <button type="button" @click="removeItem(index)" class="px-1 py-2 text-white bg-red-500 rounded hover:bg-red-600">
-                                                        Remove
-                                                    </button> -->
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                        <!-- <button type="button" @click="removeItem(index)" class="px-1 py-2 text-white bg-red-500 rounded hover:bg-red-600">
+                                                            Remove
+                                                        </button> -->
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
                             <!-- Display Total Price -->
                             <div class="flex justify-end w-full">
                                 <div
                                     class="flex items-center gap-4 px-1 py-2 bg-gray-300 rounded-bl-lg dark:bg-gray-500">
-                                    <span class="text-lg font-bold dark:text-gray-200">Total Price:</span>
-                                    <span class="text-lg dark:text-gray-200">{{ total_price.toFixed(2) }}</span>
+                                    <span class="text-xs font-bold 2xl:text-lg dark:text-gray-200">Total Price:</span>
+                                    <span class="text-xs 2xl:text-lg dark:text-gray-200">{{ total_price.toFixed(2)
+                                    }}</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex justify-end w-full col-span-1 pt-2 md:col-span-2">
-                            <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900"
-                                @click="addItem" text="Add Item" />
+                            <div class="flex justify-end w-full col-span-1 pt-2 md:col-span-2">
+                                <ButtonCode :icon="PhRowsPlusBottom" color="bg-emerald-700 hover:bg-emerald-900"
+                                    @click="addItem" text="Add Row" />
+                            </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-center gap-2">
                         <ButtonCode type="submit" :icon="editing ? PhFloppyDisk : PhFilePlus"
-                            color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Add'" />
+                            color="bg-emerald-700 hover:bg-emerald-900" :text="editing ? 'Update' : 'Save'" />
                         <ButtonCode v-if="editing" type="button" color="bg-gray-500 hover:bg-gray-700" text="Cancel"
                             @click="cancelForm" />
                     </div>
