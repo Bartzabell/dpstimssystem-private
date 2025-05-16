@@ -333,7 +333,8 @@ const cancelConfirmDialog = () => {
                                                 <div class="inline-flex justify-center w-full h-full gap-2 ">
                                                     <ButtonCode @click="removeItem(index)"
                                                         color="bg-red-700 hover:bg-red-900" text="Remove" />
-                                                    <!-- <button type="button" @click="removeItem(index)" class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+
+                                                    <!-- <button type="button" @click="removeItem(index)" class="px-1 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                                                         Remove
                                                     </button> -->
                                                 </div>
