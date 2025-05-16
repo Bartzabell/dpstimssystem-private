@@ -24,6 +24,9 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
+            $table->unsignedBigInteger('deleted_by')->nullable();
+            $table->softDeletes();
+            $table->foreign('deleted_by')->references('id')->on('users')->onDelete('NO ACTION');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
