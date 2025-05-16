@@ -32,25 +32,15 @@ const updateValue = (event) => {
 </script>
 
 <template>
-  <div class="mb-2">
-    <label class="text-sm font-medium">{{ label }}</label>
-    <div class="flex w-full transition bg-white rounded-lg focus-within:ring-1 focus-within:ring-teal-900 ring-teal-100">
-      <select 
-        :name="name" 
-        :value="modelValue" 
-        @input="updateValue"
-        :readonly="readonly" 
-        :disabled="disabled"
-        :class="[
-            'w-full rounded-lg py-1.5 focus-within:ring-1 focus-within:ring-teal-900 ring-teal-100 focus:outline-none pl-2',
-            { 'bg-gray-100': readonly || disabled }
-        ]"
-      >
-        <option 
-          v-for="option in options" 
-          :key="option.value" 
-          :value="option.value"
-        >
+  <div class="">
+    <label class="text-[8px] lg:text-[10px] 2xl:text-sm font-medium">{{ label }}</label>
+    <div
+      class="flex w-full transition bg-white rounded-lg focus-within:ring-1 focus-within:ring-teal-900 ring-teal-100">
+      <select :name="name" :value="modelValue" @input="updateValue" :readonly="readonly" :disabled="disabled" :class="[
+        'w-full rounded-lg py-0.5 2xl:py-1.5 !text-[10px] 2xl:!text-sm focus-within:ring-1 focus-within:ring-teal-900 ring-teal-100 focus:outline-none pl-2',
+        { 'bg-gray-100': readonly || disabled }
+      ]">
+        <option v-for="option in options" :key="option.value" :value="option.value">
           {{ option.label }}
         </option>
       </select>
