@@ -388,17 +388,6 @@ const cancelConfirmDialog = () => {
                             </div>
                         </div>
                         <div class="flex flex-row items-center w-full gap-1 mb-2 h-max">
-                            <!-- <label
-                                class="!text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Press&nbsp;to&nbsp;"Add&nbsp;Product"&nbsp;</label> -->
-                            <div class="w-full">
-                                <button @click="addItem"
-                                    class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900">
-                                    <PhRowsPlusBottom :size="20" class="mr-2" />
-                                    Add Product
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flex flex-row items-center w-full gap-1 mb-2 h-max">
                             <label
                                 class="!text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Select&nbsp;Category<i
                                     class="text-gray-400">(optional)</i></label>
@@ -414,9 +403,9 @@ const cancelConfirmDialog = () => {
                             </div>
                         </div>
                         <div class="bg-gray-200 border-2 border-gray-600">
-                            <div class=" grid grid-cols-2 gap-2 overflow-y-auto 2xl:grid-cols-3 max-h-[30vh]">
+                            <div class=" grid grid-cols-2 overflow-y-auto 2xl:grid-cols-3 max-h-[30vh]">
                                 <button v-for="item in filteredInventories" :key="item.id"
-                                    @click="handleInventorySelection(item, form.items.length - 1)"
+                                    @click="() => { addItem(); handleInventorySelection(item, form.items.length - 1); }"
                                     class="px-2 py-1 !text-[10px] lg:!text-[12px] font-medium 2xl:!text-sm text-left text-gray-800 truncate border border-black bg-emerald-100 dark:bg-gray-600 dark:text-gray-200 hover:text-white hover:bg-emerald-500"
                                     :title="item.item_code || item.name">
                                     {{ item.item_code || item.name }}
@@ -426,16 +415,9 @@ const cancelConfirmDialog = () => {
                     </div>
                 </div>
 
-                <div class="p-5 pt-16">
+                <div class="p-5 pt-12">
                     <!-- Right side - Form details and items list -->
                     <div class="h-full p-5 bg-white rounded shadow dark:bg-gray-800">
-
-                        <!-- Items list -->
-                        <label class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Input
-                            quantity here<b class="text-red-500">*</b></label>
-                        <input type="number" v-model="lastItemQty"
-                            class="w-full px-3 py-2 border-2 rounded-lg border-emerald-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            min="1" />
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-lg font-bold dark:text-gray-200">Sales Product List</h3>
@@ -453,7 +435,8 @@ const cancelConfirmDialog = () => {
                                                     <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
                                                         Item Code
                                                     </th>
-                                                    <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
+                                                    <th
+                                                        class="px-2 py-1 border w-max dark:text-gray-200 whitespace-nowrap">
                                                         Quantity
                                                     </th>
                                                     <th class="px-2 py-1 border dark:text-gray-200 whitespace-nowrap">
@@ -471,25 +454,18 @@ const cancelConfirmDialog = () => {
                                                             item.stock_id)?.item_code ||
                                                             'No item selected'}}
                                                     </td>
-                                                    <td class="px-2 py-1 border">
-                                                        {{ item.item_qty }}
+                                                    <td class="px-2 py-1 border w-max">
+                                                        <CustomInput type="number" v-model="item.item_qty" />
                                                     </td>
                                                     <td class="px-2 py-1 border">
-                                                        <!-- {{ parseFloat(item.item_price).toFixed(2) }} -->
-                                                        <CustomInput type="number" v-model="form.item_price"
-                                                            :message="form.errors.item_price" />
+                                                        ₱&nbsp;{{ item.item_price }}
                                                     </td>
                                                     <td class="px-2 py-1 border whitespace-nowrap">
-                                                        <div class="inline-flex gap-2">
+                                                        <div class="inline-flex items-center justify-center w-full">
                                                             <button type="button" @click="removeItem(index)"
                                                                 class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                                                                 <PhTrash :size="16" />
                                                             </button>
-                                                            <!-- <button type="button"
-                                                                @click="form.items[form.items.length - 1] = item; removeItem(index)"
-                                                                class="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                                                <PhPencil :size="16" />
-                                                            </button> -->
                                                         </div>
                                                     </td>
                                                 </tr>
