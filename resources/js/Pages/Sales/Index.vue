@@ -3,7 +3,7 @@ import { ref, watch, computed } from 'vue';
 import Print from './Print.vue';
 import { useForm, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhCaretUp, PhCaretDown, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning } from "@phosphor-icons/vue";
+import { PhRowsPlusBottom, PhX, PhPrinter, PhFilePlus, PhCaretUp, PhCaretDown, PhDownloadSimple, PhFloppyDisk, PhTrash, PhPencil, PhListMagnifyingGlass, PhWarning, PhArchive } from "@phosphor-icons/vue";
 
 const props = defineProps({
     forms: Object,
@@ -360,7 +360,7 @@ const cancelConfirmDialog = () => {
                         <!-- <h2 class="p-1 font-bold dark:text-gray-200">Customer Information</h2> -->
                         <!-- Customer info -->
                         <div
-                            class="grid grid-cols-1 px-5 py-1 !text-[10px] 2xl:!text-sm mb-4 bg-gray-300 border-8 border-gray-600 border-double rounded-lg gap-x-2 md:grid-cols-2">
+                            class="grid grid-cols-1 px-5 py-1 !text-[10px] 2xl:!text-sm mb-4 bg-gray-300 border-2 border-gray-600 rounded-lg gap-x-2 md:grid-cols-2">
                             <div class="mb-0.5">
                                 <label
                                     class="!text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Customer</label>
@@ -387,70 +387,40 @@ const cancelConfirmDialog = () => {
                                 <CustomInput name="Customer Address" type="text" v-model="form.address" disabled />
                             </div>
                         </div>
-
-                        <!-- Category buttons -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <div
-                                class="flex flex-col px-1 py-3 bg-indigo-300 border-4 border-gray-600 border-double rounded-lg">
-                                <label
-                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Press
-                                    to add
-                                    item<b class="text-red-500">*</b></label>
+                        <div class="flex flex-row items-center w-full gap-1 mb-2 h-max">
+                            <!-- <label
+                                class="!text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Press&nbsp;to&nbsp;"Add&nbsp;Product"&nbsp;</label> -->
+                            <div class="w-full">
                                 <button @click="addItem"
                                     class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900">
                                     <PhRowsPlusBottom :size="20" class="mr-2" />
-                                    Add Item
+                                    Add Product
                                 </button>
                             </div>
-                            <div
-                                class="grid grid-cols-2 gap-2 px-1 py-3 bg-pink-200 border-4 border-gray-600 border-double rounded-lg 2xl:grid-cols-4 2xl:gap-0 2xl:gap-x-2">
-                                <label
-                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200 col-span-2 2xl:col-span-4">Select
-                                    a
-                                    category<i class="text-xs font-thin text-gray-500">(optional)</i></label>
-                                <button @click="selectedCategory = null" :class="[
-                                    'px-3 py-2 rounded-lg border border-black text-sm font-medium',
-                                    !selectedCategory
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-emerald-100 text-gray-800 dark:bg-gray-600 hover:text-white dark:text-gray-200 hover:bg-emerald-600'
-                                ]">
-                                    All Items
-                                </button>
-                                <button v-for="category in props.categories" :key="category.id"
-                                    @click="selectCategory(category.name)" :class="[
-                                        'px-3 py-2 rounded-lg border border-black text-sm font-medium',
-                                        selectedCategory === category.name
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-emerald-100 text-gray-800 dark:bg-gray-600 hover:text-white dark:text-gray-200 hover:bg-emerald-500'
-                                    ]">
-                                    {{ category.name }}
-                                </button>
+                        </div>
+                        <div class="flex flex-row items-center w-full gap-1 mb-2 h-max">
+                            <label
+                                class="!text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Select&nbsp;Category<i
+                                    class="text-gray-400">(optional)</i></label>
+                            <div class="w-full">
+                                <CustomSelect name="category" :options="[
+                                    { value: '', label: 'All Items' },
+                                    ...props.categories.map(category => ({
+                                        value: category.name,
+                                        label: category.name
+                                    }))
+                                ]" :modelValue="selectedCategory"
+                                    @update:modelValue="(value) => selectCategory(value === '' ? null : value)" />
                             </div>
-
-                            <!-- Item buttons (filtered by category) -->
-                            <div class="px-1 py-3 border-4 border-gray-600 border-double rounded-lg bg-amber-200">
-                                <label
-                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Select
-                                    an
-                                    item<b class="text-red-500">*</b></label>
-                                <div class=" grid grid-cols-2 gap-2 overflow-y-auto 2xl:grid-cols-3 max-h-[30vh]">
-                                    <button v-for="item in filteredInventories" :key="item.id"
-                                        @click="handleInventorySelection(item, form.items.length - 1)"
-                                        class="px-3 py-2 text-sm font-medium text-left text-gray-800 truncate border border-black rounded-lg bg-emerald-100 dark:bg-gray-600 dark:text-gray-200 hover:text-white hover:bg-emerald-500"
-                                        :title="item.name || item.item_code">
-                                        {{ item.name || item.item_code }}
-                                    </button>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col items-start px-1 py-3 border-4 border-gray-600 border-double rounded-lg bg-lime-100">
-                                <!-- Quantity input -->
-                                <label
-                                    class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Input
-                                    quantity here<b class="text-red-500">*</b></label>
-                                <input type="number" v-model="lastItemQty"
-                                    class="w-full px-3 py-2 border-2 rounded-lg border-emerald-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    min="1" />
+                        </div>
+                        <div class="bg-gray-200 border-2 border-gray-600">
+                            <div class=" grid grid-cols-2 gap-2 overflow-y-auto 2xl:grid-cols-3 max-h-[30vh]">
+                                <button v-for="item in filteredInventories" :key="item.id"
+                                    @click="handleInventorySelection(item, form.items.length - 1)"
+                                    class="px-2 py-1 !text-[10px] lg:!text-[12px] font-medium 2xl:!text-sm text-left text-gray-800 truncate border border-black bg-emerald-100 dark:bg-gray-600 dark:text-gray-200 hover:text-white hover:bg-emerald-500"
+                                    :title="item.item_code || item.name">
+                                    {{ item.item_code || item.name }}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -461,14 +431,19 @@ const cancelConfirmDialog = () => {
                     <div class="h-full p-5 bg-white rounded shadow dark:bg-gray-800">
 
                         <!-- Items list -->
+                        <label class="text-[8px] lg:text-[10px] font-medium 2xl:text-sm dark:text-gray-200">Input
+                            quantity here<b class="text-red-500">*</b></label>
+                        <input type="number" v-model="lastItemQty"
+                            class="w-full px-3 py-2 border-2 rounded-lg border-emerald-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            min="1" />
                         <div class="mb-4">
                             <div class="flex items-center justify-between mb-2">
-                                <h3 class="text-lg font-bold dark:text-gray-200">Added Items</h3>
+                                <h3 class="text-lg font-bold dark:text-gray-200">Sales Product List</h3>
                             </div>
                             <div>
                                 <div v-if="form.items.length === 0"
                                     class="py-4 text-center rounded dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
-                                    <p>No items added yet. Add items from the left panel.</p>
+                                    <p>No product added yet. Add product from the left panel.</p>
                                 </div>
                                 <div v-else class="flex flex-col border rounded-lg">
                                     <div class="overflow-y-auto max-h-[20vh]">
@@ -491,7 +466,7 @@ const cancelConfirmDialog = () => {
                                             <tbody class="overflow-y-auto max-h-64">
                                                 <tr v-for="(item, index) in form.items" :key="index"
                                                     class="hover:bg-gray-50 dark:hover:bg-gray-400">
-                                                    <td class="px-2 py-1 border">
+                                                    <td class="px-2 !text-xs lg:text-sm 2xl:text-base py-1 border">
                                                         {{props.inventories.find(inv => inv.id ===
                                                             item.stock_id)?.item_code ||
                                                             'No item selected'}}
@@ -502,7 +477,7 @@ const cancelConfirmDialog = () => {
                                                     <td class="px-2 py-1 border">
                                                         <!-- {{ parseFloat(item.item_price).toFixed(2) }} -->
                                                         <CustomInput type="number" v-model="form.item_price"
-                                                        :message="form.errors.item_price" />
+                                                            :message="form.errors.item_price" />
                                                     </td>
                                                     <td class="px-2 py-1 border whitespace-nowrap">
                                                         <div class="inline-flex gap-2">
@@ -510,24 +485,17 @@ const cancelConfirmDialog = () => {
                                                                 class="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                                                                 <PhTrash :size="16" />
                                                             </button>
-                                                            <button type="button"
+                                                            <!-- <button type="button"
                                                                 @click="form.items[form.items.length - 1] = item; removeItem(index)"
                                                                 class="px-2 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
                                                                 <PhPencil :size="16" />
-                                                            </button>
+                                                            </button> -->
                                                         </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <!-- <div class="mt-6">
-                                        <button @click="addItem"
-                                            class="flex items-center justify-center w-full px-4 py-2 text-white rounded-lg bg-emerald-700 hover:bg-emerald-900">
-                                            <PhRowsPlusBottom :size="20" class="mr-2" />
-                                            Add Item
-                                        </button>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -732,8 +700,8 @@ const cancelConfirmDialog = () => {
                                             <PhPencil :size="16" />
                                         </button>
                                         <button @click="confirmDelete(form.id)"
-                                            class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
-                                            <PhTrash :size="16" />
+                                            class="p-3 text-white bg-orange-500 rounded-full hover:bg-orange-700">
+                                            <PhArchive :size="16" />
                                         </button>
                                     </div>
                                 </td>
