@@ -93,26 +93,45 @@ const activeTab = ref('monthly-sales');
                 </div>
             </div>
         </Modal>
+        <Modal :show="isMonthVisible" class="fixed inset-0 z-50">
+            <div class="h-[80vh]" v-if="isMonthVisible">
+                <div
+                    class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
+                    <div>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">{{ currentMonth }} Total Sales</h1>
+                    </div>
+                    <button @click="toggleForm2Visibility"
+                        class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
+                        <PhX :size="16" />
+                    </button>
+                </div>
+                <div class="flex items-center h-full">
+                    <div class="w-full">
+                        <MonthlyIncomeChart />
+                    </div>
+                </div>
+            </div>
+        </Modal>
+
         <div class="px-5">
             <div class="grid grid-cols-1 gap-2 lg:grid-cols-3 2xl:grid-cols-6">
 
-                <Link href="/inventory">
-                <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-500 hover:bg-lime-400">
-                    <p class="py-2 text-sm">Today's Total Sales</p>
-                    <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ todayTotalSales.toLocaleString()
-                        }}</h1>
-                </div>
-                </Link>
-                <Link href="/inventory">
-                <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-700 hover:bg-lime-600">
-                    <p class="py-2 text-sm">Weekly Total Sales</p>
-                    <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ weeklyTotalSales.toLocaleString() }}
-                    </h1>
-                </div>
-                </Link>
-                <button class=""> <!--@click="toggleForm2Visibility"-->
-                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-900 hover:bg-lime-800">
-                        <p class="py-2 text-sm">{{ currentMonth }} Total Sales</p>
+                <button @click="toggleFormVisibility">
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-500">
+                        <p class="py-2">Today's Total Sales</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ todayTotalSales.toLocaleString()
+                            }}</h1>
+                    </div>
+                </button>
+                <button @click="toggleFormWeeklyVisibility">
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-700">
+                        <p class="py-2">Weekly Total Sales</p>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php Sample</h1>
+                    </div>
+                </button>
+                <button @click="toggleForm2Visibility">
+                    <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-900">
+                        <p class="py-2">{{ currentMonth }} Total Sales</p>
                         <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ monthlySales.toLocaleString() }}
                         </h1>
                     </div>
