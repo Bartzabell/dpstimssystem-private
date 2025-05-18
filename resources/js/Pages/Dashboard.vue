@@ -60,7 +60,7 @@ const activeTab = ref('monthly-sales');
             </h2>
         </template>
         <Modal :show="isTodayVisible" class="fixed inset-0 z-50">
-            <div v-if="isTodayVisible">
+            <div class="w-screen lg:w-[80vw] 2xl:w-[70vw]" v-if="isTodayVisible">
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
@@ -71,13 +71,13 @@ const activeTab = ref('monthly-sales');
                         <PhX :size="16" />
                     </button>
                 </div>
-                <div>
+                <div class="w-full px-5 pt-20 pb-5">
                     <TodaysSalesChart />
                 </div>
             </div>
         </Modal>
         <Modal :show="isWeekVisible" class="fixed inset-0 z-50">
-            <div v-if="isWeekVisible">
+            <div class="w-screen lg:w-[80vw] 2xl:w-[70vw]" v-if="isWeekVisible">
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
@@ -88,17 +88,17 @@ const activeTab = ref('monthly-sales');
                         <PhX :size="16" />
                     </button>
                 </div>
-                <div>
+                <div class="w-full px-5 pt-20 pb-5">
                     <WeeklySalesChart />
                 </div>
             </div>
         </Modal>
         <Modal :show="isMonthVisible" class="fixed inset-0 z-50">
-            <div class="h-[80vh]" v-if="isMonthVisible">
+            <div class="w-screen lg:w-[80vw] 2xl:w-[70vw]" v-if="isMonthVisible">
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">{{ currentMonth }} Total Sales</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Total Sales of {{ currentMonth }}</h1>
                     </div>
                     <button @click="toggleForm2Visibility"
                         class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
@@ -106,7 +106,7 @@ const activeTab = ref('monthly-sales');
                     </button>
                 </div>
                 <div class="flex items-center h-full">
-                    <div class="w-full">
+                    <div class="w-full px-5 pt-20 pb-5">
                         <MonthlyIncomeChart />
                     </div>
                 </div>
@@ -120,14 +120,14 @@ const activeTab = ref('monthly-sales');
                     <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-500">
                         <p class="py-2">Today's Total Sales</p>
                         <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ todayTotalSales.toLocaleString()
-                            }}</h1>
+                        }}</h1>
                     </div>
                 </button>
                 <button @click="toggleFormWeeklyVisibility">
                     <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-700">
                         <p class="py-2">Weekly Total Sales</p>
                         <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ weeklyTotalSales.toLocaleString()
-                            }}</h1>
+                        }}</h1>
                     </div>
                 </button>
                 <button @click="toggleForm2Visibility">
@@ -138,19 +138,19 @@ const activeTab = ref('monthly-sales');
                     </div>
                 </button>
                 <Link href="/inventory" class="">
-                <div class="px-4 py-1 text-sm text-white bg-green-900 md:text-base hover:bg-green-800">
+                <div class="h-full px-4 py-1 text-sm text-white bg-green-900 md:text-base hover:bg-green-800">
                     <p class="py-2 text-sm text-center">Available Products</p>
                     <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ availableProducts }}</h1>
                 </div>
                 </Link>
                 <Link href="/inventory?search=low&sort_direction=asc&sort_field=id">
-                <div class="px-4 py-1 text-sm text-white bg-blue-900 md:text-base hover:bg-blue-800">
+                <div class="h-full px-4 py-1 text-sm text-white bg-blue-900 md:text-base hover:bg-blue-800">
                     <p class="py-2 text-sm">Fast Moving Products</p>
                     <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ lowStatusProducts }}</h1>
                 </div>
                 </Link>
                 <Link href="/inventory?search=high&sort_direction=asc&sort_field=id">
-                <div class="px-4 py-1 text-sm text-white bg-purple-700 md:text-base hover:bg-purple-600">
+                <div class="h-full px-4 py-1 text-sm text-white bg-purple-700 md:text-base hover:bg-purple-600">
                     <p class="py-2 text-sm">Critically Low Products</p>
                     <h1 class="w-full py-2 text-lg text-center md:text-2xl">{{ exceedingProducts }}</h1>
                 </div>
