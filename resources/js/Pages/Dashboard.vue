@@ -126,7 +126,8 @@ const activeTab = ref('monthly-sales');
                 <button @click="toggleFormWeeklyVisibility">
                     <div class="px-4 py-1 text-sm text-white md:text-base bg-lime-700">
                         <p class="py-2">Weekly Total Sales</p>
-                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php Sample</h1>
+                        <h1 class="w-full py-2 text-lg text-center md:text-2xl">Php {{ weeklyTotalSales.toLocaleString()
+                            }}</h1>
                     </div>
                 </button>
                 <button @click="toggleForm2Visibility">
