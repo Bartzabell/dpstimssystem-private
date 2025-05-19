@@ -40,14 +40,14 @@ class DatabaseSeeder extends Seeder
         }
 
         $warehouses = [
-            ['name' => 'warehouse 1'],
-            ['name' => 'warehouse 2'],
-            ['name' => 'warehouse 3'],
-            ['name' => 'warehouse 4'],
+            ['warehouse_name' => 'warehouse 1'],
+            ['warehouse_name' => 'warehouse 2'],
+            ['warehouse_name' => 'warehouse 3'],
+            ['warehouse_name' => 'warehouse 4'],
         ];
 
         foreach ($warehouses as $warehouse) {
-            Warehouse::firstOrCreate(['name' => $warehouse['name']], $warehouse);
+            Warehouse::firstOrCreate(['warehouse_name' => $warehouse['warehouse_name']], $warehouse);
         }
 
         // Then fetch the admin role to get its ID
@@ -103,7 +103,7 @@ class DatabaseSeeder extends Seeder
             ['item_code' => 'WhiteStandardPlasticCup100Meter',],
             [
                 'name' => 'Sample Item',
-                'item_qty' => 100,
+                // 'item_qty' => 100,
                 'category' => 'Cup',
                 'type' => 'Standard',
                 'material' => 'Plastic',
