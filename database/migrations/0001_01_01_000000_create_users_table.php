@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Role;
+use App\Models\Warehouse;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
             $table->unsignedBigInteger('deleted_by')->nullable();
+            $table->foreignIdFor(Warehouse::class, 'warehouse_id')->nullable();
             $table->softDeletes();
             $table->foreign('deleted_by')->references('id')->on('users')->onDelete('NO ACTION');
         });

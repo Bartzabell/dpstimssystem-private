@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class InventoryStock extends Model
+class Warehouse extends Model
 {
     use LogsActivity, SoftDeletes;
 
@@ -17,13 +17,12 @@ class InventoryStock extends Model
             ->logOnly(['name', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->useLogName('Inventory Module');
+            ->useLogName('Warehouse Module');
     }
 
-    protected $table = 'inventory_stocks';
+    protected $table = 'warehouses';
 
-    protected $fillable = ['name', 'item_code', 'category', 'material', 'color', 'type', 'size',
-     'uom', 'price', 'min_stock', 'max_stock', 'status', 'created_by', 'updated_by'];
+    protected $fillable = ['warehouse_name', 'created_by', 'updated_by'];
 
     public function creator(){
         return $this->belongsTo(User::class, 'created_by', 'id');

@@ -30,7 +30,7 @@ class TransactionPurchaseItem extends Model
     }
 
     public function stock(){
-        return $this->belongsTo(InventoryStock::class, 'stock_id', 'id');
+        return $this->belongsTo(WarehouseStock::class, 'stock_id', 'id');
     }
 
     public function creator(){

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('item_code')->nullable();
-            $table->decimal('item_qty', 10, 2)->default(0);
+            // $table->decimal('item_qty', 10, 2)->default(0);
             $table->string('category')->nullable();
             $table->string('type')->nullable();
             $table->string('material')->nullable();

@@ -35,6 +35,7 @@ class User extends Authenticatable
         'role_id',
         'username',
         'password',
+        'warehouse_id',
     ];
 
     /**
@@ -83,5 +84,9 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    public function warehouse(){
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');
     }
 }
