@@ -12,6 +12,8 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\Uom;
 use App\Models\User;
+use App\Models\Warehouse;
+use App\Models\WarehouseStock;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -32,14 +34,26 @@ class DatabaseSeeder extends Seeder
             ['name' => 'cashier'],
             ['name' => 'manager'],
         ];
-        
+
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role['name']], $role);
         }
-        
+
+        $warehouses = [
+            ['name' => 'warehouse 1'],
+            ['name' => 'warehouse 2'],
+            ['name' => 'warehouse 3'],
+            ['name' => 'warehouse 4'],
+        ];
+
+        foreach ($warehouses as $warehouse) {
+            Warehouse::firstOrCreate(['name' => $warehouse['name']], $warehouse);
+        }
+
         // Then fetch the admin role to get its ID
         $adminRole = Role::where('name', 'admin')->first();
-        
+        // $adminWarehouse = Role::where('id', 1)->first();
+
         // $adminRole = Role::firstOrCreate(
         //     ['name' => 'admin'],
         //     ['name' => 'stocker'],
@@ -53,6 +67,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Administrator',
                 'role_id' => $adminRole->id,
+                // 'role_id' => $adminWarehouse->id,
                 'email' => 'admin@example.com', // Change if needed
                 'password' => Hash::make('password'),
             ]
@@ -103,6 +118,41 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        WarehouseStock::firstOrCreate(
+            [
+                'inventory_id' => 1,
+                'warehouse_id' => 1,
+            ],
+            [
+                'item_qty' => 50,
+                'status' => 'normal',
+                'created_by' => 1,
+            ]
+        );
+
+        WarehouseStock::firstOrCreate(
+            [
+                'inventory_id' => 1,
+                'warehouse_id' => 2,
+            ],
+            [
+                'item_qty' => 30,
+                'status' => 'normal',
+                'created_by' => 1,
+            ]
+        );
+
+        WarehouseStock::firstOrCreate(
+            [
+                'inventory_id' => 1,
+                'warehouse_id' => 3,
+            ],
+            [
+                'item_qty' => 20,
+                'status' => 'normal',
+                'created_by' => 1,
+            ]
+        );
 
         $uoms = [
             ['name' => 'kg', 'created_by' => 1],
