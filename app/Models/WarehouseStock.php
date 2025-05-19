@@ -22,7 +22,7 @@ class WarehouseStock extends Model
 
     protected $table = 'warehouse_stocks';
 
-    protected $fillable = ['inventory_id', 'warehouse_id', 'item_qty', 'status', 'created_by', 'updated_by'];
+    protected $fillable = ['inventory_id', 'warehouse_id', 'item_qty', 'price', 'min_stock', 'max_stock', 'status', 'created_by', 'updated_by'];
 
     public function inventory(){
         return $this->belongsTo(InventoryStock::class, 'inventory_id', 'id');

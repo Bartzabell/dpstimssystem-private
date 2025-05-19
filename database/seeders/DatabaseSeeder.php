@@ -126,6 +126,9 @@ class DatabaseSeeder extends Seeder
             [
                 'item_qty' => 50,
                 'status' => 'normal',
+                'price' => 20,
+                'min_stock' => 10,
+                'max_stock' => 100,
                 'created_by' => 1,
             ]
         );
@@ -138,6 +141,9 @@ class DatabaseSeeder extends Seeder
             [
                 'item_qty' => 30,
                 'status' => 'normal',
+                'price' => 20,
+                'min_stock' => 10,
+                'max_stock' => 100,
                 'created_by' => 1,
             ]
         );
@@ -150,6 +156,9 @@ class DatabaseSeeder extends Seeder
             [
                 'item_qty' => 20,
                 'status' => 'normal',
+                'price' => 20,
+                'min_stock' => 10,
+                'max_stock' => 100,
                 'created_by' => 1,
             ]
         );
