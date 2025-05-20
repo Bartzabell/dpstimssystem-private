@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Discount;
 use App\Models\TransactionSalesBill;
 use App\Models\TransactionSalesItem;
+use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -42,12 +43,15 @@ class SalesController extends Controller
             ->when($sortField, function ($query, $sortField) use ($sortDirection) {
                 return $query->orderBy($sortField, $sortDirection);
             })
+            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->paginate(5)
             ->appends($request->query());
 
         $customers = Customer::select('*')
             ->get();
-        $inventories = InventoryStock::select('*')
+        $inventories = WarehouseStock::join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+            ->select('warehouse_stocks.id', 'inventory_stocks.item_code as item_code', 'warehouse_stocks.price')
+            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->get();
         $discounts = Discount::select('*')
             ->get();
@@ -73,6 +77,7 @@ class SalesController extends Controller
             'date_sold' => $request->date_sold,
             'discount_id' => $request->discount_id,
             'total_price' => $request->total_price, // Use total_price from the request
+            'warehouse_id' => Auth::user()->warehouse_id,
             'created_by' => Auth::id(),
         ]);
 
@@ -87,7 +92,7 @@ class SalesController extends Controller
                     'created_by' => Auth::id(),
                 ]);
 
-                $inventory = InventoryStock::find($item['stock_id']);
+                $inventory = WarehouseStock::find($item['stock_id']);
                 $inventory->update([
                     'item_qty' => $inventory->item_qty - $item['item_qty'],
                 ]);
@@ -109,6 +114,7 @@ class SalesController extends Controller
             'date_sold' => $request->date_sold,
             'discount_id' => $request->discount_id,
             'total_price' => $request->total_price, // Use total_price from the request
+            'warehouse_id' => Auth::user()->warehouse_id,
             'updated_by' => Auth::id(),
         ]);
 
@@ -144,7 +150,7 @@ class SalesController extends Controller
                         'created_by' => Auth::id(),
                     ]);
 
-                    $inventory = InventoryStock::find($item['stock_id']);
+                    $inventory = WarehouseStock::find($item['stock_id']);
                     $inventory->update([
                         'item_qty' => $inventory->item_qty - $item['item_qty'],
                     ]);
