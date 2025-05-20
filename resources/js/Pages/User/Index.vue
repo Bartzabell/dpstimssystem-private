@@ -31,7 +31,6 @@
         id: null,
         name: '',
         username: '',
-        email: '',
         role_id: '',
         warehouse_id: '',
         password: '',
@@ -80,7 +79,6 @@
         form.id = user.id;
         form.name = user.name;
         form.username = user.username;
-        form.email = user.email;
         form.role_id = user.role_id;
         form.warehouse_id = user.warehouse_id;
         form.password = user.password;
@@ -94,7 +92,6 @@
     const resetForm = () => {
         form.id = null;
         form.name = '';
-        form.email = '';
         form.username = '';
         form.role_id = '';
         form.warehouse_id = '';
@@ -195,7 +192,6 @@
                     <div class="grid grid-cols-1 gap-5 p-5 mt-10 md:grid-cols-2">
                         <CustomInput name="Name:" v-model="form.name" />
                         <CustomInput name="Username:" v-model="form.username"/>
-                        <CustomInput name="Email:" v-model="form.email" type="email" />
                         <div>
                             <label class="text-sm font-medium dark:text-gray-200">Role:</label>
                             <SearchableDropdown
@@ -255,7 +251,6 @@
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Username</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Role</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Warehouse</td>
-                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Email</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Date Created</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Actions</td>
                                 </tr>
@@ -266,7 +261,6 @@
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ user.username }}</td>
                                     <td class="px-2 py-1 capitalize border whitespace-nowrap">{{ user.role?.name }}</td>
                                     <td class="px-2 py-1 capitalize border whitespace-nowrap">{{ user.warehouse?.name }}</td>
-                                    <td class="px-2 py-1 border whitespace-nowrap">{{ user.email }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(user.created_at) }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">
                                         <div class="inline-flex justify-center w-full h-full gap-2 ">

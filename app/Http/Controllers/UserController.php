@@ -22,7 +22,6 @@ class UserController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('created_at', 'like', "%{$search}%")
                     ->orWhereHas('role', function ($q) use ($search) {
@@ -53,7 +52,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username',
-            'email' => 'required|email|unique:users,email',
             'role_id' => 'required|exists:roles,id',
             'warehouse_id' => 'required|exists:warehouses,id',
             'password' => 'required|min:8',
@@ -62,7 +60,6 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'username' => $request->username,
-            'email' => $request->email,
             'role_id' => $request->role_id,
             'warehouse_id' => $request->warehouse_id,
             'password' => $request->password,
@@ -83,7 +80,6 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'username' => $request->username,
-            'email' => $request->email,
             'role_id' => $request->role_id,
             'warehouse_id' => $request->warehouse_id,
             'password' => $request->password,

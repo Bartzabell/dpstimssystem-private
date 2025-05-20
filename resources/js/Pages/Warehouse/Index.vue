@@ -211,15 +211,17 @@ const dialogAction = ref('');
                 </div>
                 <form @submit.prevent="submit">
                     <div class="grid grid-cols-1 !text-[10px] 2xl:!text-sm gap-2 p-5 mt-10 lg:grid-cols-2">
-                        <SearchableDropdown
-                            v-model="selectedInventory"
-                            :items="inventories"
-                            value-field="id"
-                            label-field="name"
-                            description-field="item_code"
-                            @change="form.inventory_id = $event.id"
-                            :disabled="editing"
-                            />
+                        <div>
+                            <Label class="font-medium">Product Name</Label>
+                            <SearchableDropdown
+                                v-model="selectedInventory"
+                                :items="inventories"
+                                value-field="id"
+                                label-field="name"
+                                @change="form.inventory_id = $event.id"
+                                :disabled="editing"
+                                />
+                        </div>
                         <CustomInput name="Product Quantity" v-model="form.item_qty" />
                         <CustomInput name="Product Price" v-model="form.price" />
                         <CustomInput name="Minimum Stock" v-model="form.min_stock" />

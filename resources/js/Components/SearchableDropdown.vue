@@ -162,9 +162,9 @@ onMounted(() => {
                             </span>
                             <span class="block w-full truncate dark:text-gray-300">{{ selectedLabel || placeholder }}</span>
                         </div>
-                        <div v-if="selectedDescription" class="text-xs text-gray-500 truncate dark:text-gray-400">
+                        <!-- <div v-if="selectedDescription" class="text-xs text-gray-500 truncate dark:text-gray-400">
                             {{ selectedDescription }}
-                        </div>
+                        </div> -->
                     </div>
                 </template>
             </div>
