@@ -6,7 +6,9 @@ import MonthlyIncomeChart from '@/Components/Charts/MonthlyIncomeChart.vue';
 import TodaysSalesChart from '@/Components/Charts/TodaysSalesChart.vue';
 import WeeklySalesChart from '@/Components/Charts/WeeklySalesChart.vue';
 import MonthlySalesQuantityChart from '@/Components/Charts/MonthlySalesQuantityChart.vue';
+import SearchableDropdown from '@/Components/SearchableDropdown.vue';
 import { PhX } from '@phosphor-icons/vue';
+
 const props = defineProps({
     sales: Object,
     todayTotalSales: { type: Number, default: 0, },
@@ -17,6 +19,8 @@ const props = defineProps({
     exceedingProducts: { type: Number, default: 0, },
     filters: Object,
     currentMonth: String,
+    warehouses: Array,
+    selectedWarehouse: [String, Number],
 });
 
 const tabs = [
@@ -51,13 +55,37 @@ function toggleForm5Visibility() {
 }
 
 const activeTab = ref('monthly-sales');
+
+// Handle warehouse selection change
+const handleWarehouseChange = (warehouseId) => {
+    router.get(route('dashboard'), { warehouse: warehouseId }, {
+        preserveState: true,
+        replace: true,
+        only: ['sales', 'todayTotalSales', 'weeklyTotalSales', 'monthlySales',
+               'availableProducts', 'lowStatusProducts', 'exceedingProducts',
+               'selectedWarehouse']
+    });
+};
+
 </script>
 <template>
     <AppLayout title="Dashboard">
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Dashboard
-            </h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                    Dashboard
+                </h2>
+                <div class="w-64">
+                    <SearchableDropdown
+                        :items="warehouses"
+                        :modelValue="selectedWarehouse"
+                        @update:modelValue="handleWarehouseChange"
+                        placeholder="Select Warehouse"
+                        valueField="id"
+                        labelField="name"
+                    />
+                </div>
+            </div>
         </template>
         <Modal :show="isTodayVisible" class="fixed inset-0 z-50">
             <div class="w-screen lg:w-[80vw] 2xl:w-[70vw]" v-if="isTodayVisible">

@@ -16,6 +16,15 @@ class ChartController extends Controller
 
         $query = TransactionSalesBill::query();
 
+        $selectedWarehouse = request()->input('warehouse', 'general');
+
+        // Filter by warehouse if not 'general'
+        if ($selectedWarehouse !== 'general') {
+            $query->whereHas('items.stock', function($q) use ($selectedWarehouse) {
+                $q->where('warehouse_id', $selectedWarehouse);
+            });
+        }
+
         // Filter by warehouse if user is not admin
         if ($user->role_id != 1) {
             $query->whereHas('items.stock', function($q) use ($user) {
@@ -51,15 +60,15 @@ class ChartController extends Controller
 
     public function getAvailableYears()
     {
-        $user = Auth::user();
         $connection = DB::connection()->getDriverName();
 
         $query = TransactionSalesBill::query();
+        $selectedWarehouse = request()->input('warehouse', 'general');
 
-        // Filter by warehouse if user is not admin
-        if ($user->role_id != 1) {
-            $query->whereHas('items.stock', function($q) use ($user) {
-                $q->where('warehouse_id', $user->warehouse_id);
+        // Filter by warehouse if not 'general'
+        if ($selectedWarehouse !== 'general') {
+            $query->whereHas('items.stock', function($q) use ($selectedWarehouse) {
+                $q->where('warehouse_id', $selectedWarehouse);
             });
         }
 
@@ -84,17 +93,16 @@ class ChartController extends Controller
 
     public function getMonthlySalesQuantity($year)
     {
-        $user = Auth::user();
         $connection = DB::connection()->getDriverName();
 
         $query = TransactionSalesItem::query()
             ->join('transaction_sales_bills', 'transaction_sales_items.tsb_id', '=', 'transaction_sales_bills.id')
             ->join('warehouse_stocks', 'transaction_sales_items.stock_id', '=', 'warehouse_stocks.id')
             ->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id');
+        $selectedWarehouse = request()->input('warehouse', 'general');
 
-        // Filter by warehouse if user is not admin
-        if ($user->role_id != 1) {
-            $query->where('warehouse_stocks.warehouse_id', $user->warehouse_id);
+        if ($selectedWarehouse !== 'general') {
+            $query->where('warehouse_stocks.warehouse_id', $selectedWarehouse);
         }
 
         if ($connection === 'pgsql') {
@@ -150,7 +158,6 @@ class ChartController extends Controller
 
     public function getTodaysSalesByItem()
     {
-        $user = Auth::user();
         $today = now()->format('Y-m-d');
 
         $query = TransactionSalesItem::query()
@@ -158,10 +165,11 @@ class ChartController extends Controller
             ->join('warehouse_stocks', 'transaction_sales_items.stock_id', '=', 'warehouse_stocks.id')
             ->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id');
 
-        // Filter by warehouse if user is not admin
-        if ($user->role_id != 1) {
-            $query->where('warehouse_stocks.warehouse_id', $user->warehouse_id);
-        }
+            $selectedWarehouse = request()->input('warehouse', 'general');
+
+            if ($selectedWarehouse !== 'general') {
+                $query->where('warehouse_stocks.warehouse_id', $selectedWarehouse);
+            }
 
         $results = $query->select(
                 'inventory_stocks.item_code',
@@ -182,7 +190,6 @@ class ChartController extends Controller
 
     public function getWeeklySalesByItem()
     {
-        $user = Auth::user();
         $startOfWeek = now()->startOfWeek()->format('Y-m-d');
         $endOfWeek = now()->endOfWeek()->format('Y-m-d');
 
@@ -191,9 +198,10 @@ class ChartController extends Controller
             ->join('warehouse_stocks', 'transaction_sales_items.stock_id', '=', 'warehouse_stocks.id')
             ->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id');
 
-        // Filter by warehouse if user is not admin
-        if ($user->role_id != 1) {
-            $query->where('warehouse_stocks.warehouse_id', $user->warehouse_id);
+        $selectedWarehouse = request()->input('warehouse', 'general');
+
+        if ($selectedWarehouse !== 'general') {
+            $query->where('warehouse_stocks.warehouse_id', $selectedWarehouse);
         }
 
         $results = $query->select(

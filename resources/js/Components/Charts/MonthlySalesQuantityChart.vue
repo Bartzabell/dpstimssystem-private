@@ -3,10 +3,10 @@
       <div>
         <div>
           <label for="year-select" class="mx-2" :class="{ 'text-white': isDarkMode }">Select Year:</label>
-          <select 
-            id="year-select" 
-            class="rounded-full" 
-            v-model="selectedYear" 
+          <select
+            id="year-select"
+            class="rounded-full"
+            v-model="selectedYear"
             @change="fetchMonthlySalesQuantityData"
             :class="{ 'bg-gray-800 text-white border-gray-700': isDarkMode }">
             <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
@@ -18,11 +18,12 @@
       </div>
     </div>
   </template>
-  
+
   <script>
     import ApexCharts from 'apexcharts';
     import axios from 'axios';
-  
+    import { ref, watch, computed } from 'vue';
+
     export default {
       data() {
         return {
@@ -102,7 +103,7 @@
       mounted() {
         this.checkDarkMode();
         this.fetchAvailableYears();
-        
+
         // Listen for changes to color scheme preference
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.checkDarkMode);
       },
@@ -137,7 +138,7 @@
             this.chartOptions.grid.borderColor = '#e7e7e7'; // Original grid color
             this.chartOptions.tooltip.theme = 'light'; // Light tooltip
           }
-          
+
           // If chart already exists, update it with new theme
           if (this.chart) {
             this.chart.updateOptions(this.chartOptions);
@@ -147,12 +148,12 @@
           try {
             const response = await axios.get('/api/sales/available-years');
             this.availableYears = response.data;
-  
+
             if (this.availableYears.length > 0) {
               // Set the most recent year as default
               this.selectedYear = this.availableYears[this.availableYears.length - 1];
             }
-  
+
             this.fetchMonthlySalesQuantityData();
           } catch (error) {
             console.error('Error fetching available years:', error);
@@ -160,7 +161,11 @@
         },
         async fetchMonthlySalesQuantityData() {
           try {
-            const response = await axios.get(`/api/sales/monthly-sales-quantity/${this.selectedYear}`);
+            const response = await axios.get(`/api/sales/monthly-sales-quantity/${this.selectedYear}`, {
+                params: {
+                    warehouse: this.$page.props.selectedWarehouse
+                }
+            });
             this.monthlyData = response.data.monthlyData;
             this.items = response.data.items;
             this.renderChart();
@@ -175,7 +180,7 @@
               data: this.monthlyData[item.id] || Array(12).fill(0) // Ensure 12 months of data
             };
           });
-  
+
           if (this.chart) {
             this.chart.updateSeries(series);
           } else {
@@ -192,14 +197,14 @@
         if (window.matchMedia) {
           window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.checkDarkMode);
         }
-        
+
         if (this.chart) {
           this.chart.destroy();
         }
       }
     };
   </script>
-  
+
   <style>
   /* Add dark mode CSS for select dropdown */
   @media (prefers-color-scheme: dark) {
@@ -208,12 +213,12 @@
       color: white;
       border-color: #4a5568;
     }
-    
+
     select option {
       background-color: #2d3748;
       color: white;
     }
-    
+
     /* ApexCharts toolbar adjustments for dark mode */
     .apexcharts-toolbar {
       filter: invert(0.8);

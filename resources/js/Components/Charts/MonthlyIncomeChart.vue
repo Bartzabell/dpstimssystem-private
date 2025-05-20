@@ -75,7 +75,7 @@
         mounted() {
             this.checkDarkMode();
             this.fetchAvailableYears();
-            
+
             // Listen for changes to color scheme preference
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.checkDarkMode);
         },
@@ -98,7 +98,7 @@
                     this.chartOptions.grid.borderColor = '#e7e7e7'; // Original grid color
                     this.chartOptions.tooltip.theme = 'light'; // Light tooltip
                 }
-                
+
                 // If chart already exists, update it with new theme
                 if (this.chart) {
                     this.chart.updateOptions(this.chartOptions);
@@ -121,7 +121,11 @@
             },
             async fetchMonthlyIncomeData() {
                 try {
-                    const response = await axios.get(`/api/sales/monthly-income/${this.selectedYear}`);
+                    const response = await axios.get(`/api/sales/monthly-income/${this.selectedYear}`, {
+                        params: {
+                            warehouse: this.$page.props.selectedWarehouse
+                        }
+                    });
                     this.monthlyData = response.data;
                     this.renderChart();
                 } catch (error) {
@@ -150,12 +154,13 @@
             if (window.matchMedia) {
                 window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.checkDarkMode);
             }
-            
+
             if (this.chart) {
                 this.chart.destroy();
             }
         }
     }
+
 </script>
 
 <template>
@@ -183,7 +188,7 @@
         color: white;
         border-color: #4a5568;
     }
-    
+
     select option {
         background-color: #2d3748;
         color: white;

@@ -1,5 +1,6 @@
 <script>
 import ApexCharts from 'apexcharts';
+import { ref, watch, computed } from 'vue';
 
 export default {
     data() {
@@ -112,7 +113,11 @@ export default {
         },
         async fetchTodaysSalesData() {
             try {
-                const response = await axios.get('/api/sales/todays-sales-by-item');
+                const response = await axios.get('/api/sales/todays-sales-by-item', {
+                    params: {
+                        warehouse: this.$page.props.selectedWarehouse
+                    }
+                });
                 const data = response.data;
 
                 this.renderChart(data.items, data.quantities, data.sales);
@@ -165,6 +170,7 @@ export default {
         }
     }
 }
+
 </script>
 
 <template>
