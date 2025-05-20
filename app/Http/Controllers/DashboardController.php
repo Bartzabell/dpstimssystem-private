@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\TransactionSalesBill;
 use App\Models\InventoryStock;
+use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,9 +32,9 @@ class DashboardController extends Controller
             ->appends($request->query());
 
         // Inventory data
-        $availableProducts = InventoryStock::where('item_qty', '>', 0)->count();
-        $lowStatusProducts = InventoryStock::whereRaw('item_qty < min_stock')->count();
-        $exceedingProducts = InventoryStock::whereRaw('item_qty > max_stock')->count();
+        $availableProducts = WarehouseStock::where('warehouse_id', auth()->user()->warehouse_id)->where('item_qty', '>', 0)->count();
+        $lowStatusProducts = WarehouseStock::where('warehouse_id', auth()->user()->warehouse_id)->whereRaw('item_qty < min_stock')->count();
+        $exceedingProducts = WarehouseStock::where('warehouse_id', auth()->user()->warehouse_id)->whereRaw('item_qty > max_stock')->count();
 
         return Inertia::render('Dashboard', [
             'sales' => $sales,

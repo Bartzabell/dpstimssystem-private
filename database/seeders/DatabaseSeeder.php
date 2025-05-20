@@ -40,14 +40,14 @@ class DatabaseSeeder extends Seeder
         }
 
         $warehouses = [
-            ['warehouse_name' => 'warehouse 1'],
-            ['warehouse_name' => 'warehouse 2'],
-            ['warehouse_name' => 'warehouse 3'],
-            ['warehouse_name' => 'warehouse 4'],
+            ['name' => 'warehouse 1'],
+            ['name' => 'warehouse 2'],
+            ['name' => 'warehouse 3'],
+            ['name' => 'warehouse 4'],
         ];
 
         foreach ($warehouses as $warehouse) {
-            Warehouse::firstOrCreate(['warehouse_name' => $warehouse['warehouse_name']], $warehouse);
+            Warehouse::firstOrCreate(['name' => $warehouse['name']], $warehouse);
         }
 
         // Then fetch the admin role to get its ID

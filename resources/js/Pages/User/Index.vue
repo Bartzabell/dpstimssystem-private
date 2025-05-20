@@ -7,12 +7,14 @@
     const props = defineProps({
         users: Object,
         roles: Array,
+        warehouses: Array,
         filters: Object
     });
 
     const topToast = ref(null);
     const itemToDelete = ref(null);
     const selectedRole = ref(null);
+    const selectedWarehouse = ref(null);
     const showDeleteConfirmation = ref(false);
     const showConfirmDialog = ref(false);
     const dialogAction = ref('');
@@ -31,6 +33,7 @@
         username: '',
         email: '',
         role_id: '',
+        warehouse_id: '',
         password: '',
     });
 
@@ -79,9 +82,11 @@
         form.username = user.username;
         form.email = user.email;
         form.role_id = user.role_id;
+        form.warehouse_id = user.warehouse_id;
         form.password = user.password;
 
         selectedRole.value = user.role_id;
+        selectedWarehouse.value = user.warehouse_id;
 
         editing.value = true;
     };
@@ -92,8 +97,10 @@
         form.email = '';
         form.username = '';
         form.role_id = '';
+        form.warehouse_id = '';
         form.password = '';
         selectedRole.value = null;
+        selectedWarehouse.value = null;
     };
 
     function toggleFormVisibility() {
@@ -199,6 +206,16 @@
                                 @change="form.role_id = $event.id"
                             />
                         </div>
+                        <div>
+                            <label class="text-sm font-medium dark:text-gray-200">Warehouse:</label>
+                            <SearchableDropdown
+                                class="border rounded-lg border-slate-600"
+                                v-model="selectedWarehouse"
+                                :items="warehouses"
+                                placeholder="Search Warehouse..."
+                                @change="form.warehouse_id = $event.id"
+                            />
+                        </div>
                         <CustomInput name="Password:" v-model="form.password" type="password" />
                         <div class="flex items-center justify-end w-full">
                             <div class="flex items-center justify-center gap-2 mt-2">
@@ -237,6 +254,7 @@
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Name</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Username</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Role</td>
+                                    <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Warehouse</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Email</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Date Created</td>
                                     <td class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">Actions</td>
@@ -247,6 +265,7 @@
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ user.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ user.username }}</td>
                                     <td class="px-2 py-1 capitalize border whitespace-nowrap">{{ user.role?.name }}</td>
+                                    <td class="px-2 py-1 capitalize border whitespace-nowrap">{{ user.warehouse?.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ user.email }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(user.created_at) }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">

@@ -22,7 +22,7 @@ class Warehouse extends Model
 
     protected $table = 'warehouses';
 
-    protected $fillable = ['warehouse_name', 'created_by', 'updated_by'];
+    protected $fillable = ['name', 'created_by', 'updated_by'];
 
     public function creator(){
         return $this->belongsTo(User::class, 'created_by', 'id');

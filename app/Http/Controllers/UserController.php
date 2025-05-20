@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -17,7 +18,7 @@ class UserController extends Controller
 
         //FOR TABLE PAGINATION AND SEARCH
         $users = User::query()
-            ->with(['role'])
+            ->with(['role', 'warehouse'])
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%")
@@ -26,6 +27,9 @@ class UserController extends Controller
                     ->orWhere('created_at', 'like', "%{$search}%")
                     ->orWhereHas('role', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('warehouse', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
                     });
             })
             ->paginate(5)
@@ -33,10 +37,12 @@ class UserController extends Controller
 
         $roles = Role::select('id', 'name')
             ->get();
+        $warehouses = Warehouse::select('id', 'name')->get();
 
         return Inertia::render('User/Index', [
             'users' => $users,
             'roles' => $roles,
+            'warehouses' => $warehouses,
             'filters' => $request->only('search')
         ]);
     }
@@ -49,6 +55,7 @@ class UserController extends Controller
             'username' => 'required|string|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'role_id' => 'required|exists:roles,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
             'password' => 'required|min:8',
         ]);
 
@@ -57,6 +64,7 @@ class UserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'role_id' => $request->role_id,
+            'warehouse_id' => $request->warehouse_id,
             'password' => $request->password,
             'created_by' => Auth::id(),
         ]);
@@ -77,6 +85,7 @@ class UserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'role_id' => $request->role_id,
+            'warehouse_id' => $request->warehouse_id,
             'password' => $request->password,
             'updated_by' => Auth::id(),
         ]);
