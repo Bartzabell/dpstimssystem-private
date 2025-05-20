@@ -117,6 +117,14 @@ const logout = () => {
                                         </span>
                                     </Link>
                                 </li>
+                                <li class="px-6 py-2 hover:bg-lime-700 hover:text-white">
+                                    <Link :href="route('warehouse.index')">
+                                        <span class="inline-flex items-center w-full gap-2">
+                                            <PhPackage :size="28" weight="fill" />
+                                            Warehouse Inventory
+                                        </span>
+                                    </Link>
+                                </li>
                                 <li class="px-6 py-2 hover:bg-lime-700 hover:text-white" :class="{ 'bg-lime-700 text-white': route().current('purchase.index') }">
                                     <Link :href="route('purchase.index')">
                                         <span class="inline-flex items-center w-full gap-2">

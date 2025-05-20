@@ -11,6 +11,7 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -56,6 +57,11 @@ Route::middleware([
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
     Route::post('/inventory/{inventory}', [InventoryController::class, 'update'])->name('inventory.update');
     Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+
+    Route::get('/warehouse', [WarehouseController::class, 'index'])->name('warehouse.index');
+    Route::post('/warehouse', [WarehouseController::class, 'store'])->name('warehouse.store');
+    Route::post('/warehouse/{warehouseStock}', [WarehouseController::class, 'update'])->name('warehouse.update');
+    Route::delete('/warehouse/{warehouseStock}', [WarehouseController::class, 'destroy'])->name('warehouse.destroy');
 
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');

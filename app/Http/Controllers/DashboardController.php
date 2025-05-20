@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\TransactionSalesBill;
-use App\Models\InventoryStock;
 use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
