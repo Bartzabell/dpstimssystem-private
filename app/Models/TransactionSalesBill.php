@@ -22,7 +22,7 @@ class TransactionSalesBill extends Model
 
     protected $table = 'transaction_sales_bills';
 
-    protected $fillable = ['customer_id', 'date_sold', 'total_price', 'discount_id', 'created_by', 'updated_by', 'dispatch_status'];
+    protected $fillable = ['customer_id', 'date_sold', 'total_price', 'warehouse_id', 'discount_id', 'created_by', 'updated_by', 'dispatch_status'];
 
     public function customer(){
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
@@ -34,6 +34,10 @@ class TransactionSalesBill extends Model
 
     public function items(){
         return $this->hasMany(TransactionSalesItem::class, 'tsb_id', 'id');
+    }
+
+    public function warehouse(){
+        return $this->belongsTo(Warehouse::class, 'warehouse_id', 'id');
     }
 
     public function creator(){
