@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventory;
-use App\Models\InventoryStock;
+use App\Models\WarehouseStock;
 use App\Models\Supplier;
 use App\Models\TransactionPurchaseBill;
 use App\Models\TransactionPurchaseItem;
-use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -45,7 +44,9 @@ class PurchaseController extends Controller
 
         $suppliers = Supplier::select('id', 'name', 'phone_no', 'tin_no')
             ->get();
-        $inventories = WarehouseStock::with('inventory')->select('id', 'inventory.item_code as item_code', 'price')
+        $inventories = WarehouseStock::join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+            ->select('warehouse_stocks.id', 'inventory_stocks.item_code as item_code', 'warehouse_stocks.price')
+            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->get();
 
         return Inertia::render('Purchase/Index', [

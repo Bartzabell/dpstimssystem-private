@@ -294,7 +294,7 @@ const cancelConfirmDialog = () => {
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-xs font-bold 2xl:text-lg dark:text-gray-200">Purchased Product</h3>
                             </div>
-                            <div class="overflow-y-auto max-h-[90vh] lg:max-h-[25vh] 2xl:max-h-[45vh]">
+                            <div class="overflow-y-auto max-h-[90vh] lg:max-h-[25vh] 2xl:max-h-[50vh]">
                                 <div v-if="form.items.length === 0"
                                     class="py-4 text-xs text-center rounded 2xl:text-base dark:text-gray-400 dark:bg-gray-600 bg-gray-50">
                                     <p>No products added yet. Click 'Add Row' to start.</p>
@@ -324,10 +324,12 @@ const cancelConfirmDialog = () => {
                                             <tr v-for="(item, index) in form.items" :key="index"
                                                 class="hover:bg-gray-50 dark:hover:bg-gray-400">
                                                 <td
-                                                    class="px-2 pt-1 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm pb-1 border whitespace-nowrap">
+                                                    class="px-2  py-1 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm pb-1 border whitespace-nowrap">
                                                     <SearchableDropdown class="border rounded-lg border-slate-600"
                                                         v-model="selectedItems[index]" :items="inventories"
                                                         placeholder="Search Item..."
+                                                        value-field="id"
+                                                        label-field="name"
                                                         @change="handleInventoryChange($event, index)" />
                                                 </td>
                                                 <td class="px-2 py-1 border whitespace-nowrap">
