@@ -53,6 +53,15 @@ class WarehouseController extends Controller
 
     public function store(Request $request)
     {
+        // Check if a warehouse stock with the same warehouse_id and inventory_id already exists
+        $existingStock = WarehouseStock::where('warehouse_id', Auth::user()->warehouse_id)
+                                      ->where('inventory_id', $request->inventory_id)
+                                      ->first();
+
+        if ($existingStock) {
+            return back()->withErrors(['error' => 'A stock with this product already exists in your warehouse.']);
+        }
+
         $status = $this->getStatus($request->item_qty, $request->min_stock, $request->max_stock);
 
         WarehouseStock::create([
@@ -66,11 +75,23 @@ class WarehouseController extends Controller
             'created_by' => Auth::id(),
         ]);
 
-        return redirect()->route('warehouse.index');
+        return redirect()->route('warehouse.index')->with('success', 'Product added successfully.');
     }
 
     public function update(Request $request, WarehouseStock $warehouseStock)
     {
+        // If inventory_id is being changed, check for duplicates
+        if ($warehouseStock->inventory_id != $request->inventory_id) {
+            $existingStock = WarehouseStock::where('warehouse_id', Auth::user()->warehouse_id)
+                                         ->where('inventory_id', $request->inventory_id)
+                                         ->first();
+
+            if ($existingStock) {
+                // Return with error message if duplicate found
+                return redirect()->back()->with('error', 'A stock with this product already exists in your warehouse.');
+            }
+        }
+
         $status = $this->getStatus($request->item_qty, $request->min_stock, $request->max_stock);
 
         $warehouseStock->update([
@@ -83,7 +104,7 @@ class WarehouseController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
-        return redirect()->route('warehouse.index');
+        return redirect()->route('warehouse.index')->with('success', 'Product updated successfully.');
     }
 
     private function getStatus($itemQty, $minStock, $maxStock)
@@ -101,6 +122,6 @@ class WarehouseController extends Controller
     public function destroy(WarehouseStock $warehouseStock)
     {
         $warehouseStock->delete();
-        return redirect()->route('warehouse.index');
+        return redirect()->route('warehouse.index')->with('success', 'Product deleted successfully.');
     }
 }

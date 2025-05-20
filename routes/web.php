@@ -60,7 +60,7 @@ Route::middleware([
 
     Route::get('/warehouse', [WarehouseController::class, 'index'])->name('warehouse.index');
     Route::post('/warehouse', [WarehouseController::class, 'store'])->name('warehouse.store');
-    Route::post('/warehouse/{warehouseStock}', [WarehouseController::class, 'update'])->name('warehouse.update');
+    Route::put('/warehouse/{warehouseStock}', [WarehouseController::class, 'update'])->name('warehouse.update');
     Route::delete('/warehouse/{warehouseStock}', [WarehouseController::class, 'destroy'])->name('warehouse.destroy');
 
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');

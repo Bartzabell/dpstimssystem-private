@@ -1,4 +1,4 @@
-    <script setup>
+<script setup>
 import { ref, watch, computed } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -7,7 +7,8 @@ import { PhX, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhCaretUp, PhCaretDow
 const props = defineProps({
     warehouseStocks: Object,
     inventories: Array,
-    filters: Object
+    filters: Object,
+    flash: Object // Add this to receive flash messages
 });
 
 const search = ref(props.filters?.search || '');
@@ -39,6 +40,22 @@ const form = useForm({
     max_stock: '',
     status: '',
 });
+
+// Display flash messages when component mounts
+watch(() => props.flash, (newFlash) => {
+    if (newFlash?.error) {
+        topToast.value.showToast(newFlash.error, 'error');
+    }
+    if (newFlash?.success) {
+        topToast.value.showToast(newFlash.success, 'success');
+    }
+}, { immediate: true, deep: true });
+
+watch(() => form.errors, (errors) => {
+    if (errors.error) {
+        topToast.value.showToast(errors.error, 'error');
+    }
+}, { deep: true });
 
 function toggleFormVisibility() {
     if (isFormVisible.value) {
@@ -77,8 +94,8 @@ const deleteItem = () => {
             if (isFormVisible.value) {
                 isFormVisible.value = false;
             }
-            topToast.value.showToast('Item deleted successfully', 'success');
             showDeleteConfirmation.value = false;
+            // Toast will be handled by the flash message
         },
         onError: () => {
             topToast.value.showToast('Failed to delete item', 'error');
@@ -96,6 +113,7 @@ const resetForm = () => {
     form.max_stock = '';
     form.status = '';
     selectedInventory.value = null;
+    form.clearErrors();
 };
 
 const editing = ref(false);
@@ -107,34 +125,36 @@ const submit = () => {
 
 const confirmSubmit = () => {
     if (editing.value) {
-        form.post(route('warehouse.update', form.id), {
+        form.put(route('warehouse.update', form.id), {
+            preserveScroll: true,
             onSuccess: () => {
-                if (isFormVisible.value) {
-                    isFormVisible.value = false;
-                }
+                isFormVisible.value = false;
                 resetForm();
                 editing.value = false;
                 showConfirmDialog.value = false;
-                topToast.value.showToast('Item updated successfully', 'success');
             },
             onError: () => {
                 showConfirmDialog.value = false;
-                topToast.value.showToast('Failed to update item', 'error');
+                // The error will be handled by the form.errors watcher
             }
         });
     } else {
         form.post(route('warehouse.store'), {
+            preserveScroll: true,
             onSuccess: () => {
                 if (isFormVisible.value) {
                     isFormVisible.value = false;
                 }
                 resetForm();
                 showConfirmDialog.value = false;
-                topToast.value.showToast('Item added successfully', 'success');
             },
-            onError: () => {
+            onError: (errors) => {
                 showConfirmDialog.value = false;
-                topToast.value.showToast('Failed to add item', 'error');
+                if (errors.error) {
+                    topToast.value.showToast(errors.error, 'error');
+                } else {
+                    topToast.value.showToast('Failed to add item', 'error');
+                }
             }
         });
     }
@@ -182,7 +202,7 @@ const dialogAction = ref('');
                 <div
                     class="fixed top-0 z-40 flex items-center justify-between w-full px-8 py-1 bg-white border-b border-black dark:border-gray-500 dark:bg-gray-800">
                     <div>
-                        <h1 class="text-2xl font-extrabold dark:text-gray-200">Add Product</h1>
+                        <h1 class="text-2xl font-extrabold dark:text-gray-200">{{ editing ? 'Edit Product' : 'Add Product' }}</h1>
                     </div>
                     <button @click="toggleFormVisibility"
                         class="p-3 text-white bg-red-700 rounded-full hover:bg-red-900">
@@ -198,6 +218,7 @@ const dialogAction = ref('');
                             label-field="name"
                             description-field="item_code"
                             @change="form.inventory_id = $event.id"
+                            :disabled="editing"
                             />
                         <CustomInput name="Product Quantity" v-model="form.item_qty" />
                         <CustomInput name="Product Price" v-model="form.price" />
