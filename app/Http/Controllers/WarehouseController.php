@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InventoryStock;
+use App\Models\Warehouse;
 use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,7 @@ class WarehouseController extends Controller
 
         //FOR TABLE PAGINATION AND SEARCH
         $warehouseStocks = WarehouseStock::query()
-            ->with(['creator', 'inventory'])
+            ->with(['creator', 'inventory', 'warehouse'])
             ->when($search, function ($query, $search) {
                 return $query->where('inventory.name', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%")
@@ -43,10 +44,12 @@ class WarehouseController extends Controller
             ->appends($request->query());
 
         $inventories = InventoryStock::select('item_code', 'name', 'id')->get();
+        $warehouse = Warehouse::where('id', Auth::user()->warehouse_id)->first();
 
         return Inertia::render('Warehouse/Index', [
             'warehouseStocks' => $warehouseStocks,
             'inventories' => $inventories,
+            'warehouse' => $warehouse,
             'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }

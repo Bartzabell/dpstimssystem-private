@@ -7,6 +7,7 @@ use App\Models\InventoryStock;
 use App\Models\Supplier;
 use App\Models\TransactionPurchaseBill;
 use App\Models\TransactionPurchaseItem;
+use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -38,12 +39,13 @@ class PurchaseController extends Controller
             ->when($sortField, function ($query, $sortField) use ($sortDirection) {
                 return $query->orderBy($sortField, $sortDirection);
             })
+            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->paginate(5)
             ->appends($request->query());
 
         $suppliers = Supplier::select('id', 'name', 'phone_no', 'tin_no')
             ->get();
-        $inventories = InventoryStock::select('id', 'item_code', 'price')
+        $inventories = WarehouseStock::with('inventory')->select('id', 'inventory.item_code as item_code', 'price')
             ->get();
 
         return Inertia::render('Purchase/Index', [
@@ -61,6 +63,7 @@ class PurchaseController extends Controller
         $form = TransactionPurchaseBill::create([
             'supplier_id' => $request->supplier_id,
             'date_purchased' => $request->date_purchased,
+            'warehouse_id' => Auth::user()->warehouse_id,
             'created_by' => Auth::id(),
         ]);
 
@@ -75,7 +78,7 @@ class PurchaseController extends Controller
                     'created_by' => Auth::id(),
                 ]);
 
-                $inventory = InventoryStock::find($item['stock_id']);
+                $inventory = WarehouseStock::find($item['stock_id']);
                 $inventory->update([
                     'item_qty' => $inventory->item_qty + $item['item_qty'],
                 ]);
@@ -101,6 +104,7 @@ class PurchaseController extends Controller
         $form->update([
             'supplier_id' => $request->supplier_id,
             'date_purchased' => $request->date_purchased,
+            'warehouse_id' => Auth::user()->warehouse_id,
             'updated_by' => Auth::id(),
         ]);
 
@@ -136,7 +140,7 @@ class PurchaseController extends Controller
                         'created_by' => Auth::id(),
                     ]);
 
-                    $inventory = InventoryStock::find($item['stock_id']);
+                    $inventory = WarehouseStock::find($item['stock_id']);
                     $inventory->update([
                         'item_qty' => $inventory->item_qty + $item['item_qty'],
                     ]);

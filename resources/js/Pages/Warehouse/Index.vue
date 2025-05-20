@@ -8,6 +8,7 @@ const props = defineProps({
     warehouseStocks: Object,
     inventories: Array,
     filters: Object,
+    warehouse: Object,
     flash: Object // Add this to receive flash messages
 });
 
@@ -192,9 +193,9 @@ const dialogAction = ref('');
 </script>
 <template>
     <AppLayout title="Warehouse Inventory">
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Inventory
+        <template #header :warehouse-name="warehouseObject.name">
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-20 0">
+                <span class="p-2 text-white rounded-l-md bg-emerald-800">{{ warehouse?.name ?? 'Warehouse' }} </span> Inventory
             </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
