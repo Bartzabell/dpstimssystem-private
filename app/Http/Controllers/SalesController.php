@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Discount;
 use App\Models\TransactionSalesBill;
 use App\Models\TransactionSalesItem;
+use App\Models\Warehouse;
 use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class SalesController extends Controller
 
         //FOR TABLE PAGINATION AND SEARCH
         $forms = TransactionSalesBill::query()
-            ->with(['creator', 'customer', 'items', 'discount']) // Eager load relationships
+            ->with(['creator', 'customer', 'items', 'discount', 'warehouse']) // Eager load relationships
             ->when($search, function ($query, $search) {
                 return $query->where('id', 'like', "%{$search}%")
                     ->orWhere('date_sold', 'like', "%{$search}%")
@@ -36,6 +37,9 @@ class SalesController extends Controller
                     ->orWhereHas('discount', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
                     })
+                    ->orWhereHas('warehouse', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
                     ->orWhereHas('creator', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
                     });
@@ -43,7 +47,7 @@ class SalesController extends Controller
             ->when($sortField, function ($query, $sortField) use ($sortDirection) {
                 return $query->orderBy($sortField, $sortDirection);
             })
-            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
+            // ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->paginate(5)
             ->appends($request->query());
 
@@ -57,6 +61,7 @@ class SalesController extends Controller
             ->get();
         $categories = Category::select('*')
             ->get();
+        $warehouses = Warehouse::select('id', 'name')->get();
 
         return Inertia::render('Sales/Index', [
             'forms' => $forms,
@@ -64,6 +69,7 @@ class SalesController extends Controller
             'inventories' => $inventories,
             'discounts' => $discounts,
             'categories' => $categories,
+            'warehouses' => $warehouses,
             'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }
@@ -77,7 +83,7 @@ class SalesController extends Controller
             'date_sold' => $request->date_sold,
             'discount_id' => $request->discount_id,
             'total_price' => $request->total_price, // Use total_price from the request
-            'warehouse_id' => Auth::user()->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             'created_by' => Auth::id(),
         ]);
 
@@ -114,7 +120,7 @@ class SalesController extends Controller
             'date_sold' => $request->date_sold,
             'discount_id' => $request->discount_id,
             'total_price' => $request->total_price, // Use total_price from the request
-            'warehouse_id' => Auth::user()->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             'updated_by' => Auth::id(),
         ]);
 

@@ -8,6 +8,7 @@ const props = defineProps({
     forms: Object,
     suppliers: Array,
     inventories: Array,
+    warehouses: Array,
     filters: Object
 });
 
@@ -20,6 +21,7 @@ const topToast = ref(null);
 
 const selectedItems = ref([]);
 const selectedSupplier = ref(null);
+const selectedWarehouse = ref(null);
 
 function toggleFormVisibility() {
     if (isFormVisible.value) {
@@ -45,6 +47,7 @@ const form = useForm({
     id: null,
     supplier_id: '',
     date_purchased: '',
+    warehouse_id: '',
     phone_no: '',
     tin_no: '',
     items: [],
@@ -76,6 +79,7 @@ const edit = (purchase_form) => {
     }
     form.id = purchase_form.id;
     form.supplier_id = purchase_form.supplier_id;
+    form.warehouse_id = purchase_form.warehouse_id;
     form.date_purchased = purchase_form.date_purchased;
     form.phone_no = purchase_form.supplier?.phone_no || '';
     form.tin_no = purchase_form.supplier?.tin_no || '';
@@ -92,6 +96,7 @@ const edit = (purchase_form) => {
 
     selectedItems.value = form.items.map(item => item.stock_id || null);
     selectedSupplier.value = purchase_form.supplier_id;
+    selectedWarehouse.value = purchase_form.warehouse_id;
 
     editing.value = true;
 };
@@ -135,6 +140,7 @@ const resetForm = () => {
     form.supplier_id = '';
     form.date_purchased = '';
     form.phone_no = '';
+    form.warehouse_id = '';
     form.tin_no = '';
     form.items = [];
     selectedItems.value = [];
@@ -271,7 +277,7 @@ const cancelConfirmDialog = () => {
                 <form @submit.prevent="submit" class="pt-10 pb-4 m-3 bg-white rounded shadow dark:bg-gray-800">
                     <div class="grid grid-cols-1 gap-5 px-3 py-1">
                         <div class="grid grid-cols-1 gap-2 lg:grid-cols-5">
-                            <div class="!text-[10px] col-span-1 lg:col-span-2 2xl:!text-sm spanlabel">
+                            <div class="!text-[10px] col-span-1 2xl:!text-sm spanlabel">
                                 <label
                                     class="block mt-2.5 2xl:mt-0.5 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Supplier</label>
                                 <SearchableDropdown class="border rounded-lg border-slate-600"
@@ -288,6 +294,13 @@ const cancelConfirmDialog = () => {
                             <div>
                                 <CustomInput name="Tax Identification Number" type="text" v-model="form.tin_no"
                                     disabled />
+                            </div>
+                            <div class="!text-[10px] col-span-1 2xl:!text-sm spanlabel">
+                                <label
+                                    class="block mt-2.5 2xl:mt-0.5 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Warehouse</label>
+                                <SearchableDropdown class="border rounded-lg border-slate-600"
+                                    v-model="selectedWarehouse" :items="warehouses" placeholder="Search Supplier..."
+                                    @change="form.warehouse_id = $event.id" />
                             </div>
                         </div>
                         <div>
@@ -411,6 +424,15 @@ const cancelConfirmDialog = () => {
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('id')" class="flex items-center justify-center w-full">
+                                        Warehouse
+                                        <PhCaretUp v-if="sortField === 'warehouse.name' && sortDirection === 'asc'" class="ml-1"
+                                            :size="16" />
+                                        <PhCaretDown v-if="sortField === 'warehouse.name' && sortDirection === 'desc'" class="ml-1"
+                                            :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
                                     <button @click="sort('supplier_id')"
                                         class="flex items-center justify-center w-full">
                                         SUPPLIER
@@ -465,6 +487,7 @@ const cancelConfirmDialog = () => {
                             <tr class="text-xs text-gray-600 md:text-base dark:text-gray-50 dark:bg-gray-500 dark:even:bg-gray-600 dark:hover:bg-gray-800 hover:bg-blue-100 even:bg-gray-50"
                                 v-for="form in forms.data" :key="form.id">
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.warehouse?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.supplier?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_purchased) }}
                                 </td>

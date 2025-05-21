@@ -113,7 +113,7 @@ const logout = () => {
                                     <Link :href="route('inventory.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhPackage :size="28" weight="fill" />
-                                            Inventory
+                                            Product Registration
                                         </span>
                                     </Link>
                                 </li>
@@ -121,7 +121,7 @@ const logout = () => {
                                     <Link :href="route('warehouse.index')">
                                         <span class="inline-flex items-center w-full gap-2">
                                             <PhPackage :size="28" weight="fill" />
-                                            Warehouse Inventory
+                                            Inventory
                                         </span>
                                     </Link>
                                 </li>

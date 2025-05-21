@@ -44,15 +44,6 @@ function toggleFormWeeklyVisibility() {
 function toggleForm2Visibility() {
     isMonthVisible.value = !isMonthVisible.value;
 }
-function toggleForm3Visibility() {
-    isAvailableVisible.value = !isAvailableVisible.value;
-}
-function toggleForm4Visibility() {
-    isLowVisible.value = !isLowVisible.value;
-}
-function toggleForm5Visibility() {
-    isHighVisible.value = !isHighVisible.value;
-}
 
 const activeTab = ref('monthly-sales');
 
@@ -66,12 +57,12 @@ const handleWarehouseChange = (warehouseId) => {
                'selectedWarehouse']
     });
 };
-
+const currentWarehouseId = computed(() => props.selectedWarehouse);
 </script>
 <template>
     <AppLayout title="Dashboard">
-        <template #header>
-            <div class="flex items-center justify-between">
+        <template #header >
+            <div class="flex items-center justify-end">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                     Dashboard
                 </h2>
@@ -199,13 +190,19 @@ const handleWarehouseChange = (warehouseId) => {
                         </button>
                     </div>
                 </div>
-                <div v-if="activeTab === 'monthly-sales'"
+                <div v-show="activeTab === 'monthly-sales'"
                     class="col-span-1 px-4 py-1 bg-white rounded-lg dark:bg-gray-700 lg:col-span-3 2xl:col-span-6">
-                    <MonthlyIncomeChart />
+                    <MonthlyIncomeChart
+                        :warehouse-id="currentWarehouseId"
+                        :key="`income-${currentWarehouseId}`"
+                    />
                 </div>
-                <div v-if="activeTab === 'item-sales'"
+                <div v-show="activeTab === 'item-sales'"
                     class="col-span-1 px-4 py-1 bg-white rounded-lg dark:bg-gray-700 lg:col-span-3 2xl:col-span-6">
-                    <MonthlySalesQuantityChart />
+                    <MonthlySalesQuantityChart
+                        :warehouse-id="currentWarehouseId"
+                        :key="`quantity-${currentWarehouseId}`"
+                    />
                 </div>
             </div>
         </div>

@@ -11,6 +11,7 @@ const props = defineProps({
     inventories: Array,
     discounts: Array,
     filters: Object,
+    warehouses: Array,
     categories: Array
 });
 
@@ -29,6 +30,7 @@ const topToast = ref(null);
 const selectedItems = ref([]);
 const selectedCustomer = ref(null);
 const selectedDiscount = ref(null);
+const selectedWarehouse = ref(null);
 
 // State for categories and filtered items
 const selectedCategory = ref(null);
@@ -69,6 +71,7 @@ const form = useForm({
     date_sold: '',
     phone_no: '',
     tin_no: '',
+    warehouse_id: '',
     address: '',
     email: '',
     items: [],
@@ -148,6 +151,7 @@ const edit = (sales_form) => {
     form.customer_id = sales_form.customer_id;
     form.discount_id = sales_form.discount_id;
     form.date_sold = sales_form.date_sold;
+    form.warehouse_id = sales_form.warehouse_id;
     form.phone_no = sales_form.supplier?.phone_no || '';
     form.tin_no = sales_form.supplier?.tin_no || '';
 
@@ -164,6 +168,7 @@ const edit = (sales_form) => {
     selectedItems.value = form.items.map(item => item.stock_id || null);
     selectedCustomer.value = sales_form.customer_id;
     selectedDiscount.value = sales_form.discount_id;
+    selectedWarehouse.value = sales_form.warehouse_id;
     editing.value = true;
 };
 
@@ -215,6 +220,7 @@ const resetForm = () => {
     form.discount_id = '';
     form.date_sold = '';
     form.items = [];
+    form.warehouse_id = '';
     selectedItems.value = [];
     selectedCustomer.value = null;
     selectedDiscount.value = null;
@@ -385,6 +391,13 @@ const cancelConfirmDialog = () => {
                             </div>
                             <div>
                                 <CustomInput name="Customer Address" type="text" v-model="form.address" disabled />
+                            </div>
+                            <div >
+                                <label
+                                    class="block mt-2.5 2xl:mt-0.5 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Warehouse</label>
+                                <SearchableDropdown class="bg-white border rounded-lg border-slate-600"
+                                    v-model="selectedWarehouse" :items="warehouses" placeholder="Search Supplier..."
+                                    @change="form.warehouse_id = $event.id" />
                             </div>
                         </div>
                         <div class="flex flex-row items-center w-full gap-1 mb-2 h-max">
@@ -607,6 +620,15 @@ const cancelConfirmDialog = () => {
                                     </button>
                                 </th>
                                 <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                    <button @click="sort('id')" class="flex items-center justify-center w-full">
+                                        Warehouse
+                                        <PhCaretUp v-if="sortField === 'warehouse.name' && sortDirection === 'asc'" class="ml-1"
+                                            :size="16" />
+                                        <PhCaretDown v-if="sortField === 'warehouse.name' && sortDirection === 'desc'" class="ml-1"
+                                            :size="16" />
+                                    </button>
+                                </th>
+                                <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
                                     <button @click="sort('customer_id')"
                                         class="flex items-center justify-center w-full">
                                         CUSTOMER
@@ -660,6 +682,7 @@ const cancelConfirmDialog = () => {
                             <tr class="text-xs text-gray-600 md:text-base dark:text-gray-50 dark:bg-gray-500 dark:even:bg-gray-600 dark:hover:bg-gray-800 hover:bg-blue-100 even:bg-gray-50"
                                 v-for="form in forms.data" :key="form.id">
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.id }}</td>
+                                <td class="px-2 py-1 border whitespace-nowrap">{{ form.warehouse?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.customer?.name }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ formatDate(form.date_sold) }}</td>
                                 <td class="px-2 py-1 border whitespace-nowrap">{{ form.total_price }}</td>

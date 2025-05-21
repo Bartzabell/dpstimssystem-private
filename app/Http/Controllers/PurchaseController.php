@@ -7,6 +7,7 @@ use App\Models\WarehouseStock;
 use App\Models\Supplier;
 use App\Models\TransactionPurchaseBill;
 use App\Models\TransactionPurchaseItem;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -23,12 +24,15 @@ class PurchaseController extends Controller
 
         //FOR TABLE PAGINATION, SEARCH, AND SORTING
         $forms = TransactionPurchaseBill::query()
-            ->with(['creator', 'supplier', 'items']) // Eager load relationships
+            ->with(['creator', 'supplier', 'items', 'warehouse']) // Eager load relationships
             ->when($search, function ($query, $search) {
                 return $query->where('id', 'like', "%{$search}%")
                     ->orWhere('date_purchased', 'like', "%{$search}%")
                     ->orWhere('total_price', 'like', "%{$search}%")
                     ->orWhereHas('supplier', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('warehouse', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
                     })
                     ->orWhereHas('creator', function ($q) use ($search) {
@@ -38,7 +42,7 @@ class PurchaseController extends Controller
             ->when($sortField, function ($query, $sortField) use ($sortDirection) {
                 return $query->orderBy($sortField, $sortDirection);
             })
-            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
+            // ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->paginate(5)
             ->appends($request->query());
 
@@ -48,11 +52,13 @@ class PurchaseController extends Controller
             ->select('warehouse_stocks.id', 'inventory_stocks.item_code as item_code', 'warehouse_stocks.price')
             ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->get();
+        $warehouses = Warehouse::select('id', 'name')->get();
 
         return Inertia::render('Purchase/Index', [
             'forms' => $forms,
             'suppliers' => $suppliers,
             'inventories' => $inventories,
+            'warehouses' => $warehouses,
             'filters' => $request->only('search', 'sort_field', 'sort_direction')
         ]);
     }
@@ -64,7 +70,7 @@ class PurchaseController extends Controller
         $form = TransactionPurchaseBill::create([
             'supplier_id' => $request->supplier_id,
             'date_purchased' => $request->date_purchased,
-            'warehouse_id' => Auth::user()->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             'created_by' => Auth::id(),
         ]);
 
@@ -105,7 +111,7 @@ class PurchaseController extends Controller
         $form->update([
             'supplier_id' => $request->supplier_id,
             'date_purchased' => $request->date_purchased,
-            'warehouse_id' => Auth::user()->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             'updated_by' => Auth::id(),
         ]);
 
