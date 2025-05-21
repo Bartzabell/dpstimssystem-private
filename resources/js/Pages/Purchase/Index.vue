@@ -61,7 +61,7 @@ const total_price = computed(() => {
 });
 
 const filteredInventories = computed(() => {
-  if (!selectedWarehouse.value) return props.inventories;
+  if (!selectedWarehouse.value) return [];
   return props.inventories.filter(inventory => inventory.warehouse_id === selectedWarehouse.value);
 });
 
