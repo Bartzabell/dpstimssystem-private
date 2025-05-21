@@ -19,8 +19,9 @@ class PurchaseController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->input('search');
-        $sortField = $request->input('sort_field', 'id'); // Default sort field
-        $sortDirection = $request->input('sort_direction', 'desc'); // Default sort direction
+        $sortField = $request->input('sort_field', 'id');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $warehouseId = $request->input('warehouse_id', 1);
 
         //FOR TABLE PAGINATION, SEARCH, AND SORTING
         $forms = TransactionPurchaseBill::query()
@@ -42,6 +43,9 @@ class PurchaseController extends Controller
             ->when($sortField, function ($query, $sortField) use ($sortDirection) {
                 return $query->orderBy($sortField, $sortDirection);
             })
+            ->when($warehouseId, function ($query, $warehouseId) {
+                return $query->where('warehouse_id', $warehouseId);
+            })
             // ->where('warehouse_id', '=', Auth::user()->warehouse_id)
             ->paginate(5)
             ->appends($request->query());
@@ -59,7 +63,7 @@ class PurchaseController extends Controller
             'suppliers' => $suppliers,
             'inventories' => $inventories,
             'warehouses' => $warehouses,
-            'filters' => $request->only('search', 'sort_field', 'sort_direction')
+            'filters' => $request->only('search', 'sort_field', 'sort_direction', 'warehouse_id')
         ]);
     }
 

@@ -15,6 +15,7 @@ const props = defineProps({
 const search = ref(props.filters.search || '');
 const sortField = ref(props.filters.sort_field || 'id');
 const sortDirection = ref(props.filters.sort_direction || 'asc');
+const selectedSearchWarehouse = ref(1);
 const isFormVisible = ref(false);
 const editing = ref(false);
 const topToast = ref(null);
@@ -59,8 +60,16 @@ const total_price = computed(() => {
     }, 0);
 });
 
-watch(search, (value) => {
-    router.get(route('purchase.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+watch([search, selectedSearchWarehouse], ([searchValue, warehouseValue]) => {
+    router.get(route('purchase.index'),
+        {
+            search: searchValue,
+            warehouse_id: warehouseValue,
+            sort_field: sortField.value,
+            sort_direction: sortDirection.value
+        },
+        { preserveState: true, replace: true }
+    );
 }, { deep: true });
 
 const sort = (field) => {
@@ -70,7 +79,15 @@ const sort = (field) => {
         sortField.value = field;
         sortDirection.value = 'asc';
     }
-    router.get(route('purchase.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+    router.get(route('purchase.index'),
+        {
+            search: search.value,
+            warehouse_id: selectedSearchWarehouse.value,
+            sort_field: sortField.value,
+            sort_direction: sortDirection.value
+        },
+        { preserveState: true, replace: true }
+    );
 };
 
 const edit = (purchase_form) => {
@@ -398,15 +415,22 @@ const cancelConfirmDialog = () => {
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-700">
                 <!-- Search Bar -->
-                <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
-                    <ButtonCode @click="toggleFormVisibility" text="Add Purchase" :icon="PhFilePlus"
-                        color="bg-emerald-700 hover:bg-emerald-900" />
-                    <div class="relative">
-                        <PhListMagnifyingGlass
-                            class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
-                            :size="20" />
-                        <input type="text" v-model="search" placeholder="Search..."
-                            class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl" />
+                <div class="flex flex-col justify-between gap-2 mb-4 items-between md:items-center md:flex-row">
+                    <div class="w-44">
+                        <SearchableDropdown class="font-black text-center border rounded-lg border-slate-600"
+                                v-model="selectedSearchWarehouse" :items="warehouses" placeholder="Search Warehouse..."
+                                    />
+                    </div>
+                    <div class="flex items-center justify-end gap-2">
+                        <ButtonCode @click="toggleFormVisibility" text="Add Purchase" :icon="PhFilePlus"
+                            color="bg-emerald-700 hover:bg-emerald-900" />
+                        <div class="relative">
+                            <PhListMagnifyingGlass
+                                class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
+                                :size="20" />
+                            <input type="text" v-model="search" placeholder="Search..."
+                                class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl" />
+                        </div>
                     </div>
                 </div>
                 <!-- items Table -->

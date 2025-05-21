@@ -36,7 +36,15 @@ const sort = (field) => {
         sortField.value = field;
         sortDirection.value = 'asc';
     }
-    router.get(route('warehouse.index'), { search: search.value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+    router.get(route('warehouse.index'),
+        {
+            search: search.value,
+            warehouse_id: selectedSearchWarehouse.value,
+            sort_field: sortField.value,
+            sort_direction: sortDirection.value
+        },
+        { preserveState: true, replace: true }
+    );
 };
 
 const isFormVisible = ref(false);
@@ -265,7 +273,7 @@ const dialogAction = ref('');
                 <!-- Search Bar -->
                 <div class="flex flex-col items-end justify-between gap-2 mb-4 md:items-center md:flex-row">
                     <div class="w-44">
-                        <SearchableDropdown class="border rounded-lg border-slate-600"
+                        <SearchableDropdown class="font-black text-center border rounded-lg border-slate-600"
                                 v-model="selectedSearchWarehouse" :items="warehouses" placeholder="Search Warehouse..."
                                     />
                     </div>
