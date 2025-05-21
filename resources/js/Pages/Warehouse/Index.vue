@@ -7,16 +7,26 @@ import { PhX, PhFilePlus, PhFloppyDisk, PhTrash, PhPencil, PhCaretUp, PhCaretDow
 const props = defineProps({
     warehouseStocks: Object,
     inventories: Array,
+    warehouses: Array,
     filters: Object,
-    warehouse: Object,
     flash: Object // Add this to receive flash messages
 });
 
 const search = ref(props.filters?.search || '');
 const sortField = ref(props.filters.sort_field || 'id');
 const sortDirection = ref(props.filters.sort_direction || 'asc');
-watch(search, (value) => {
-    router.get(route('warehouse.index'), { search: value, sort_field: sortField.value, sort_direction: sortDirection.value }, { preserveState: true, replace: true });
+const selectedSearchWarehouse = ref(1);
+
+watch([search, selectedSearchWarehouse], ([searchValue, warehouseValue]) => {
+    router.get(route('warehouse.index'),
+        {
+            search: searchValue,
+            warehouse_id: warehouseValue,
+            sort_field: sortField.value,
+            sort_direction: sortDirection.value
+        },
+        { preserveState: true, replace: true }
+    );
 }, { deep: true });
 
 const sort = (field) => {
@@ -32,9 +42,11 @@ const sort = (field) => {
 const isFormVisible = ref(false);
 const topToast = ref(null);
 const selectedInventory = ref(null);
+const selectedWarehouse = ref(null);
 const form = useForm({
     id: null,
     inventory_id: '',
+    warehouse_id: '',
     item_qty: '',
     price: '',
     min_stock: '',
@@ -74,12 +86,14 @@ const edit = (warehouse) => {
     form.id = warehouse.id;
     form.inventory_id = warehouse.inventory_id;
     form.item_qty = warehouse.item_qty;
+    form.warehouse_id = warehouse.warehouse_id;
     form.price = warehouse.price;
     form.min_stock = warehouse.min_stock;
     form.max_stock = warehouse.max_stock;
     form.status = warehouse.status;
 
     selectedInventory.value = warehouse.inventory_id;
+    selectedWarehouse.value = warehouse.warehouse_id;
 
     editing.value = true;
 };
@@ -110,6 +124,7 @@ const resetForm = () => {
     form.inventory_id = '';
     form.item_qty = '';
     form.price = '';
+    form.warehouse_id = '';
     form.min_stock = '';
     form.max_stock = '';
     form.status = '';
@@ -154,7 +169,7 @@ const confirmSubmit = () => {
                 if (errors.error) {
                     topToast.value.showToast(errors.error, 'error');
                 } else {
-                    topToast.value.showToast('Failed to add item', 'error');
+                    topToast.value.showToast('Failed to add item. Please complete the required fields.', 'error');
                 }
             }
         });
@@ -193,9 +208,9 @@ const dialogAction = ref('');
 </script>
 <template>
     <AppLayout title="Warehouse Inventory">
-        <template #header :warehouse-name="warehouseObject.name">
+        <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-20 0">
-                <span class="p-2 text-white rounded-l-md bg-emerald-800">{{ warehouse?.name ?? 'Warehouse' }} </span> Inventory
+                Warehouse Inventory
             </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
@@ -223,6 +238,13 @@ const dialogAction = ref('');
                                 :disabled="editing"
                                 />
                         </div>
+                        <div class="!text-[10px] col-span-1 2xl:!text-sm spanlabel">
+                            <label
+                                class="block mt-2.5 2xl:mt-0.5 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm dark:text-gray-200">Warehouse</label>
+                            <SearchableDropdown class="border rounded-lg border-slate-600"
+                                v-model="selectedWarehouse" :items="warehouses" placeholder="Search Supplier..."
+                                @change="form.warehouse_id = $event.id" />
+                        </div>
                         <CustomInput name="Product Quantity" v-model="form.item_qty" />
                         <CustomInput name="Product Price" v-model="form.price" />
                         <CustomInput name="Minimum Stock" v-model="form.min_stock" />
@@ -241,16 +263,24 @@ const dialogAction = ref('');
         <div class="p-5">
             <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-700">
                 <!-- Search Bar -->
-                <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
-                    <ButtonCode @click="toggleFormVisibility" text="Add Product" :icon="PhFilePlus"
-                        color="bg-emerald-700 hover:bg-emerald-900" />
-                    <div class="relative">
-                        <PhListMagnifyingGlass
-                            class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
-                            :size="20" />
-                        <input type="text" v-model="search" placeholder="Search..."
-                            class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl" />
+                <div class="flex flex-col items-end justify-between gap-2 mb-4 md:items-center md:flex-row">
+                    <div class="w-44">
+                        <SearchableDropdown class="border rounded-lg border-slate-600"
+                                v-model="selectedSearchWarehouse" :items="warehouses" placeholder="Search Warehouse..."
+                                    />
                     </div>
+                    <div class="flex items-center justify-end gap-2">
+                        <ButtonCode @click="toggleFormVisibility" text="Add Product" :icon="PhFilePlus"
+                            color="bg-emerald-700 hover:bg-emerald-900" />
+                        <div class="relative">
+                            <PhListMagnifyingGlass
+                                class="absolute text-gray-400 transform -translate-y-1/2 dark:text-gray-500 left-2 top-1/2"
+                                :size="20" />
+                            <input type="text" v-model="search" placeholder="Search..."
+                                class="py-1 pl-8 pr-2 text-sm border dark:bg-gray-300 dark:text-gray-500 rounded-2xl" />
+                        </div>
+                    </div>
+
                 </div>
 
                 <div v-if="warehouseStocks && warehouseStocks.data && warehouseStocks.data.length > 0">
@@ -269,7 +299,16 @@ const dialogAction = ref('');
                                         </button>
                                     </th>
                                     <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
-                                        <button @click="sort('name')" class="flex items-center justify-center w-full">
+                                        <button @click="sort('warehouse.name')" class="flex items-center justify-center w-full">
+                                            Warehouse
+                                            <PhCaretUp v-if="sortField === 'warehouse.name' && sortDirection === 'asc'" class="ml-1"
+                                                :size="16" />
+                                            <PhCaretDown v-if="sortField === 'warehouse.name' && sortDirection === 'desc'" class="ml-1"
+                                                :size="16" />
+                                        </button>
+                                    </th>
+                                    <th class="px-2 py-1 border bg-emerald-800 whitespace-nowrap">
+                                        <button @click="sort('inventory.name')" class="flex items-center justify-center w-full">
                                             NAME
                                             <PhCaretUp v-if="sortField === 'inventory.name' && sortDirection === 'asc'"
                                                 class="ml-1" :size="16" />
@@ -380,6 +419,7 @@ const dialogAction = ref('');
                                 <tr class="text-xs text-gray-600 dark:text-gray-50 dark:bg-gray-500 dark:even:bg-gray-600 dark:hover:bg-gray-800 md:text-base hover:bg-blue-100 even:bg-gray-50"
                                     v-for="warehouse in warehouseStocks.data" :key="warehouse.id">
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ warehouse.id }}</td>
+                                    <td class="px-2 py-1 border whitespace-nowrap">{{ warehouse.warehouse?.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ warehouse.inventory.name }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ warehouse.inventory.item_code }}</td>
                                     <td class="px-2 py-1 border whitespace-nowrap">{{ warehouse.item_qty }}</td>

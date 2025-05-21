@@ -16,48 +16,99 @@ class WarehouseController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->input('search');
-        $sortField = $request->input('sort_field', 'id'); // Default sort field
-        $sortDirection = $request->input('sort_direction', 'asc'); // Default sort direction
+        $sortField = $request->input('sort_field', 'id');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $warehouseId = $request->input('warehouse_id', 1);
 
         //FOR TABLE PAGINATION AND SEARCH
         $warehouseStocks = WarehouseStock::query()
             ->with(['creator', 'inventory', 'warehouse'])
             ->when($search, function ($query, $search) {
-                return $query->where('inventory.name', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%")
-                    ->orWhere('inventory.item_code', 'like', "%{$search}%")
+                return $query->where('id', 'like', "%{$search}%")
+                    ->orWhereHas('inventory', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('item_code', 'like', "%{$search}%")
+                            ->orWhere('category', 'like', "%{$search}%")
+                            ->orWhere('size', 'like', "%{$search}%")
+                            ->orWhere('type', 'like', "%{$search}%")
+                            ->orWhere('material', 'like', "%{$search}%")
+                            ->orWhere('color', 'like', "%{$search}%")
+                            ->orWhere('uom', 'like', "%{$search}%")
+                            ->orWhere('price', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('warehouse', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
                     ->orWhere('item_qty', 'like', "%{$search}%")
-                    ->orWhere('inventory.category', 'like', "%{$search}%")
-                    ->orWhere('inventory.size', 'like', "%{$search}%")
-                    ->orWhere('inventory.type', 'like', "%{$search}%")
-                    ->orWhere('inventory.material', 'like', "%{$search}%")
-                    ->orWhere('inventory.color', 'like', "%{$search}%")
-                    ->orWhere('inventory.uom', 'like', "%{$search}%")
-                    ->orWhere('inventory.price', 'like', "%{$search}%")
                     ->orWhere('status', 'like', "%{$search}%");
             })
-            ->when($sortField, function ($query, $sortField) use ($sortDirection) {
-                return $query->orderBy($sortField, $sortDirection);
+            ->when($warehouseId, function ($query, $warehouseId) {
+                return $query->where('warehouse_id', $warehouseId);
             })
-            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
+            ->when($sortField, function ($query, $sortField) use ($sortDirection) {
+                // Handle sorting by relationship fields
+                if ($sortField === 'inventory.name') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.name', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'item_code') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.item_code', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'category') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.category', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'size') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.size', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'type') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.type', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'material') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.material', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'color') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.color', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'uom') {
+                    return $query->join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
+                                ->orderBy('inventory_stocks.uom', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } elseif ($sortField === 'warehouse.name') {
+                    return $query->join('warehouses', 'warehouse_stocks.warehouse_id', '=', 'warehouses.id')
+                                ->orderBy('warehouses.name', $sortDirection)
+                                ->select('warehouse_stocks.*');
+                } else {
+                    return $query->orderBy($sortField, $sortDirection);
+                }
+            })
             ->paginate(5)
             ->appends($request->query());
 
         $inventories = InventoryStock::select('item_code', 'name', 'id')->get();
-        $warehouse = Warehouse::where('id', Auth::user()->warehouse_id)->first();
+        $warehouses = Warehouse::select('id', 'name')->get();
 
         return Inertia::render('Warehouse/Index', [
             'warehouseStocks' => $warehouseStocks,
+            'warehouses' => $warehouses,
             'inventories' => $inventories,
-            'warehouse' => $warehouse,
-            'filters' => $request->only('search', 'sort_field', 'sort_direction')
+            'filters' => $request->only('search', 'sort_field', 'sort_direction', 'warehouse_id')
         ]);
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'inventory_id' => 'required|exists:inventory_stocks,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+        ]);
         // Check if a warehouse stock with the same warehouse_id and inventory_id already exists
-        $existingStock = WarehouseStock::where('warehouse_id', Auth::user()->warehouse_id)
+        $existingStock = WarehouseStock::where('warehouse_id', $request->warehouse_id)
                                       ->where('inventory_id', $request->inventory_id)
                                       ->first();
 
@@ -69,7 +120,7 @@ class WarehouseController extends Controller
 
         WarehouseStock::create([
             'inventory_id' => $request->inventory_id,
-            'warehouse_id' => Auth::user()->warehouse_id,
+            'warehouse_id' => $request->warehouse_id,
             'item_qty' => $request->item_qty,
             'price' => $request->price,
             'min_stock' => $request->min_stock,
@@ -85,7 +136,7 @@ class WarehouseController extends Controller
     {
         // If inventory_id is being changed, check for duplicates
         if ($warehouseStock->inventory_id != $request->inventory_id) {
-            $existingStock = WarehouseStock::where('warehouse_id', Auth::user()->warehouse_id)
+            $existingStock = WarehouseStock::where('warehouse_id', $request->warehouse_id)
                                          ->where('inventory_id', $request->inventory_id)
                                          ->first();
 
@@ -99,6 +150,7 @@ class WarehouseController extends Controller
 
         $warehouseStock->update([
             'inventory_id' => $request->inventory_id,
+            'warehouse_id' => $request->warehouse_id,
             'item_qty' => $request->item_qty,
             'price' => $request->price,
             'min_stock' => $request->min_stock,

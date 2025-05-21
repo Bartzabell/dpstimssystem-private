@@ -20,7 +20,7 @@ class PurchaseController extends Controller
     {
         $search = $request->input('search');
         $sortField = $request->input('sort_field', 'id'); // Default sort field
-        $sortDirection = $request->input('sort_direction', 'asc'); // Default sort direction
+        $sortDirection = $request->input('sort_direction', 'desc'); // Default sort direction
 
         //FOR TABLE PAGINATION, SEARCH, AND SORTING
         $forms = TransactionPurchaseBill::query()

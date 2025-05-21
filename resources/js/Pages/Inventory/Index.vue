@@ -215,7 +215,7 @@ const dialogAction = ref('');
     <AppLayout title="Inventory">
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Inventory
+                Product Registration
             </h2>
         </template>
         <Modal :show="isFormVisible" @close="!isFormVisible" class="fixed inset-0 z-50">
@@ -286,7 +286,7 @@ const dialogAction = ref('');
             <div class="p-6 mt-2 bg-white rounded shadow dark:bg-gray-700">
                 <!-- Search Bar -->
                 <div class="flex flex-col items-end justify-end gap-2 mb-4 md:items-center md:flex-row">
-                    <ButtonCode @click="toggleFormVisibility" text="Add Product" :icon="PhFilePlus"
+                    <ButtonCode @click="toggleFormVisibility" text="Register Product" :icon="PhFilePlus"
                         color="bg-emerald-700 hover:bg-emerald-900" />
                     <div class="relative">
                         <PhListMagnifyingGlass
