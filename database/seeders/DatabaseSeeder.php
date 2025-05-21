@@ -100,7 +100,7 @@ class DatabaseSeeder extends Seeder
         );
 
         InventoryStock::firstOrCreate(
-            ['item_code' => 'WhiteStandardPlasticCup100Meter',],
+            ['item_code' => 'WhiteStandardPlasticCup100ML',],
             [
                 'name' => 'Sample Item',
                 // 'item_qty' => 100,
@@ -124,6 +124,7 @@ class DatabaseSeeder extends Seeder
                 'warehouse_id' => 1,
             ],
             [
+                'item_code' => 'WhiteStandardPlasticCup100ML',
                 'item_qty' => 50,
                 'status' => 'normal',
                 'price' => 20,
@@ -139,6 +140,7 @@ class DatabaseSeeder extends Seeder
                 'warehouse_id' => 2,
             ],
             [
+                'item_code' => 'WhiteStandardPlasticCup100ML',
                 'item_qty' => 30,
                 'status' => 'normal',
                 'price' => 20,
@@ -154,6 +156,7 @@ class DatabaseSeeder extends Seeder
                 'warehouse_id' => 3,
             ],
             [
+                'item_code' => 'WhiteStandardPlasticCup100ML',
                 'item_qty' => 20,
                 'status' => 'normal',
                 'price' => 20,

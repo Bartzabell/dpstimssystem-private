@@ -7,6 +7,8 @@ use App\Models\Color;
 use App\Models\InventoryStock;
 use App\Models\Material;
 use App\Models\Uom;
+use App\Models\Warehouse;
+use App\Models\WarehouseStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -64,7 +66,7 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-        InventoryStock::create([
+        $inventory = InventoryStock::create([
             'name' => $request->name,
             'item_code' => $request->item_code,
             'category' => $request->category,
@@ -79,6 +81,22 @@ class InventoryController extends Controller
             'status' => 'active',
             'created_by' => Auth::id(),
         ]);
+
+        $warehouses = Warehouse::select('id')->get();
+
+            foreach ($warehouses as $warehouse){
+                WarehouseStock::create([
+                'inventory_id' => $inventory->id,
+                'warehouse_id' => $warehouse->id,
+                'item_code' => $request->item_code,
+                'item_qty' => 0,
+                'price' => $request->price,
+                'min_stock' => 0,
+                'max_stock' => 0,
+                'status' => 'normal',
+                'created_by' => Auth::id(),
+            ]);
+        };
 
         return redirect()->route('inventory.index');
     }

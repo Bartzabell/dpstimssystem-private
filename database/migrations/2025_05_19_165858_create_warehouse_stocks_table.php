@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(InventoryStock::class, 'inventory_id')->nullable();
             $table->foreignIdFor(Warehouse::class, 'warehouse_id')->nullable();
+            $table->string('item_code')->nullable();
             $table->decimal('item_qty', 10, 2)->default(0)->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('min_stock', 10, 2)->nullable();

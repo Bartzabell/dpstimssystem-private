@@ -52,10 +52,8 @@ class PurchaseController extends Controller
 
         $suppliers = Supplier::select('id', 'name', 'phone_no', 'tin_no')
             ->get();
-        $inventories = WarehouseStock::join('inventory_stocks', 'warehouse_stocks.inventory_id', '=', 'inventory_stocks.id')
-            ->select('warehouse_stocks.id', 'inventory_stocks.item_code as item_code', 'warehouse_stocks.price')
-            ->where('warehouse_id', '=', Auth::user()->warehouse_id)
-            ->get();
+        $inventories = WarehouseStock::select('id', 'item_code', 'warehouse_id')->get();
+
         $warehouses = Warehouse::select('id', 'name')->get();
 
         return Inertia::render('Purchase/Index', [

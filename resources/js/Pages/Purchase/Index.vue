@@ -60,6 +60,11 @@ const total_price = computed(() => {
     }, 0);
 });
 
+const filteredInventories = computed(() => {
+  if (!selectedWarehouse.value) return props.inventories;
+  return props.inventories.filter(inventory => inventory.warehouse_id === selectedWarehouse.value);
+});
+
 watch([search, selectedSearchWarehouse], ([searchValue, warehouseValue]) => {
     router.get(route('purchase.index'),
         {
@@ -356,10 +361,10 @@ const cancelConfirmDialog = () => {
                                                 <td
                                                     class="px-2  py-1 !text-[8px] lg:!text-[10px] font-medium 2xl:!text-sm pb-1 border whitespace-nowrap">
                                                     <SearchableDropdown class="border rounded-lg border-slate-600"
-                                                        v-model="selectedItems[index]" :items="inventories"
+                                                        v-model="selectedItems[index]" :items="filteredInventories"
                                                         placeholder="Search Item..."
                                                         value-field="id"
-                                                        label-field="name"
+                                                        label-field="item_code"
                                                         @change="handleInventoryChange($event, index)" />
                                                 </td>
                                                 <td class="px-2 py-1 border whitespace-nowrap">
